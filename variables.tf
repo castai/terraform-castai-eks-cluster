@@ -31,5 +31,5 @@ variable "aws_instance_profile_arn" {
 variable "api_url" {
   type = string
   description = "URL of alternative CAST AI API to be used during development or testing"
-  default = ""
+  default = "https://api.cast.ai/"
 }
