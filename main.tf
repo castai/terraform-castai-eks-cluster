@@ -5,7 +5,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
 
   access_key_id        = var.aws_access_key_id
   secret_access_key    = var.aws_secret_access_key
-  instance_profile_arn = var.aws_instance_profile_role_arn
+  instance_profile_arn = var.aws_instance_profile_arn
 }
 
 resource "helm_release" "castai_agent" {
@@ -17,6 +17,14 @@ resource "helm_release" "castai_agent" {
   set {
     name  = "provider"
     value = "eks"
+  }
+
+  dynamic set {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name = "apiURL"
+      value = var.api_url
+    }
   }
 
   set_sensitive {
@@ -34,6 +42,14 @@ resource "helm_release" "castai_cluster_controller" {
   set {
     name = "castai.clusterID"
     value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  dynamic set {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name = "castai.apiURL"
+      value = var.api_url
+    }
   }
 
   set_sensitive {

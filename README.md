@@ -1,5 +1,5 @@
 <a href="https://cast.ai">
-    <img src="https://cast.ai/wp-content/themes/cast/assets/img/cast-logo-dark-blue.svg" align="right" height="100" />
+    <img src="https://cast.ai/wp-content/themes/cast/img/cast-logo-dark-blue.svg" align="right" height="100" />
 </a>
 
 Terraform module for connecting an AWS EKS cluster to CAST AI 
@@ -22,7 +22,7 @@ Requires `castai/castai` and `hashicorp/aws` providers to be configured.
 
 ```hcl
 module "castai-eks-cluster" {
-  source = "castai/terraform-castai-eks-cluster"
+  source = "../../"
 
   aws_account_id     = var.aws_account_id
   aws_cluster_region = var.cluster_region
