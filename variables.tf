@@ -27,3 +27,9 @@ variable "aws_instance_profile_arn" {
   type = string
   description = "ARN of the AWS instance profile that will be used by CAST AI cluster-controller."
 }
+
+variable "api_url" {
+  type = string
+  description = "URL of alternative CAST AI API to be used during development or testing"
+  default = "https://api.cast.ai/"
+}
