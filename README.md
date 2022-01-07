@@ -22,7 +22,7 @@ Requires `castai/castai` and `hashicorp/aws` providers to be configured.
 
 ```hcl
 module "castai-eks-cluster" {
-  source = "../../"
+  source = "castai/eks-cluster/castai"
 
   aws_account_id     = var.aws_account_id
   aws_cluster_region = var.cluster_region
