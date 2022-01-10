@@ -2,6 +2,8 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   account_id = var.aws_account_id
   region     = var.aws_cluster_region
   name       = var.aws_cluster_name
+  subnets         = var.subnets
+  security_groups = var.security_groups
 
   access_key_id        = var.aws_access_key_id
   secret_access_key    = var.aws_secret_access_key
