@@ -33,3 +33,15 @@ variable "api_url" {
   description = "URL of alternative CAST AI API to be used during development or testing"
   default = "https://api.cast.ai/"
 }
+
+variable "subnets" {
+  type = list(string)
+  description = "Optional custom subnets for the cluster. If not set subnets from the EKS cluster configuration are used."
+  default = []
+}
+
+variable "security_groups" {
+  type = list(string)
+  description = "Optional custom security groups for the cluster. If not set security groups from the EKS cluster configuration are used."
+  default = []
+}
