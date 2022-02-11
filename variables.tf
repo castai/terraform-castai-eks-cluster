@@ -54,6 +54,6 @@ variable "tags" {
 
 variable "autoscaler_policies_json" {
   type = string
-  description = "Optional patch to default cluster policies"
+  description = "Optional json patch to apply on default cluster policies"
   default = ""
 }
