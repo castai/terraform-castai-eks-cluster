@@ -63,7 +63,7 @@ resource "helm_release" "castai_cluster_controller" {
   depends_on = [helm_release.castai_agent]
 }
 
-resource "castai_autoscaler" "castai_cluster_autoscaler" {
+resource "castai_autoscaler" "castai_autoscaler_policies" {
   autoscaler_policies_json = var.autoscaler_policies_json
   cluster_id               = castai_eks_cluster.my_castai_cluster.id
 
