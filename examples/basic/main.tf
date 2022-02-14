@@ -20,4 +20,24 @@ module "cast-eks-cluster" {
   aws_access_key_id         = var.aws_access_key_id
   aws_secret_access_key     = var.aws_secret_access_key
   instance_profile_role_arn = var.instance_profile_arn
+  autoscaler_policies_json  = <<-EOT
+    {
+        "enabled": true,
+        "unschedulablePods": {
+            "enabled": true
+        },
+        "spotInstances": {
+            "enabled": true,
+            "clouds": ["aws"],
+            "spotBackups": {
+                "enabled": true
+            }
+        },
+        "nodeDownscaler": {
+            "emptyNodes": {
+                "enabled": true
+            }
+        }
+    }
+  EOT
 }

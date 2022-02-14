@@ -31,5 +31,6 @@ module "castai-eks-cluster" {
   aws_access_key_id             = var.aws_access_key_id
   aws_secret_access_key         = var.aws_secret_access_key
   aws_instance_profile_arn      = var.instance_profile_arn
+  autoscaler_policies_json      = var.autoscaler_policies_json
 }
 ```
