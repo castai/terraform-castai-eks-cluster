@@ -63,3 +63,9 @@ variable "autoscaler_policies_json" {
   description = "Optional json object to override CAST AI cluster autoscaler policies"
   default = ""
 }
+
+variable "delete_nodes_on_disconnect" {
+  type = bool
+  description = "Optionally delete Cast.ai created nodes when the cluster is destroyed"
+  default = false
+}

@@ -8,7 +8,6 @@ provider "aws" {
   secret_key = var.aws_secret_access_key
 }
 
-
 module "cast-eks-cluster" {
   source = "../../"
 
@@ -40,4 +39,5 @@ module "cast-eks-cluster" {
         }
     }
   EOT
+  delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
 }
