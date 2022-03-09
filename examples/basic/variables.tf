@@ -30,7 +30,6 @@ variable "aws_instance_profile_arn" {
   type = string
 }
 
-
 variable "delete_nodes_on_disconnect" {
   type = bool
 }
