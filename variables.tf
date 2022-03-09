@@ -43,7 +43,7 @@ variable "subnets" {
 variable "dns_cluster_ip" {
   type = string
   description = "Overrides the IP address to use for DNS queries within the cluster. Defaults to 10.100.0.10 or 172.20.0.10 based on the IP address of the primary interface."
-  default = ""
+  default = null
 }
 
 variable "security_groups" {
