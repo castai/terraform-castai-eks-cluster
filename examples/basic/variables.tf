@@ -33,3 +33,7 @@ variable "aws_instance_profile_arn" {
 variable "delete_nodes_on_disconnect" {
   type = bool
 }
+
+variable "ssh_public_key" {
+  type = string
+}
