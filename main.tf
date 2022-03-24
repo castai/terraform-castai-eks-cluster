@@ -5,6 +5,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   subnets                    = var.subnets
   security_groups            = var.security_groups
   dns_cluster_ip             = var.dns_cluster_ip
+  ssh_public_key             = var.ssh_public_key
   tags                       = var.tags
   access_key_id              = var.aws_access_key_id
   secret_access_key          = var.aws_secret_access_key

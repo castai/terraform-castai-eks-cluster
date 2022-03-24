@@ -46,6 +46,12 @@ variable "dns_cluster_ip" {
   default     = null
 }
 
+variable "ssh_public_key" {
+  type        = string
+  description = "Optional SSH public key for VM instances. Accepted values are base64 encoded SSH public key or AWS key pair ID"
+  default     = null
+}
+
 variable "security_groups" {
   type        = list(string)
   description = "Optional custom security groups for the cluster. If not set security groups from the EKS cluster configuration are used."
