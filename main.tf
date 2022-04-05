@@ -17,6 +17,7 @@ resource "helm_release" "castai_agent" {
   name            = "castai-agent"
   repository      = "https://castai.github.io/helm-charts"
   chart           = "castai-agent"
+  namespace       = "castai-agent"
   cleanup_on_fail = true
 
   set {
@@ -42,6 +43,7 @@ resource "helm_release" "castai_cluster_controller" {
   name            = "castai-cluster-controller"
   repository      = "https://castai.github.io/helm-charts"
   chart           = "castai-cluster-controller"
+  namespace       = "castai-agent"
   cleanup_on_fail = true
 
   set {
