@@ -26,6 +26,11 @@ resource "helm_release" "castai_agent" {
     value = "eks"
   }
 
+  set {
+    name = "createNamespace"
+    value = "false"
+  }
+
   dynamic "set" {
     for_each = var.api_url != "" ? [var.api_url] : []
     content {
