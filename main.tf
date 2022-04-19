@@ -74,6 +74,22 @@ resource "helm_release" "castai_cluster_controller" {
   depends_on = [helm_release.castai_agent]
 }
 
+resource "helm_release" "castai_evictor" {
+  name            = "cluster-evictor"
+  repository      = "https://castai.github.io/helm-charts"
+  chart           = "castai-evictor"
+  namespace       = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail = true
+
+  set {
+    name  = "replicaCount"
+    value = "0"
+  }
+
+  depends_on = [helm_release.castai_agent]
+}
+
 resource "castai_autoscaler" "castai_autoscaler_policies" {
   autoscaler_policies_json = var.autoscaler_policies_json
   cluster_id               = castai_eks_cluster.my_castai_cluster.id
