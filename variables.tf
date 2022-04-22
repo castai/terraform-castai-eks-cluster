@@ -16,11 +16,13 @@ variable "aws_cluster_name" {
 variable "aws_access_key_id" {
   type        = string
   description = "AWS access key ID to be used for CAST AI access."
+  default = null
 }
 
 variable "aws_secret_access_key" {
   type        = string
   description = "AWS secret access key to be used for CAST AI access."
+  default = null
 }
 
 variable "aws_instance_profile_arn" {
@@ -79,5 +81,5 @@ variable "delete_nodes_on_disconnect" {
 variable "aws_assume_role_arn" {
   type        = string
   description = "Arn of the role to be used by CAST AI for IAM access"
-  default     = ""
+  default     = null
 }
