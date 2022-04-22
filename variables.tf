@@ -75,3 +75,9 @@ variable "delete_nodes_on_disconnect" {
   description = "Optionally delete Cast AI created nodes when the cluster is destroyed"
   default     = false
 }
+
+variable "aws_assume_role_arn" {
+  type        = string
+  description = "Arn of the role to be used by CAST AI for IAM access"
+  default     = ""
+}

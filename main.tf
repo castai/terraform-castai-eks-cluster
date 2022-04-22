@@ -11,6 +11,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   secret_access_key          = var.aws_secret_access_key
   instance_profile_arn       = var.aws_instance_profile_arn
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
+  assume_role_arn            = var.aws_assume_role_arn
 }
 
 resource "helm_release" "castai_agent" {
