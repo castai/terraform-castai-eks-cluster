@@ -88,7 +88,7 @@ resource "helm_release" "castai_cluster_controller" {
 }
 
 resource "helm_release" "castai_evictor" {
-  name            = "cluster-evictor"
+  name            = "castai-evictor"
   repository      = "https://castai.github.io/helm-charts"
   chart           = "castai-evictor"
   namespace       = "castai-agent"
