@@ -111,5 +111,5 @@ resource "castai_autoscaler" "castai_autoscaler_policies" {
   autoscaler_policies_json = var.autoscaler_policies_json
   cluster_id               = castai_eks_cluster.my_castai_cluster.id
 
-  depends_on = [helm_release.castai_agent]
+  depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
 }
