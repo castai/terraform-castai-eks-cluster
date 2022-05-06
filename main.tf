@@ -3,7 +3,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   region                     = var.aws_cluster_region
   name                       = var.aws_cluster_name
   subnets                    = var.subnets
-  security_groups            = var.security_groups
+  override_security_groups   = var.override_security_groups
   dns_cluster_ip             = var.dns_cluster_ip
   ssh_public_key             = var.ssh_public_key
   tags                       = var.tags

@@ -54,10 +54,10 @@ variable "ssh_public_key" {
   default     = null
 }
 
-variable "security_groups" {
+variable "override_security_groups" {
   type        = list(string)
   description = "Optional custom security groups for the cluster. If not set security groups from the EKS cluster configuration are used."
-  default     = []
+  default     = null
 }
 
 variable "tags" {
