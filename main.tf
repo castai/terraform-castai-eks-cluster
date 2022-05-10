@@ -13,17 +13,10 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
   assume_role_arn            = var.aws_assume_role_arn
 
-  depends_on = [helm_release.castai_cluster_controller]
-}
-
-data "castai_eks_clusterid" "castai_cluster_id" {
-  account_id                 = var.aws_account_id
-  region                     = var.aws_cluster_region
-  cluster_name               = var.aws_cluster_name
 }
 
 resource "castai_cluster_token" "cluster_token" {
-  cluster_id = data.castai_eks_clusterid.castai_cluster_id.id
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
 }
 
 resource "helm_release" "castai_agent" {
@@ -38,6 +31,11 @@ resource "helm_release" "castai_agent" {
   set {
     name  = "provider"
     value = "eks"
+  }
+
+  set {
+    name = "additionalEnv.STATIC_CLUSTER_ID"
+    value =  castai_eks_cluster.my_castai_cluster.id
   }
 
   set {
@@ -70,7 +68,7 @@ resource "helm_release" "castai_cluster_controller" {
 
   set {
     name  = "castai.clusterID"
-    value = data.castai_eks_clusterid.castai_cluster_id.id
+    value =  castai_eks_cluster.my_castai_cluster.id
   }
 
   dynamic "set" {
