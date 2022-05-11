@@ -83,3 +83,23 @@ variable "aws_assume_role_arn" {
   description = "Arn of the role to be used by CAST AI for IAM access"
   default     = null
 }
+
+variable "agent_aws_iam_service_account_role_arn" {
+  type        = string
+  description = "Arn of the role to be used by CAST AI agent to fetch instance details. Only readonly AmazonEC2ReadOnlyAccess is needed."
+  default     = ""
+}
+
+variable "agent_aws_access_key_id" {
+  type        = string
+  description = "AWS access key for CAST AI agent to fetch instance details."
+  default     = ""
+}
+
+variable "agent_aws_secret_access_key" {
+  type        = string
+  description = "AWS access key secret for CAST AI agent to fetch instance details."
+  default     = ""
+}
+
+
