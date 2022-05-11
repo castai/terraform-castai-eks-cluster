@@ -12,7 +12,6 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   instance_profile_arn       = var.aws_instance_profile_arn
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
   assume_role_arn            = var.aws_assume_role_arn
-
 }
 
 resource "castai_cluster_token" "cluster_token" {
@@ -48,6 +47,30 @@ resource "helm_release" "castai_agent" {
     content {
       name  = "apiURL"
       value = var.api_url
+    }
+  }
+
+  dynamic "set" {
+    for_each = var.agent_aws_iam_service_account_role_arn != "" ? [var.agent_aws_iam_service_account_role_arn] : []
+    content {
+      name  = "serviceAccount.annotations.eks\\.\\amazonaws\\.\\com/role-arn"
+      value = var.agent_aws_iam_service_account_role_arn
+    }
+  }
+
+  dynamic "set_sensitive" {
+    for_each = var.agent_aws_access_key_id != "" ? [var.agent_aws_access_key_id] : []
+    content {
+      name  = "additionalSecretEnv.AWS_ACCESS_KEY_ID"
+      value = var.agent_aws_access_key_id
+    }
+  }
+
+  dynamic "set_sensitive" {
+    for_each = var.agent_aws_secret_access_key != "" ? [var.agent_aws_secret_access_key] : []
+    content {
+      name  = "additionalSecretEnv.AWS_SECRET_ACCESS_KEY"
+      value = var.agent_aws_secret_access_key
     }
   }
 
