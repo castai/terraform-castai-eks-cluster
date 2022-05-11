@@ -101,5 +101,3 @@ variable "agent_aws_secret_access_key" {
   description = "AWS access key secret for CAST AI agent to fetch instance details."
   default     = ""
 }
-
-
