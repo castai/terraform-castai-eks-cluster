@@ -53,7 +53,7 @@ resource "helm_release" "castai_agent" {
   dynamic "set" {
     for_each = var.agent_aws_iam_service_account_role_arn != "" ? [var.agent_aws_iam_service_account_role_arn] : []
     content {
-      name  = "serviceAccount.annotations.eks\\.\\amazonaws\\.\\com/role-arn"
+      name  = "serviceAccount.annotations.eks\.\\amazonaws\\.\\com/role-arn"
       value = var.agent_aws_iam_service_account_role_arn
     }
   }
