@@ -131,6 +131,41 @@ resource "helm_release" "castai_evictor" {
   }
 }
 
+resource "helm_release" "castai_spot_handler" {
+  name             = "castai-spot-handler"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-spot-handler"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  set {
+    name  = "castai.provider"
+    value = "eks"
+  }
+
+  set {
+    name  = "createNamespace"
+    value = "false"
+  }
+
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
+  }
+
+  set {
+    name  = "castai.clusterID"
+    value =  castai_eks_cluster.my_castai_cluster.id
+  }
+
+  depends_on = [helm_release.castai_agent]
+}
+
 resource "castai_autoscaler" "castai_autoscaler_policies" {
   autoscaler_policies_json = var.autoscaler_policies_json
   cluster_id               = castai_eks_cluster.my_castai_cluster.id
