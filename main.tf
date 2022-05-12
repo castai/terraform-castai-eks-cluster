@@ -142,7 +142,7 @@ resource "helm_release" "castai_spot_handler" {
 
   set {
     name  = "castai.provider"
-    value = "eks"
+    value = "aws"
   }
 
   set {
