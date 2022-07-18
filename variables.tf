@@ -101,3 +101,9 @@ variable "agent_aws_secret_access_key" {
   description = "AWS access key secret for CAST AI agent to fetch instance details."
   default     = ""
 }
+
+variable "castai_components_labels" {
+  type = map
+  description = "Optional additional Kubernetes labels for CAST AI pods"
+  default = {}
+}

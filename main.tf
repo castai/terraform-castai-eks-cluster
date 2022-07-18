@@ -74,6 +74,19 @@ resource "helm_release" "castai_agent" {
     name  = "apiKey"
     value = castai_eks_cluster.castai_cluster.cluster_token
   }
+
+  set {
+    name  = "podLabels"
+    value = var.castai_components_labels
+  }
+
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
+  }
 }
 
 resource "helm_release" "castai_cluster_controller" {
@@ -103,6 +116,14 @@ resource "helm_release" "castai_cluster_controller" {
     value = castai_eks_cluster.castai_cluster.cluster_token
   }
 
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
+  }
+
   depends_on = [helm_release.castai_agent]
 }
 
@@ -124,6 +145,14 @@ resource "helm_release" "castai_evictor" {
 
   lifecycle {
     ignore_changes = [set, version]
+  }
+
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
   }
 }
 
@@ -157,6 +186,14 @@ resource "helm_release" "castai_spot_handler" {
   set {
     name  = "castai.clusterID"
     value =  castai_eks_cluster.my_castai_cluster.id
+  }
+
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
   }
 
   depends_on = [helm_release.castai_agent]
