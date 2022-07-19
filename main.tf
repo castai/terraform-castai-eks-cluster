@@ -79,11 +79,6 @@ resource "helm_release" "castai_agent" {
     value = castai_cluster_token.cluster_token.cluster_token
   }
 
-  set {
-    name  = "podLabels"
-    value = var.castai_components_labels
-  }
-
   dynamic "set" {
     for_each = var.castai_components_labels
     content {
