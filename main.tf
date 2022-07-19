@@ -14,6 +14,10 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   assume_role_arn            = var.aws_assume_role_arn
 }
 
+resource "castai_cluster_token" "cluster_token" {
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
+}
+
 resource "helm_release" "castai_agent" {
   name            = "castai-agent"
   repository      = "https://castai.github.io/helm-charts"
@@ -72,7 +76,7 @@ resource "helm_release" "castai_agent" {
 
   set_sensitive {
     name  = "apiKey"
-    value = castai_eks_cluster.castai_cluster.cluster_token
+    value = castai_cluster_token.cluster_token.cluster_token
   }
 
   set {
@@ -113,7 +117,7 @@ resource "helm_release" "castai_cluster_controller" {
 
   set_sensitive {
     name  = "castai.apiKey"
-    value = castai_eks_cluster.castai_cluster.cluster_token
+    value = castai_cluster_token.cluster_token.cluster_token
   }
 
   dynamic "set" {
