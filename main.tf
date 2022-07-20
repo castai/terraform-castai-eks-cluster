@@ -124,6 +124,10 @@ resource "helm_release" "castai_cluster_controller" {
   }
 
   depends_on = [helm_release.castai_agent]
+
+  lifecycle {
+    ignore_changes = [app_version, revision, version]
+  }
 }
 
 resource "helm_release" "castai_evictor" {
