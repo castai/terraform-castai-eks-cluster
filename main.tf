@@ -12,6 +12,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   instance_profile_arn       = var.aws_instance_profile_arn
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
   assume_role_arn            = var.aws_assume_role_arn
+  node_configurations        = var.aws_node_configurations
 }
 
 resource "castai_cluster_token" "cluster_token" {

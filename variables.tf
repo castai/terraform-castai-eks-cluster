@@ -107,3 +107,9 @@ variable "castai_components_labels" {
   description = "Optional additional Kubernetes labels for CAST AI pods"
   default = {}
 }
+
+variable "node_configurations" {
+  type = map(any)
+  description = "Optional configuration for CAST AI provisioned nodes"
+  default = {}
+}
