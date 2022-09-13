@@ -1,31 +1,54 @@
-resource "castai_eks_cluster" "my_castai_cluster" {
-  account_id                 = var.aws_account_id
-  region                     = var.aws_cluster_region
-  name                       = var.aws_cluster_name
-  subnets                    = var.subnets
-  override_security_groups   = var.override_security_groups
-  dns_cluster_ip             = var.dns_cluster_ip
-  ssh_public_key             = var.ssh_public_key
-  tags                       = var.tags
-  access_key_id              = var.aws_access_key_id
-  secret_access_key          = var.aws_secret_access_key
-  instance_profile_arn       = var.aws_instance_profile_arn
+resource "castai_eks_cluster" "this" {
+  account_id = var.aws_account_id
+  region     = var.aws_cluster_region
+  name       = var.aws_cluster_name
+
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
-  assume_role_arn            = var.aws_assume_role_arn
+
+  access_key_id     = var.aws_access_key_id // TODO: deprecate and make not required
+  secret_access_key = var.aws_secret_access_key // TODO: deprecate and make not required
+  assume_role_arn   = var.aws_assume_role_arn
+
+  instance_profile_arn = var.aws_instance_profile_arn // TODO: deprecate and make not required
+}
+
+resource "castai_node_configuration" "this" {
+  for_each = {for k, v in var.node_configurations : k => v}
+
+  cluster_id = castai_eks_cluster.this.id
+
+  name           = try(each.value.name, each.key)
+  disk_cpu_ratio = try(each.value.disk_cpu_ratio, 25)
+  subnets        = try(each.value.subnets, var.subnets)
+  ssh_public_key = try(each.value.ssh_public_key, null)
+  image          = try(each.value.image, null)
+  tags           = try(each.value.tags, var.tags, {})
+
+  eks {
+    security_groups      = try(each.value.security_groups, var.override_security_groups, null)
+    dns_cluster_ip       = try(each.value.dns_cluster_ip, var.dns_cluster_ip, null)
+    instance_profile_arn = try(each.value.instance_profile_arn, var.aws_instance_profile_arn, null)
+    key_pair_id          = try(each.value.key_pair_id, null)
+  }
+}
+
+resource "castai_node_configuration_default" "this" {
+  cluster_id       = castai_eks_cluster.this.id
+  configuration_id = var.default_node_configuration
 }
 
 resource "castai_cluster_token" "cluster_token" {
-  cluster_id = castai_eks_cluster.my_castai_cluster.id
+  cluster_id = castai_eks_cluster.this.id
 }
 
 resource "helm_release" "castai_agent" {
-  name            = "castai-agent"
-  repository      = "https://castai.github.io/helm-charts"
-  chart           = "castai-agent"
-  namespace       = "castai-agent"
+  name             = "castai-agent"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-agent"
+  namespace        = "castai-agent"
   create_namespace = true
-  cleanup_on_fail = true
-  wait = true
+  cleanup_on_fail  = true
+  wait             = true
 
   set {
     name  = "provider"
@@ -33,12 +56,12 @@ resource "helm_release" "castai_agent" {
   }
 
   set {
-    name = "additionalEnv.STATIC_CLUSTER_ID"
-    value =  castai_eks_cluster.my_castai_cluster.id
+    name  = "additionalEnv.STATIC_CLUSTER_ID"
+    value = castai_eks_cluster.this.id
   }
 
   set {
-    name = "createNamespace"
+    name  = "createNamespace"
     value = "false"
   }
 
@@ -89,17 +112,17 @@ resource "helm_release" "castai_agent" {
 }
 
 resource "helm_release" "castai_cluster_controller" {
-  name            = "cluster-controller"
-  repository      = "https://castai.github.io/helm-charts"
-  chart           = "castai-cluster-controller"
-  namespace       = "castai-agent"
+  name             = "cluster-controller"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-cluster-controller"
+  namespace        = "castai-agent"
   create_namespace = true
-  cleanup_on_fail = true
-  wait = true
+  cleanup_on_fail  = true
+  wait             = true
 
   set {
     name  = "castai.clusterID"
-    value =  castai_eks_cluster.my_castai_cluster.id
+    value = castai_eks_cluster.this.id
   }
 
   dynamic "set" {
@@ -131,13 +154,13 @@ resource "helm_release" "castai_cluster_controller" {
 }
 
 resource "helm_release" "castai_evictor" {
-  name            = "castai-evictor"
-  repository      = "https://castai.github.io/helm-charts"
-  chart           = "castai-evictor"
-  namespace       = "castai-agent"
+  name             = "castai-evictor"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-evictor"
+  namespace        = "castai-agent"
   create_namespace = true
-  cleanup_on_fail = true
-  wait = true
+  cleanup_on_fail  = true
+  wait             = true
 
   set {
     name  = "replicaCount"
@@ -188,7 +211,7 @@ resource "helm_release" "castai_spot_handler" {
 
   set {
     name  = "castai.clusterID"
-    value =  castai_eks_cluster.my_castai_cluster.id
+    value = castai_eks_cluster.this.id
   }
 
   dynamic "set" {
@@ -204,7 +227,7 @@ resource "helm_release" "castai_spot_handler" {
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
   autoscaler_policies_json = var.autoscaler_policies_json
-  cluster_id               = castai_eks_cluster.my_castai_cluster.id
+  cluster_id               = castai_eks_cluster.this.id
 
   depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
 }

@@ -16,13 +16,13 @@ variable "aws_cluster_name" {
 variable "aws_access_key_id" {
   type        = string
   description = "AWS access key ID to be used for CAST AI access."
-  default = null
+  default     = null
 }
 
 variable "aws_secret_access_key" {
   type        = string
   description = "AWS secret access key to be used for CAST AI access."
-  default = null
+  default     = null
 }
 
 variable "aws_instance_profile_arn" {
@@ -103,7 +103,18 @@ variable "agent_aws_secret_access_key" {
 }
 
 variable "castai_components_labels" {
-  type = map
+  type        = map
   description = "Optional additional Kubernetes labels for CAST AI pods"
-  default = {}
+  default     = {}
+}
+
+variable "node_configurations" {
+  type        = any
+  description = "Map of EKS node configurations to create"
+  default     = {}
+}
+
+variable "default_node_configuration" {
+  type        = string
+  description = "ID of the default node configuration"
 }
