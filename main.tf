@@ -5,11 +5,7 @@ resource "castai_eks_cluster" "this" {
 
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
 
-  access_key_id     = var.aws_access_key_id // TODO: deprecate and make not required
-  secret_access_key = var.aws_secret_access_key // TODO: deprecate and make not required
-  assume_role_arn   = var.aws_assume_role_arn
-
-  instance_profile_arn = var.aws_instance_profile_arn // TODO: deprecate and make not required
+  assume_role_arn = var.aws_assume_role_arn
 }
 
 resource "castai_node_configuration" "this" {
