@@ -35,6 +35,12 @@ module "castai-eks-cluster" {
 }
 ```
 
+###
+Generate docs
+```shell
+terraform-docs markdown table . --output-file README.md
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -42,14 +48,14 @@ module "castai-eks-cluster" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 0.21.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 0.25.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | 0.18.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.5.1 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 0.26.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.6.0 |
 
 ## Modules
 
@@ -60,7 +66,10 @@ No modules.
 | Name | Type |
 |------|------|
 | [castai_autoscaler.castai_autoscaler_policies](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/autoscaler) | resource |
-| [castai_eks_cluster.my_castai_cluster](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/eks_cluster) | resource |
+| [castai_cluster_token.cluster_token](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/cluster_token) | resource |
+| [castai_eks_cluster.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/eks_cluster) | resource |
+| [castai_node_configuration.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration) | resource |
+| [castai_node_configuration_default.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration_default) | resource |
 | [helm_release.castai_agent](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_cluster_controller](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_evictor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -80,20 +89,17 @@ No modules.
 | <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn) | Arn of the role to be used by CAST AI for IAM access | `string` | `null` | no |
 | <a name="input_aws_cluster_name"></a> [aws\_cluster\_name](#input\_aws\_cluster\_name) | Name of the cluster to be connected to CAST AI. | `string` | n/a | yes |
 | <a name="input_aws_cluster_region"></a> [aws\_cluster\_region](#input\_aws\_cluster\_region) | Region of the cluster to be connected to CAST AI. | `string` | n/a | yes |
-| <a name="input_aws_instance_profile_arn"></a> [aws\_instance\_profile\_arn](#input\_aws\_instance\_profile\_arn) | ARN of the AWS instance profile that will be used by CAST AI cluster-controller. | `string` | n/a | yes |
 | <a name="input_aws_secret_access_key"></a> [aws\_secret\_access\_key](#input\_aws\_secret\_access\_key) | AWS secret access key to be used for CAST AI access. | `string` | `null` | no |
 | <a name="input_castai_components_labels"></a> [castai\_components\_labels](#input\_castai\_components\_labels) | Optional additional Kubernetes labels for CAST AI pods | `map` | `{}` | no |
+| <a name="input_default_node_configuration"></a> [default\_node\_configuration](#input\_default\_node\_configuration) | ID of the default node configuration | `string` | n/a | yes |
 | <a name="input_delete_nodes_on_disconnect"></a> [delete\_nodes\_on\_disconnect](#input\_delete\_nodes\_on\_disconnect) | Optionally delete Cast AI created nodes when the cluster is destroyed | `bool` | `false` | no |
-| <a name="input_dns_cluster_ip"></a> [dns\_cluster\_ip](#input\_dns\_cluster\_ip) | Overrides the IP address to use for DNS queries within the cluster. Defaults to 10.100.0.10 or 172.20.0.10 based on the IP address of the primary interface. | `string` | `null` | no |
-| <a name="input_override_security_groups"></a> [override\_security\_groups](#input\_override\_security\_groups) | Optional custom security groups for the cluster. If not set security groups from the EKS cluster configuration are used. | `list(string)` | `null` | no |
-| <a name="input_ssh_public_key"></a> [ssh\_public\_key](#input\_ssh\_public\_key) | Optional SSH public key for VM instances. Accepted values are base64 encoded SSH public key or AWS key pair ID | `string` | `null` | no |
-| <a name="input_subnets"></a> [subnets](#input\_subnets) | Optional custom subnets for the cluster. If not set subnets from the EKS cluster configuration are used. | `list(string)` | `[]` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Optional tags for new cluster nodes. This parameter applies only to new nodes - tags for old nodes are not reconciled. | `map(any)` | `{}` | no |
+| <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | CAST.AI cluster id, which can be used for accessing cluster data using API |
-| <a name="output_security_groups"></a> [security\_groups](#output\_security\_groups) | CAST.AI security groups of EKS cluster |
+| <a name="output_castai_node_configurations"></a> [castai\_node\_configurations](#output\_castai\_node\_configurations) | Map of node configurations ids by name |
+| <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | CAST AI cluster id, which can be used for accessing cluster data using API |
+| <a name="output_security_groups"></a> [security\_groups](#output\_security\_groups) | CAST AI security groups of EKS cluster |
 <!-- END_TF_DOCS -->
