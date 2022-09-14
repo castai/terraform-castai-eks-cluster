@@ -15,15 +15,15 @@ resource "castai_node_configuration" "this" {
 
   name           = try(each.value.name, each.key)
   disk_cpu_ratio = try(each.value.disk_cpu_ratio, 25)
-  subnets        = try(each.value.subnets, var.subnets)
+  subnets        = try(each.value.subnets, null)
   ssh_public_key = try(each.value.ssh_public_key, null)
   image          = try(each.value.image, null)
-  tags           = try(each.value.tags, var.tags, {})
+  tags           = try(each.value.tags, {})
 
   eks {
-    security_groups      = try(each.value.security_groups, var.override_security_groups, null)
-    dns_cluster_ip       = try(each.value.dns_cluster_ip, var.dns_cluster_ip, null)
-    instance_profile_arn = try(each.value.instance_profile_arn, var.aws_instance_profile_arn, null)
+    security_groups      = try(each.value.security_groups, null)
+    dns_cluster_ip       = try(each.value.dns_cluster_ip, null)
+    instance_profile_arn = try(each.value.instance_profile_arn, null)
     key_pair_id          = try(each.value.key_pair_id, null)
   }
 }
