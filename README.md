@@ -2,7 +2,7 @@
     <img src="https://cast.ai/wp-content/themes/cast/img/cast-logo-dark-blue.svg" align="right" height="100" />
 </a>
 
-Terraform module for connecting an AWS EKS cluster to CAST AI 
+Terraform module for connecting an AWS EKS cluster to CAST AI
 ==================
 
 
@@ -28,15 +28,58 @@ module "castai-eks-cluster" {
   aws_cluster_region = var.cluster_region
   aws_cluster_name   = var.cluster_id
 
-  aws_access_key_id             = var.aws_access_key_id
-  aws_secret_access_key         = var.aws_secret_access_key
-  aws_instance_profile_arn      = var.instance_profile_arn
-  autoscaler_policies_json      = var.autoscaler_policies_json
+  aws_assume_role_arn      = module.castai-eks-role-iam.role_arn
+  autoscaler_policies_json = var.autoscaler_policies_json
 }
 ```
 
-###
-Generate docs
+Migrating from 2.x.x to 3.x.x
+------------
+Existing configuration:
+```hcl
+module "castai-eks-cluster" {
+  // ...
+  
+  subnets                   = module.vpc.private_subnets
+  dns_cluster_ip            = "10.100.0.10"
+  instance_profile_role_arn = var.instance_profile_arn
+  ssh_public_key            = var.ssh_public_key
+  override_security_groups  = [
+    module.eks.node_security_group_id,
+  ]
+  tags = {
+    "team" : "core"
+  }
+}
+```
+New configuration: 
+```hcl
+module "castai-eks-cluster" {
+  // ...
+  
+  // Default node configuration will be used for all CAST provisioned nodes unless specific configuration is requested.
+  default_node_configuration = module.cast-eks-cluster.castai_node_configurations["default"]
+
+  node_configurations = {
+    default = {
+      subnets                   = module.vpc.private_subnets
+      dns_cluster_ip            = "10.100.0.10"
+      instance_profile_role_arn = var.instance_profile_arn
+      ssh_public_key            = var.ssh_public_key
+      security_groups           = [
+        module.eks.node_security_group_id,
+      ]
+      tags = {
+        "team" : "core"
+      }
+    }
+  }
+}
+
+```
+
+### Generate docs
+
 ```shell
 terraform-docs markdown table . --output-file README.md
 ```
