@@ -13,52 +13,10 @@ variable "aws_cluster_name" {
   description = "Name of the cluster to be connected to CAST AI."
 }
 
-variable "aws_access_key_id" {
-  type        = string
-  description = "AWS access key ID to be used for CAST AI access."
-  default     = null
-}
-
-variable "aws_secret_access_key" {
-  type        = string
-  description = "AWS secret access key to be used for CAST AI access."
-  default     = null
-}
-
 variable "api_url" {
   type        = string
   description = "URL of alternative CAST AI API to be used during development or testing"
   default     = "https://api.cast.ai"
-}
-
-variable "subnets" {
-  type        = list(string)
-  description = "Optional custom subnets for the cluster. If not set subnets from the EKS cluster configuration are used."
-  default     = []
-}
-
-variable "dns_cluster_ip" {
-  type        = string
-  description = "Overrides the IP address to use for DNS queries within the cluster. Defaults to 10.100.0.10 or 172.20.0.10 based on the IP address of the primary interface."
-  default     = null
-}
-
-variable "ssh_public_key" {
-  type        = string
-  description = "Optional SSH public key for VM instances. Accepted values are base64 encoded SSH public key or AWS key pair ID"
-  default     = null
-}
-
-variable "override_security_groups" {
-  type        = list(string)
-  description = "Optional custom security groups for the cluster. If not set security groups from the EKS cluster configuration are used."
-  default     = null
-}
-
-variable "tags" {
-  type        = map(any)
-  description = "Optional tags for new cluster nodes. This parameter applies only to new nodes - tags for old nodes are not reconciled."
-  default     = {}
 }
 
 variable "autoscaler_policies_json" {

@@ -4,8 +4,7 @@ resource "castai_eks_cluster" "this" {
   name       = var.aws_cluster_name
 
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
-
-  assume_role_arn = var.aws_assume_role_arn
+  assume_role_arn            = var.aws_assume_role_arn
 }
 
 resource "castai_node_configuration" "this" {
