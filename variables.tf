@@ -13,6 +13,18 @@ variable "aws_cluster_name" {
   description = "Name of the cluster to be connected to CAST AI."
 }
 
+variable "aws_access_key_id" {
+  type        = string
+  description = "AWS access key ID to be used for CAST AI access."
+  default     = null
+}
+
+variable "aws_secret_access_key" {
+  type        = string
+  description = "AWS secret access key to be used for CAST AI access."
+  default     = null
+}
+
 variable "api_url" {
   type        = string
   description = "URL of alternative CAST AI API to be used during development or testing"
