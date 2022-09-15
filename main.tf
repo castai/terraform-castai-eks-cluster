@@ -1,4 +1,4 @@
-resource "castai_eks_cluster" "this" {
+resource "castai_eks_cluster" "my_castai_cluster" {
   account_id = var.aws_account_id
   region     = var.aws_cluster_region
   name       = var.aws_cluster_name
@@ -12,7 +12,7 @@ resource "castai_eks_cluster" "this" {
 resource "castai_node_configuration" "this" {
   for_each = {for k, v in var.node_configurations : k => v}
 
-  cluster_id = castai_eks_cluster.this.id
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
 
   name           = try(each.value.name, each.key)
   disk_cpu_ratio = try(each.value.disk_cpu_ratio, 25)
@@ -30,12 +30,12 @@ resource "castai_node_configuration" "this" {
 }
 
 resource "castai_node_configuration_default" "this" {
-  cluster_id       = castai_eks_cluster.this.id
+  cluster_id       = castai_eks_cluster.my_castai_cluster.id
   configuration_id = var.default_node_configuration
 }
 
 resource "castai_cluster_token" "cluster_token" {
-  cluster_id = castai_eks_cluster.this.id
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
 }
 
 resource "helm_release" "castai_agent" {
@@ -54,7 +54,7 @@ resource "helm_release" "castai_agent" {
 
   set {
     name  = "additionalEnv.STATIC_CLUSTER_ID"
-    value = castai_eks_cluster.this.id
+    value = castai_eks_cluster.my_castai_cluster.id
   }
 
   set {
@@ -119,7 +119,7 @@ resource "helm_release" "castai_cluster_controller" {
 
   set {
     name  = "castai.clusterID"
-    value = castai_eks_cluster.this.id
+    value = castai_eks_cluster.my_castai_cluster.id
   }
 
   dynamic "set" {
@@ -208,7 +208,7 @@ resource "helm_release" "castai_spot_handler" {
 
   set {
     name  = "castai.clusterID"
-    value = castai_eks_cluster.this.id
+    value = castai_eks_cluster.my_castai_cluster.id
   }
 
   dynamic "set" {
@@ -224,7 +224,7 @@ resource "helm_release" "castai_spot_handler" {
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
   autoscaler_policies_json = var.autoscaler_policies_json
-  cluster_id               = castai_eks_cluster.this.id
+  cluster_id               = castai_eks_cluster.my_castai_cluster.id
 
   depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
 }
