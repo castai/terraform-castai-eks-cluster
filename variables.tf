@@ -16,54 +16,19 @@ variable "aws_cluster_name" {
 variable "aws_access_key_id" {
   type        = string
   description = "AWS access key ID to be used for CAST AI access."
-  default = null
+  default     = null
 }
 
 variable "aws_secret_access_key" {
   type        = string
   description = "AWS secret access key to be used for CAST AI access."
-  default = null
-}
-
-variable "aws_instance_profile_arn" {
-  type        = string
-  description = "ARN of the AWS instance profile that will be used by CAST AI cluster-controller."
+  default     = null
 }
 
 variable "api_url" {
   type        = string
   description = "URL of alternative CAST AI API to be used during development or testing"
   default     = "https://api.cast.ai"
-}
-
-variable "subnets" {
-  type        = list(string)
-  description = "Optional custom subnets for the cluster. If not set subnets from the EKS cluster configuration are used."
-  default     = []
-}
-
-variable "dns_cluster_ip" {
-  type        = string
-  description = "Overrides the IP address to use for DNS queries within the cluster. Defaults to 10.100.0.10 or 172.20.0.10 based on the IP address of the primary interface."
-  default     = null
-}
-
-variable "ssh_public_key" {
-  type        = string
-  description = "Optional SSH public key for VM instances. Accepted values are base64 encoded SSH public key or AWS key pair ID"
-  default     = null
-}
-
-variable "override_security_groups" {
-  type        = list(string)
-  description = "Optional custom security groups for the cluster. If not set security groups from the EKS cluster configuration are used."
-  default     = null
-}
-
-variable "tags" {
-  type        = map(any)
-  description = "Optional tags for new cluster nodes. This parameter applies only to new nodes - tags for old nodes are not reconciled."
-  default     = {}
 }
 
 variable "autoscaler_policies_json" {
@@ -103,7 +68,28 @@ variable "agent_aws_secret_access_key" {
 }
 
 variable "castai_components_labels" {
-  type = map
+  type        = map
   description = "Optional additional Kubernetes labels for CAST AI pods"
-  default = {}
+  default     = {}
+}
+
+variable "node_configurations" {
+  type = map(object({
+    disk_cpu_ratio       = optional(number)
+    subnets              = list(string)
+    ssh_public_key       = optional(string)
+    image                = optional(string)
+    tags                 = optional(map(string))
+    security_groups      = list(string)
+    dns_cluster_ip       = optional(string)
+    instance_profile_arn = string
+    key_pair_id          = optional(string)
+  }))
+  description = "Map of EKS node configurations to create"
+  default     = {}
+}
+
+variable "default_node_configuration" {
+  type        = string
+  description = "ID of the default node configuration"
 }
