@@ -4,11 +4,6 @@ output "cluster_id" {
   sensitive   = true
 }
 
-output "security_groups" {
-  value       = castai_eks_cluster.my_castai_cluster.security_groups
-  description = "CAST AI security groups of EKS cluster"
-}
-
 output "castai_node_configurations" {
   description = "Map of node configurations ids by name"
   value       = {
