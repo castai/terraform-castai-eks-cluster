@@ -56,7 +56,7 @@ variable "agent_aws_secret_access_key" {
 }
 
 variable "castai_components_labels" {
-  type        = map
+  type        = map(any)
   description = "Optional additional Kubernetes labels for CAST AI pods"
   default     = {}
 }
@@ -73,7 +73,37 @@ variable "default_node_configuration" {
 }
 
 variable "install_security_agent" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Optional flag for installation of security agent (https://docs.cast.ai/product-overview/console/security-insights/)"
+}
+
+variable "agent_values" {
+  description = "List of YAML formatted string with agent values"
+  type        = list(string)
+  default     = []
+}
+
+variable "spot_handler_values" {
+  description = "List of YAML formatted string with spot-handler values"
+  type        = list(string)
+  default     = []
+}
+
+variable "cluster_controller_values" {
+  description = "List of YAML formatted string with cluster-controller values"
+  type        = list(string)
+  default     = []
+}
+
+variable "evictor_values" {
+  description = "List of YAML formatted string with evictor values"
+  type        = list(string)
+  default     = []
+}
+
+variable "sec_agent_values" {
+  description = "List of YAML formatted string with sec-agent values"
+  type        = list(string)
+  default     = []
 }
