@@ -4,8 +4,6 @@ resource "castai_eks_cluster" "my_castai_cluster" {
   name       = var.aws_cluster_name
 
   delete_nodes_on_disconnect = var.delete_nodes_on_disconnect
-  access_key_id              = var.aws_access_key_id
-  secret_access_key          = var.aws_secret_access_key
   assume_role_arn            = var.aws_assume_role_arn
 }
 
