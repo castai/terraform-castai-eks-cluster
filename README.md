@@ -137,7 +137,6 @@ No modules.
 | Name | Type |
 |------|------|
 | [castai_autoscaler.castai_autoscaler_policies](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/autoscaler) | resource |
-| [castai_cluster_token.cluster_token](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/cluster_token) | resource |
 | [castai_eks_cluster.my_castai_cluster](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/eks_cluster) | resource |
 | [castai_node_configuration.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration) | resource |
 | [castai_node_configuration_default.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration_default) | resource |
