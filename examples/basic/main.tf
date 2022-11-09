@@ -77,7 +77,7 @@ module "cast-eks-cluster" {
         "registryPullQPS" : 10
       })
       container_runtime    = "dockerd"
-      init_script          = var.init_script
+      init_script          = base64encode(var.init_script)
       instance_profile_arn = module.castai-eks-role-iam.instance_profile_arn
     }
 
