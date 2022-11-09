@@ -62,17 +62,7 @@ variable "castai_components_labels" {
 }
 
 variable "node_configurations" {
-  type = map(object({
-    disk_cpu_ratio       = optional(number)
-    subnets              = list(string)
-    ssh_public_key       = optional(string)
-    image                = optional(string)
-    tags                 = optional(map(string))
-    security_groups      = list(string)
-    dns_cluster_ip       = optional(string)
-    instance_profile_arn = string
-    key_pair_id          = optional(string)
-  }))
+  type        = any
   description = "Map of EKS node configurations to create"
   default     = {}
 }
