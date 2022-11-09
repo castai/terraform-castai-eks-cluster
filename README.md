@@ -30,6 +30,34 @@ module "castai-eks-cluster" {
 
   aws_assume_role_arn      = module.castai-eks-role-iam.role_arn
   autoscaler_policies_json = var.autoscaler_policies_json
+
+  // Default node configuration will be used for all CAST provisioned nodes unless specific configuration is requested.
+  default_node_configuration = module.cast-eks-cluster.castai_node_configurations["default"]
+
+  node_configurations = {
+    default = {
+      subnets                   = module.vpc.private_subnets
+      dns_cluster_ip            = "10.100.0.10"
+      instance_profile_role_arn = var.instance_profile_arn
+      ssh_public_key            = var.ssh_public_key
+      security_groups           = [
+        module.eks.node_security_group_id,
+      ]
+      tags = {
+        "team" : "core"
+      }
+      init_script    = base64encode(var.init_script)
+      docker_config  = jsonencode({
+        "insecure-registries"      = ["registry.com:5000"],
+        "max-concurrent-downloads" = 10
+      })
+      kubelet_config = jsonencode({
+        "registryBurst" : 20,
+        "registryPullQPS" : 10
+      })
+      container_runtime = "dockerd"
+    }
+  }
 }
 ```
 
@@ -91,14 +119,14 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 0.25.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 1.3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | 0.26.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.6.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 1.3.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | n/a |
 
 ## Modules
 
@@ -134,7 +162,7 @@ No modules.
 | <a name="input_castai_components_labels"></a> [castai\_components\_labels](#input\_castai\_components\_labels) | Optional additional Kubernetes labels for CAST AI pods | `map` | `{}` | no |
 | <a name="input_default_node_configuration"></a> [default\_node\_configuration](#input\_default\_node\_configuration) | ID of the default node configuration | `string` | n/a | yes |
 | <a name="input_delete_nodes_on_disconnect"></a> [delete\_nodes\_on\_disconnect](#input\_delete\_nodes\_on\_disconnect) | Optionally delete Cast AI created nodes when the cluster is destroyed | `bool` | `false` | no |
-| <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | <pre>map(object({<br>    disk_cpu_ratio       = optional(number)<br>    subnets              = list(string)<br>    ssh_public_key       = optional(string)<br>    image                = optional(string)<br>    tags                 = optional(map(string))<br>    security_groups      = list(string)<br>    dns_cluster_ip       = optional(string)<br>    instance_profile_arn = string<br>    key_pair_id          = optional(string)<br>  }))</pre> | `{}` | no |
+| <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
 
 ## Outputs
 

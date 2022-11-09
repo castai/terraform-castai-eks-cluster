@@ -12,12 +12,16 @@ resource "castai_node_configuration" "this" {
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
-  name           = try(each.value.name, each.key)
-  disk_cpu_ratio = try(each.value.disk_cpu_ratio, 25)
-  subnets        = try(each.value.subnets, null)
-  ssh_public_key = try(each.value.ssh_public_key, null)
-  image          = try(each.value.image, null)
-  tags           = try(each.value.tags, {})
+  name              = try(each.value.name, each.key)
+  disk_cpu_ratio    = try(each.value.disk_cpu_ratio, 25)
+  subnets           = try(each.value.subnets, null)
+  ssh_public_key    = try(each.value.ssh_public_key, null)
+  image             = try(each.value.image, null)
+  tags              = try(each.value.tags, {})
+  container_runtime = try(each.value.container_runtime, null)
+  init_script       = try(each.value.init_script, null)
+  docker_config     = try(each.value.docker_config, null)
+  kubelet_config    = try(each.value.kubelet_config, null)
 
   eks {
     security_groups      = try(each.value.security_groups, null)

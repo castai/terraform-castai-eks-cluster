@@ -1,6 +1,5 @@
 terraform {
   required_version = ">= 0.13"
-  experiments      = [module_variable_optional_attrs]
 
   required_providers {
     aws = {
@@ -9,7 +8,7 @@ terraform {
     }
     castai = {
       source  = "castai/castai"
-      version = ">= 0.25.0"
+      version = ">= 1.3.0"
     }
   }
 }
