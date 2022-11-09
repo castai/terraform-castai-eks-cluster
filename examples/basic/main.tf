@@ -68,7 +68,7 @@ module "cast-eks-cluster" {
         module.eks.node_security_group_id,
         aws_security_group.additional.id,
       ]
-      docker_config  = jsonencode({
+      docker_config = jsonencode({
         "insecure-registries"      = ["registry.com:5000"],
         "max-concurrent-downloads" = 10
       })
@@ -76,7 +76,8 @@ module "cast-eks-cluster" {
         "registryBurst" : 20,
         "registryPullQPS" : 10
       })
-      container_runtime = "dockerd"
+      container_runtime    = "dockerd"
+      init_script          = var.init_script
       instance_profile_arn = module.castai-eks-role-iam.instance_profile_arn
     }
 
