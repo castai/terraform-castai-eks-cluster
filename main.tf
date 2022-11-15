@@ -232,7 +232,7 @@ resource "castai_autoscaler" "castai_autoscaler_policies" {
 }
 
 resource "helm_release" "castai_sec_agent" {
-  count = install_security_agent == true ? 1 : 0
+  count = var.install_security_agent == true ? 1 : 0
 
   name             = "castai-sec-agent"
   repository       = "https://castai.github.io/helm-charts"
