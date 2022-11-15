@@ -71,3 +71,9 @@ variable "default_node_configuration" {
   type        = string
   description = "ID of the default node configuration"
 }
+
+variable "install_security_agent" {
+  type = bool
+  default = false
+  description = "Optional flag for installation of security agent"
+}
