@@ -251,6 +251,11 @@ resource "helm_release" "castai_sec_agent" {
     value =  castai_eks_cluster.my_castai_cluster.id
   }
 
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_cluster_token.cluster_token.cluster_token
+  }
+  
   set {
     name = "structuredConfig.provider"
     value = "eks"
