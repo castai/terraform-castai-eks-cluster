@@ -8,7 +8,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
 }
 
 resource "castai_node_configuration" "this" {
-  for_each = {for k, v in var.node_configurations : k => v}
+  for_each = { for k, v in var.node_configurations : k => v }
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -40,6 +40,7 @@ resource "castai_cluster_token" "cluster_token" {
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 }
 
+
 resource "helm_release" "castai_agent" {
   name             = "castai-agent"
   repository       = "https://castai.github.io/helm-charts"
@@ -48,6 +49,8 @@ resource "helm_release" "castai_agent" {
   create_namespace = true
   cleanup_on_fail  = true
   wait             = true
+
+  values = var.agent_values
 
   set {
     name  = "provider"
@@ -119,6 +122,8 @@ resource "helm_release" "castai_cluster_controller" {
   cleanup_on_fail  = true
   wait             = true
 
+  values = var.cluster_controller_values
+
   set {
     name  = "castai.clusterID"
     value = castai_eks_cluster.my_castai_cluster.id
@@ -161,6 +166,8 @@ resource "helm_release" "castai_evictor" {
   cleanup_on_fail  = true
   wait             = true
 
+  values = var.evictor_values
+
   set {
     name  = "replicaCount"
     value = "0"
@@ -189,6 +196,8 @@ resource "helm_release" "castai_spot_handler" {
   create_namespace = true
   cleanup_on_fail  = true
   wait             = true
+
+  values = var.spot_handler_values
 
   set {
     name  = "castai.provider"
@@ -241,6 +250,8 @@ resource "helm_release" "castai_sec_agent" {
   create_namespace = true
   cleanup_on_fail  = true
 
+  values = var.sec_agent_values
+
   set {
     name  = "castai.apiURL"
     value = var.api_url
@@ -248,16 +259,16 @@ resource "helm_release" "castai_sec_agent" {
 
   set {
     name  = "castai.clusterID"
-    value =  castai_eks_cluster.my_castai_cluster.id
+    value = castai_eks_cluster.my_castai_cluster.id
   }
 
   set_sensitive {
     name  = "castai.apiKey"
     value = castai_cluster_token.cluster_token.cluster_token
   }
-  
+
   set {
-    name = "structuredConfig.provider"
+    name  = "structuredConfig.provider"
     value = "eks"
   }
 }
