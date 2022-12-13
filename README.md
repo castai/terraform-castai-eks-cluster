@@ -119,13 +119,13 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 1.3.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 1.3.4 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 1.3.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 1.3.4 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | n/a |
 
 ## Modules
@@ -137,7 +137,6 @@ No modules.
 | Name | Type |
 |------|------|
 | [castai_autoscaler.castai_autoscaler_policies](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/autoscaler) | resource |
-| [castai_cluster_token.cluster_token](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/cluster_token) | resource |
 | [castai_eks_cluster.my_castai_cluster](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/eks_cluster) | resource |
 | [castai_node_configuration.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration) | resource |
 | [castai_node_configuration_default.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration_default) | resource |
