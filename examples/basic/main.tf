@@ -1,5 +1,6 @@
 provider "castai" {
   api_token = var.castai_api_token
+  api_url   = var.castai_api_url
 }
 
 provider "helm" {
@@ -22,14 +23,14 @@ provider "kubernetes" {
 
 data "aws_caller_identity" "current" {}
 
-data "castai_eks_clusterid" "castai_cluster_id" {
+resource "castai_eks_clusterid" "cluster_id" {
   account_id   = data.aws_caller_identity.current.account_id
   region       = var.cluster_region
   cluster_name = var.cluster_name
 }
 
 data "castai_eks_user_arn" "castai_user_arn" {
-  cluster_id = data.castai_eks_clusterid.castai_cluster_id.id
+  cluster_id = castai_eks_clusterid.cluster_id.id
 }
 
 module "castai-eks-role-iam" {
