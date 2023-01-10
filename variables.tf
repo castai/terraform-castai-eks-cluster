@@ -102,8 +102,8 @@ variable "evictor_values" {
   default     = []
 }
 
-variable "sec_agent_values" {
-  description = "List of YAML formatted string with sec-agent values"
+variable "kvisor_values" {
+  description = "List of YAML formatted string with kvisor values"
   type        = list(string)
   default     = []
 }
