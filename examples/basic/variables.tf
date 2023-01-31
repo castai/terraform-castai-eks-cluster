@@ -14,7 +14,7 @@ variable "cluster_region" {
 
 variable "cluster_name" {
   type    = string
-  default = "tf-basic"
+  default = "tf-basic-zilvinas"
 }
 
 variable "init_script" {
