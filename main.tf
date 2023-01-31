@@ -40,20 +40,32 @@ resource "castai_node_template" "this" {
   configuration_id = try(each.value.configuration_id, null)
   should_taint     = try(each.value.should_taint, true)
 
+  custom_label {
+    key   = each.value.custom_label.key
+    value = each.value.custom_label.value
+  }
+
 
   constraints {
     compute_optimized  = try(each.value.compute_optimized, false)
     storage_optimized  = try(each.value.storage_optimized, false)
-    spot               = try(each.value.spot, false)
-    use_spot_fallbacks = try(each.value.spot, false)
-    min_cpu            = try(each.value.min_cpu, null)
-    max_cpu            = try(each.value.max_cpu, null)
-    min_memory         = try(each.value.min_memory, null)
-    max_memory         = try(each.value.max_memory, null)
+    spot               = try(each.value.constraints.spot, false)
+    use_spot_fallbacks = try(each.value.constraints.spot, false)
+    min_cpu            = try(each.value.constraints.min_cpu, null)
+    max_cpu            = try(each.value.constraints.max_cpu, null)
+    min_memory         = try(each.value.constraints.min_memory, null)
+    max_memory         = try(each.value.constraints.max_memory, null)
 
     instance_families {
-      include = try(each.value.include, [])
-      exclude = try(each.value.exclude, [])
+      include = try(each.value.constraints.instance_families.include, [])
+      exclude = try(each.value.constraints.instance_families.exclude, [])
+    }
+    gpu {
+      manufacturers = try(each.value.constraints.gpu.manufacturers, [])
+      include_names = try(each.value.constraints.gpu.include_names, [])
+      exclude_names = try(each.value.constraints.gpu.exclude_names, [])
+      min_count     = try(each.value.constraints.gpu.min_count, null)
+      max_count     = try(each.value.constraints.gpu.max_count, null)
     }
   }
 }
