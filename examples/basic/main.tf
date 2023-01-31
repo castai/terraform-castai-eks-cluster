@@ -96,6 +96,21 @@ module "cast-eks-cluster" {
     }
   }
 
+  node_templates = {
+    gpu = {
+      configuration_id = module.cast-eks-cluster.castai_node_configurations["default"]
+      should_taint = false
+
+      constraints = {
+        compute_optimized = false
+        fallback_restore_rate_seconds = 0
+        spot = true
+        storage_optimized = false
+        use_spot_fallbacks = true
+      }
+    }
+  }
+
   autoscaler_policies_json   = <<-EOT
     {
         "enabled": true,
