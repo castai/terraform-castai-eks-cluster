@@ -112,7 +112,7 @@ module "cast-eks-cluster" {
         use_spot_fallbacks = true
         min_cpu = 4
         instance_families = {
-          exclude = ["n1"]
+          exclude = ["m4"]
         }
         compute_optimized = false
         storage_optimized = false

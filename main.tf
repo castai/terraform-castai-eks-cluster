@@ -40,14 +40,20 @@ resource "castai_node_template" "this" {
   configuration_id = try(each.value.configuration_id, null)
   should_taint     = try(each.value.should_taint, true)
 
+
   constraints {
     compute_optimized  = try(each.value.compute_optimized, false)
     storage_optimized  = try(each.value.storage_optimized, false)
     spot               = try(each.value.spot, false)
     use_spot_fallbacks = try(each.value.spot, false)
-    instance_families  {
-      include = try(each.value.include, null)
-      exclude = try(each.value.exclude, null)
+    min_cpu            = try(each.value.min_cpu, null)
+    max_cpu            = try(each.value.max_cpu, null)
+    min_memory         = try(each.value.min_memory, null)
+    max_memory         = try(each.value.max_memory, null)
+
+    instance_families {
+      include = try(each.value.include, [])
+      exclude = try(each.value.exclude, [])
     }
   }
 }
