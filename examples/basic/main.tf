@@ -97,7 +97,7 @@ module "cast-eks-cluster" {
   }
 
   node_templates = {
-    spot = {
+    spot= {
       configuration_id = module.cast-eks-cluster.castai_node_configurations["default"]
       should_taint = false
 
