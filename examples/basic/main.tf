@@ -97,16 +97,25 @@ module "cast-eks-cluster" {
   }
 
   node_templates = {
-    spot= {
+    spot_tmpl = {
       configuration_id = module.cast-eks-cluster.castai_node_configurations["default"]
-      should_taint = false
+
+      should_taint = true
+      custom_label = {
+        key = "custom-key"
+        value = "label-value"
+      }
 
       constraints = {
-        compute_optimized = false
-        fallback_restore_rate_seconds = 0
+        fallback_restore_rate_seconds = 1800
         spot = true
-        storage_optimized = false
         use_spot_fallbacks = true
+        min_cpu = 4
+        instance_families = {
+          exclude = ["n1"]
+        }
+        compute_optimized = false
+        storage_optimized = false
       }
     }
   }
