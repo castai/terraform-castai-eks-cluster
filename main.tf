@@ -68,7 +68,6 @@ resource "castai_node_template" "this" {
       min_count     = try(each.value.constraints.gpu.min_count, null)
       max_count     = try(each.value.constraints.gpu.max_count, null)
     }
-
   }
 }
 
