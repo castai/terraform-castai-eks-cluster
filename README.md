@@ -58,6 +58,31 @@ module "castai-eks-cluster" {
       container_runtime = "dockerd"
     }
   }
+
+  node_templates = {
+    spot_tmpl = {
+      configuration_id = module.cast-eks-cluster.castai_node_configurations["default"]
+
+      should_taint = true
+      custom_label = {
+        key = "custom-key"
+        value = "label-value"
+      }
+
+      constraints = {
+        fallback_restore_rate_seconds = 1800
+        spot = true
+        use_spot_fallbacks = true
+        min_cpu = 4
+        max_cpu = 100
+        instance_families = {
+          exclude = ["m5"]
+        }
+        compute_optimized = false
+        storage_optimized = false
+      }
+    }
+  }
 }
 ```
 
