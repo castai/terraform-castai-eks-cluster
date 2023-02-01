@@ -50,7 +50,7 @@ resource "castai_node_template" "this" {
     compute_optimized  = try(each.value.compute_optimized, false)
     storage_optimized  = try(each.value.storage_optimized, false)
     spot               = try(each.value.constraints.spot, false)
-    use_spot_fallbacks = try(each.value.constraints.spot, false)
+    use_spot_fallbacks = try(each.value.constraints.use_spot_fallbacks, false)
     min_cpu            = try(each.value.constraints.min_cpu, null)
     max_cpu            = try(each.value.constraints.max_cpu, null)
     min_memory         = try(each.value.constraints.min_memory, null)
