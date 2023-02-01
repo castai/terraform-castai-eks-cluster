@@ -60,14 +60,6 @@ resource "castai_node_template" "this" {
       include = try(each.value.constraints.instance_families.include, [])
       exclude = try(each.value.constraints.instance_families.exclude, [])
     }
-
-    gpu {
-      manufacturers = try(each.value.constraints.gpu.manufacturers, [])
-      include_names = try(each.value.constraints.gpu.include_names, [])
-      exclude_names = try(each.value.constraints.gpu.exclude_names, [])
-      min_count     = try(each.value.constraints.gpu.min_count, null)
-      max_count     = try(each.value.constraints.gpu.max_count, null)
-    }
   }
 }
 
