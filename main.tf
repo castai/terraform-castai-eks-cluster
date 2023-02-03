@@ -47,8 +47,8 @@ resource "castai_node_template" "this" {
 
 
   constraints {
-    compute_optimized  = try(each.value.compute_optimized, false)
-    storage_optimized  = try(each.value.storage_optimized, false)
+    compute_optimized  = try(each.value.constraints.compute_optimized, false)
+    storage_optimized  = try(each.value.constraints.storage_optimized, false)
     spot               = try(each.value.constraints.spot, false)
     use_spot_fallbacks = try(each.value.constraints.use_spot_fallbacks, false)
     min_cpu            = try(each.value.constraints.min_cpu, null)
@@ -56,17 +56,24 @@ resource "castai_node_template" "this" {
     min_memory         = try(each.value.constraints.min_memory, null)
     max_memory         = try(each.value.constraints.max_memory, null)
 
-    instance_families {
-      include = try(each.value.constraints.instance_families.include, [])
-      exclude = try(each.value.constraints.instance_families.exclude, [])
+    dynamic "instance_families" {
+      for_each = flatten([lookup(each.value.constraints, "instance_families", [])])
+
+      content {
+        include = try(instance_families.value.include, [])
+        exclude = try(instance_families.value.exclude, [])
+      }
     }
 
-    gpu {
-      manufacturers = try(each.value.constraints.gpu.manufacturers, [])
-      include_names = try(each.value.constraints.gpu.include_names, [])
-      exclude_names = try(each.value.constraints.gpu.exclude_names, [])
-      min_count     = try(each.value.constraints.gpu.min_count, null)
-      max_count     = try(each.value.constraints.gpu.max_count, null)
+    dynamic "gpu" {
+      for_each = flatten([lookup(each.value.constraints, "gpu", [])])
+      content {
+        manufacturers = try(gpu.value.manufacturers, [])
+        include_names = try(gpu.value.include_names, [])
+        exclude_names = try(gpu.value.exclude_names, [])
+        min_count     = try(gpu.value.min_count, null)
+        max_count     = try(gpu.value.max_count, null)
+      }
     }
   }
 }
