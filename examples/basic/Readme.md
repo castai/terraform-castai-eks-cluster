@@ -14,7 +14,7 @@ This example contains a sample setup of:
    export AWS_SECRET_ACCESS_KEY=pc+abcdef1234567890
    ```
 1. Review `module "cast-eks-cluster"` configuration in `main.tf`, adust settings per your needs (e.g. autoscaling settings);
-1. Prepare and review terraform plan
+1. Prepare and review Terraform plan
    ```shell
    terraform init 
    terraform plan
