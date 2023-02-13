@@ -4,7 +4,7 @@ This example contains a sample setup of:
 * Creating a new EKS cluster;
 * Connecting it to CAST AI and configuring it for autoscaling.
 
-# Setup
+## Running the example
 
 1. Copy/rename file "terraform.tfvars.sample" to "terraform.tfvars" and provide your credentials and cluster setup details.
 
