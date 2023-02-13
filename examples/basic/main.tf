@@ -49,6 +49,7 @@ module "castai-eks-role-iam" {
 module "cast-eks-cluster" {
   source = "../../"
 
+  api_url = var.castai_api_url
   aws_account_id      = data.aws_caller_identity.current.account_id
   aws_cluster_region  = var.cluster_region
   aws_cluster_name    = var.cluster_name
@@ -135,8 +136,18 @@ module "cast-eks-cluster" {
             }
         },
         "nodeDownscaler": {
+            "enabled": true,
             "emptyNodes": {
                 "enabled": true
+            },
+            "evictor": {
+              "aggressiveMode": false,
+              "allowed": true,
+              "cycleInterval": "5m10s",
+              "dryRun": false,
+              "enabled": true,
+              "nodeGracePeriodMinutes": 10,
+              "scopedMode": false
             }
         }
     }
