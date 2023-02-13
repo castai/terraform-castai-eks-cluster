@@ -144,13 +144,13 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 1.3.4 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 1.3.4 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 2.0.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | n/a |
 
 ## Modules
@@ -165,6 +165,7 @@ No modules.
 | [castai_eks_cluster.my_castai_cluster](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/eks_cluster) | resource |
 | [castai_node_configuration.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration) | resource |
 | [castai_node_configuration_default.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration_default) | resource |
+| [castai_node_template.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_template) | resource |
 | [helm_release.castai_agent](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_cluster_controller](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_evictor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -201,6 +202,6 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_castai_node_configurations"></a> [castai\_node\_configurations](#output\_castai\_node\_configurations) | Map of node configurations ids by name |
-| <a name="output_castai_node_templates"></a> [castai\_node\_templates](#output\_castai\_node\_templates) | Map of node template ids by name |
+| <a name="output_castai_node_templates"></a> [castai\_node\_templates](#output\_castai\_node\_templates) | Map of node template by name |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | CAST AI cluster id, which can be used for accessing cluster data using API |
 <!-- END_TF_DOCS -->
