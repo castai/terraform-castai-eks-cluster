@@ -24,6 +24,13 @@ This example contains a sample setup of:
    terraform apply
    ```
 1. Inspect the created cluster in [CAST AI console](https://console.cast.ai);
+1. Configure `kubectl` access to your cluster locally:
+   ```shell
+   aws sts get-caller-identity
+   aws eks update-kubeconfig --region your-cluster-region --name your-cluster-name
+   # inspect status of CAST AI components
+   kubectl get po -n castai-agent
+   ```
 1. (Optional) delete created infrastructure.
    ```shell
    terraform destroy
