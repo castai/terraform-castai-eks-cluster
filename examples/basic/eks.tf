@@ -37,7 +37,7 @@ module "eks" {
       name         = "${var.cluster_name}-spot"
       min_size     = 1
       max_size     = 10
-      desired_size = 2
+      desired_size = 4
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
