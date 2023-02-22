@@ -28,6 +28,8 @@ resource "castai_node_configuration" "this" {
     dns_cluster_ip       = try(each.value.dns_cluster_ip, null)
     instance_profile_arn = try(each.value.instance_profile_arn, null)
     key_pair_id          = try(each.value.key_pair_id, null)
+    volume_type          = try(each.value.volume_type, null)
+    volume_iops          = try(each.value.volume_iops, null)
   }
 }
 
