@@ -8,7 +8,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
 }
 
 resource "castai_node_configuration" "this" {
-  for_each = { for k, v in var.node_configurations : k => v }
+  for_each = {for k, v in var.node_configurations : k => v}
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -28,6 +28,61 @@ resource "castai_node_configuration" "this" {
     dns_cluster_ip       = try(each.value.dns_cluster_ip, null)
     instance_profile_arn = try(each.value.instance_profile_arn, null)
     key_pair_id          = try(each.value.key_pair_id, null)
+    volume_type          = try(each.value.volume_type, null)
+    volume_iops          = try(each.value.volume_iops, null)
+  }
+}
+
+resource "castai_node_template" "this" {
+  for_each = {for k, v in var.node_templates : k => v}
+
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
+
+  name             = try(each.value.name, each.key)
+  configuration_id = try(each.value.configuration_id, null)
+  should_taint     = try(each.value.should_taint, true)
+
+  dynamic "custom_label" {
+    for_each = flatten([lookup(each.value, "custom_label", [])])
+
+    content {
+      key   = try(custom_label.value.key, null)
+      value = try(custom_label.value.value, null)
+    }
+  }
+
+  dynamic "constraints" {
+    for_each = flatten([lookup(each.value, "constraints", [])])
+    content {
+      compute_optimized  = try(constraints.value.compute_optimized, false)
+      storage_optimized  = try(constraints.value.storage_optimized, false)
+      spot               = try(constraints.value.spot, false)
+      use_spot_fallbacks = try(constraints.value.use_spot_fallbacks, false)
+      min_cpu            = try(constraints.value.min_cpu, null)
+      max_cpu            = try(constraints.value.max_cpu, null)
+      min_memory         = try(constraints.value.min_memory, null)
+      max_memory         = try(constraints.value.max_memory, null)
+
+      dynamic "instance_families" {
+        for_each = flatten([lookup(constraints.value, "instance_families", [])])
+
+        content {
+          include = try(instance_families.value.include, [])
+          exclude = try(instance_families.value.exclude, [])
+        }
+      }
+
+      dynamic "gpu" {
+        for_each = flatten([lookup(constraints.value, "gpu", [])])
+        content {
+          manufacturers = try(gpu.value.manufacturers, [])
+          include_names = try(gpu.value.include_names, [])
+          exclude_names = try(gpu.value.exclude_names, [])
+          min_count     = try(gpu.value.min_count, null)
+          max_count     = try(gpu.value.max_count, null)
+        }
+      }
+    }
   }
 }
 

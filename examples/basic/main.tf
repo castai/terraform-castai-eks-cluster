@@ -49,6 +49,7 @@ module "castai-eks-role-iam" {
 module "cast-eks-cluster" {
   source = "../../"
 
+  api_url = var.castai_api_url
   aws_account_id      = data.aws_caller_identity.current.account_id
   aws_cluster_region  = var.cluster_region
   aws_cluster_name    = var.cluster_name
@@ -96,6 +97,31 @@ module "cast-eks-cluster" {
     }
   }
 
+  node_templates = {
+    spot_tmpl = {
+      configuration_id = module.cast-eks-cluster.castai_node_configurations["default"]
+
+      should_taint = true
+      custom_label = {
+        key = "custom-key"
+        value = "label-value"
+      }
+
+      constraints = {
+        fallback_restore_rate_seconds = 1800
+        spot = true
+        use_spot_fallbacks = true
+        min_cpu = 4
+        max_cpu = 100
+        instance_families = {
+          exclude = ["m5"]
+        }
+        compute_optimized = false
+        storage_optimized = false
+      }
+    }
+  }
+
   autoscaler_policies_json   = <<-EOT
     {
         "enabled": true,
@@ -110,8 +136,18 @@ module "cast-eks-cluster" {
             }
         },
         "nodeDownscaler": {
+            "enabled": true,
             "emptyNodes": {
                 "enabled": true
+            },
+            "evictor": {
+              "aggressiveMode": false,
+              "allowed": true,
+              "cycleInterval": "5m10s",
+              "dryRun": false,
+              "enabled": true,
+              "nodeGracePeriodMinutes": 10,
+              "scopedMode": false
             }
         }
     }
