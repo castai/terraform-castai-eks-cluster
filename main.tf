@@ -45,6 +45,7 @@ resource "helm_release" "castai_agent" {
   cleanup_on_fail  = true
   wait             = true
 
+  version = var.agent_version
   values = var.agent_values
 
   set {
@@ -117,6 +118,7 @@ resource "helm_release" "castai_cluster_controller" {
   cleanup_on_fail  = true
   wait             = true
 
+  version = var.cluster_controller_version
   values = var.cluster_controller_values
 
   set {
@@ -161,6 +163,7 @@ resource "helm_release" "castai_evictor" {
   cleanup_on_fail  = true
   wait             = true
 
+  version = var.evictor_version
   values = var.evictor_values
 
   set {
@@ -192,6 +195,7 @@ resource "helm_release" "castai_spot_handler" {
   cleanup_on_fail  = true
   wait             = true
 
+  version = var.spot_handler_version
   values = var.spot_handler_values
 
   set {
@@ -246,6 +250,7 @@ resource "helm_release" "castai_kvisor" {
   cleanup_on_fail  = true
 
   values = var.kvisor_values
+  version = var.kvisor_version
 
   set {
     name  = "castai.apiURL"
