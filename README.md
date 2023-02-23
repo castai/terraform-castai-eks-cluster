@@ -150,8 +150,8 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | 0.26.4 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.7.1 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 2.3.0  |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | n/a |
 
 ## Modules
 
