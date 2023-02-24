@@ -30,6 +30,7 @@ resource "castai_node_configuration" "this" {
     key_pair_id          = try(each.value.key_pair_id, null)
     volume_type          = try(each.value.volume_type, null)
     volume_iops          = try(each.value.volume_iops, null)
+    volume_throughput    = try(each.value.volume_throughput, null)
   }
 }
 
