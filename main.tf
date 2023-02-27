@@ -8,7 +8,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
 }
 
 resource "castai_node_configuration" "this" {
-  for_each = {for k, v in var.node_configurations : k => v}
+  for_each = { for k, v in var.node_configurations : k => v }
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -31,11 +31,12 @@ resource "castai_node_configuration" "this" {
     volume_type          = try(each.value.volume_type, null)
     volume_iops          = try(each.value.volume_iops, null)
     volume_throughput    = try(each.value.volume_throughput, null)
+    imds_v1              = try(each.value.imds_v1, null)
   }
 }
 
 resource "castai_node_template" "this" {
-  for_each = {for k, v in var.node_templates : k => v}
+  for_each = { for k, v in var.node_templates : k => v }
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -102,7 +103,7 @@ resource "helm_release" "castai_agent" {
   wait             = true
 
   version = var.agent_version
-  values = var.agent_values
+  values  = var.agent_values
 
   set {
     name  = "provider"
@@ -175,7 +176,7 @@ resource "helm_release" "castai_cluster_controller" {
   wait             = true
 
   version = var.cluster_controller_version
-  values = var.cluster_controller_values
+  values  = var.cluster_controller_values
 
   set {
     name  = "castai.clusterID"
@@ -220,7 +221,7 @@ resource "helm_release" "castai_evictor" {
   wait             = true
 
   version = var.evictor_version
-  values = var.evictor_values
+  values  = var.evictor_values
 
   set {
     name  = "replicaCount"
@@ -252,7 +253,7 @@ resource "helm_release" "castai_spot_handler" {
   wait             = true
 
   version = var.spot_handler_version
-  values = var.spot_handler_values
+  values  = var.spot_handler_values
 
   set {
     name  = "castai.provider"
@@ -305,7 +306,7 @@ resource "helm_release" "castai_kvisor" {
   create_namespace = true
   cleanup_on_fail  = true
 
-  values = var.kvisor_values
+  values  = var.kvisor_values
   version = var.kvisor_version
 
   set {
