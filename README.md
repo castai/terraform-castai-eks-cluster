@@ -131,6 +131,10 @@ module "castai-eks-cluster" {
 
 ```
 
+# Examples
+
+Usage examples are located in [terraform provider repo](https://github.com/castai/terraform-provider-castai/tree/master/examples/eks)
+
 ### Generate docs
 
 ```shell
