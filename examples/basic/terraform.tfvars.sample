@@ -1,8 +1,0 @@
-# generate  a "full access" key in CAST AI console at https://console.cast.ai/user/api-access-keys
-castai_api_token = "123456789012345678901234567890"
-
-# URL for to use for CAST AI API
-# castai_api_url = "https://api.cast.ai"
-
-cluster_region = "us-east-1"
-cluster_name = "your-cluster-name"
