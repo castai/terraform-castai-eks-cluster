@@ -104,6 +104,8 @@ resource "castai_node_configuration_default" "this" {
 }
 
 resource "helm_release" "castai_agent" {
+  count = var.install_castai_agent == true ? 1 : 0
+
   name             = "castai-agent"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-agent"
@@ -177,6 +179,8 @@ resource "helm_release" "castai_agent" {
 }
 
 resource "helm_release" "castai_cluster_controller" {
+  count = var.install_castai_cluster_controller == true ? 1 : 0
+
   name             = "cluster-controller"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-cluster-controller"
@@ -222,6 +226,8 @@ resource "helm_release" "castai_cluster_controller" {
 }
 
 resource "helm_release" "castai_evictor" {
+  count = var.install_castai_evictor == true ? 1 : 0
+
   name             = "castai-evictor"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-evictor"
@@ -254,6 +260,8 @@ resource "helm_release" "castai_evictor" {
 }
 
 resource "helm_release" "castai_spot_handler" {
+  count = var.install_castai_spot_handler == true ? 1 : 0
+
   name             = "castai-spot-handler"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-spot-handler"

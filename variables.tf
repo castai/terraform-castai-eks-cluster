@@ -78,6 +78,30 @@ variable "node_templates" {
   default     = {}
 }
 
+variable "install_castai_agent" {
+  type        = bool
+  default     = true
+  description = "Optional flag for installation of castai agent"
+}
+
+variable "install_castai_cluster_controller" {
+  type        = bool
+  default     = true
+  description = "Optional flag for installation of castai cluster controller"
+}
+
+variable "install_castai_evictor" {
+  type        = bool
+  default     = true
+  description = "Optional flag for installation of castai evictor"
+}
+
+variable "install_castai_spot_handler" {
+  type        = bool
+  default     = true
+  description = "Optional flag for installation of castai spot handler"
+}
+
 variable "install_security_agent" {
   type        = bool
   default     = false
