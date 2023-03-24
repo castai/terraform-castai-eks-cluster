@@ -64,9 +64,10 @@ module "castai-eks-cluster" {
       configuration_id = module.cast-eks-cluster.castai_node_configurations["default"]
 
       should_taint = true
-      custom_label = {
-        key = "custom-key"
-        value = "label-value"
+
+      custom_labels = {
+        custom-label-key-1 = "custom-label-value-1"
+        custom-label-key-2 = "custom-label-value-2"
       }
 
       custom_taints = [
@@ -159,13 +160,13 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 3.2.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 3.3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 3.2.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 3.3.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | 2.9.0 |
 
 ## Modules
