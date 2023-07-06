@@ -105,6 +105,7 @@ resource "castai_node_template" "this" {
 }
 
 resource "castai_node_configuration_default" "this" {
+  count = var.readonly ? 0: 1
   cluster_id       = castai_eks_cluster.my_castai_cluster.id
   configuration_id = var.default_node_configuration
 }
@@ -190,6 +191,7 @@ resource "helm_release" "castai_cluster_controller" {
   create_namespace = true
   cleanup_on_fail  = true
   wait             = true
+  count = var.readonly ? 0: 1
 
   version = var.cluster_controller_version
   values  = var.cluster_controller_values
@@ -306,6 +308,7 @@ resource "helm_release" "castai_spot_handler" {
 }
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
+  count = var.readonly ? 0: 1
   autoscaler_policies_json = var.autoscaler_policies_json
   cluster_id               = castai_eks_cluster.my_castai_cluster.id
 

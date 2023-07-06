@@ -28,7 +28,7 @@ variable "autoscaler_policies_json" {
 variable "delete_nodes_on_disconnect" {
   type        = bool
   description = "Optionally delete Cast AI created nodes when the cluster is destroyed"
-  default     = false
+  default     = null
 }
 
 variable "aws_assume_role_arn" {
@@ -142,4 +142,9 @@ variable "kvisor_version" {
   description = "Version of kvisor chart. Default latest"
   type        = string
   default     = null
+}
+
+variable "readonly" {
+  type = bool
+  default = false
 }
