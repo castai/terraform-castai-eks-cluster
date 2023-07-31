@@ -19,6 +19,13 @@ variable "api_url" {
   default     = "https://api.cast.ai"
 }
 
+variable "castai_api_token" {
+  type = string
+  description = "Optional CAST AI API token created in console.cast.ai API Access keys section. Used only when `wait_for_cluster_ready` is set to true"
+  sensitive = true
+  default = ""
+}
+
 variable "autoscaler_policies_json" {
   type        = string
   description = "Optional json object to override CAST AI cluster autoscaler policies"
@@ -142,4 +149,10 @@ variable "kvisor_version" {
   description = "Version of kvisor chart. Default latest"
   type        = string
   default     = null
+}
+
+variable "wait_for_cluster_ready" {
+  type        = bool
+  description = "Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set"
+  default     = false
 }
