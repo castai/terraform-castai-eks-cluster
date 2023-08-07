@@ -46,8 +46,8 @@ module "castai-eks-cluster" {
       tags = {
         "team" : "core"
       }
-      init_script    = base64encode(var.init_script)
-      docker_config  = jsonencode({
+      init_script   = base64encode(var.init_script)
+      docker_config = jsonencode({
         "insecure-registries"      = ["registry.com:5000"],
         "max-concurrent-downloads" = 10
       })
@@ -72,27 +72,28 @@ module "castai-eks-cluster" {
 
       custom_taints = [
         {
-          key = "custom-taint-key-1"
+          key   = "custom-taint-key-1"
           value = "custom-taint-value-1"
         },
         {
-          key = "custom-taint-key-2"
+          key   = "custom-taint-key-2"
           value = "custom-taint-value-2"
         }
       ]
 
       constraints = {
         fallback_restore_rate_seconds = 1800
-        spot = true
-        use_spot_fallbacks = true
-        min_cpu = 4
-        max_cpu = 100
-        instance_families = {
+        spot                          = true
+        use_spot_fallbacks            = true
+        min_cpu                       = 4
+        max_cpu                       = 100
+        instance_families             = {
           exclude = ["m5"]
         }
         compute_optimized = false
         storage_optimized = false
-        architectures = ["amd64"]
+        is_gpu_only       = false
+        architectures     = ["amd64"]
       }
     }
   }
@@ -161,15 +162,16 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 3.11.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 4.1.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | 3.0.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.9.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 4.1.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
@@ -189,6 +191,7 @@ No modules.
 | [helm_release.castai_evictor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_kvisor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_spot_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [null_resource.wait_for_cluster](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 
 ## Inputs
 
@@ -205,6 +208,7 @@ No modules.
 | <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn) | Arn of the role to be used by CAST AI for IAM access | `string` | `null` | no |
 | <a name="input_aws_cluster_name"></a> [aws\_cluster\_name](#input\_aws\_cluster\_name) | Name of the cluster to be connected to CAST AI. | `string` | n/a | yes |
 | <a name="input_aws_cluster_region"></a> [aws\_cluster\_region](#input\_aws\_cluster\_region) | Region of the cluster to be connected to CAST AI. | `string` | n/a | yes |
+| <a name="input_castai_api_token"></a> [castai\_api\_token](#input\_castai\_api\_token) | Optional CAST AI API token created in console.cast.ai API Access keys section. Used only when `wait_for_cluster_ready` is set to true | `string` | `""` | no |
 | <a name="input_castai_components_labels"></a> [castai\_components\_labels](#input\_castai\_components\_labels) | Optional additional Kubernetes labels for CAST AI pods | `map(any)` | `{}` | no |
 | <a name="input_cluster_controller_values"></a> [cluster\_controller\_values](#input\_cluster\_controller\_values) | List of YAML formatted string with cluster-controller values | `list(string)` | `[]` | no |
 | <a name="input_cluster_controller_version"></a> [cluster\_controller\_version](#input\_cluster\_controller\_version) | Version of castai-cluster-controller helm chart. Default latest | `string` | `null` | no |
@@ -219,6 +223,7 @@ No modules.
 | <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates) | Map of node templates to create | `any` | `{}` | no |
 | <a name="input_spot_handler_values"></a> [spot\_handler\_values](#input\_spot\_handler\_values) | List of YAML formatted string with spot-handler values | `list(string)` | `[]` | no |
 | <a name="input_spot_handler_version"></a> [spot\_handler\_version](#input\_spot\_handler\_version) | Version of castai-spot-handler helm chart. Default latest | `string` | `null` | no |
+| <a name="input_wait_for_cluster_ready"></a> [wait\_for\_cluster\_ready](#input\_wait\_for\_cluster\_ready) | Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set | `bool` | `false` | no |
 
 ## Outputs
 

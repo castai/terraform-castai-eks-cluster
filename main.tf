@@ -8,7 +8,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
 }
 
 resource "castai_node_configuration" "this" {
-  for_each = { for k, v in var.node_configurations : k => v }
+  for_each = {for k, v in var.node_configurations : k => v}
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -38,7 +38,7 @@ resource "castai_node_configuration" "this" {
 }
 
 resource "castai_node_template" "this" {
-  for_each = { for k, v in var.node_templates : k => v }
+  for_each = {for k, v in var.node_templates : k => v}
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -72,6 +72,7 @@ resource "castai_node_template" "this" {
     content {
       compute_optimized             = try(constraints.value.compute_optimized, false)
       storage_optimized             = try(constraints.value.storage_optimized, false)
+      is_gpu_only                   = try(constraints.value.is_gpu_only, false)
       spot                          = try(constraints.value.spot, false)
       use_spot_fallbacks            = try(constraints.value.use_spot_fallbacks, false)
       fallback_restore_rate_seconds = try(constraints.value.fallback_restore_rate_seconds, null)
@@ -228,7 +229,7 @@ resource "helm_release" "castai_cluster_controller" {
 }
 
 resource "null_resource" "wait_for_cluster" {
-  count = var.wait_for_cluster_ready ? 1 : 0
+  count      = var.wait_for_cluster_ready ? 1 : 0
   depends_on = [helm_release.castai_cluster_controller, helm_release.castai_agent]
 
   provisioner "local-exec" {
