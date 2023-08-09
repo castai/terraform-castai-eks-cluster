@@ -145,6 +145,104 @@ module "castai-eks-cluster" {
 
 ```
 
+Migrating from 5.x.x to 6.x.x
+------------
+Existing configuration:
+```hcl
+module "castai-gke-cluster" {
+  // ...
+
+  node_templates = {
+    // ...
+  }
+  autoscaler_policies_json = <<-EOT
+    {
+        "enabled": true,
+        "unschedulablePods": {
+            "enabled": true
+        },
+        "spotInstances": {
+            "enabled": true,
+            "clouds": ["aws"],
+            "spotBackups": {
+                "enabled": true
+            },
+            "spotDiversityEnabled": false,
+            "spotDiversityPriceIncreaseLimitPercent": 20,
+            "spotInterruptionPredictions": {
+              "enabled": true,
+              "type": "AWSRebalanceRecommendations"
+            }
+        },
+        "nodeDownscaler": {
+            "enabled": true,
+            "emptyNodes": {
+                "enabled": true
+            },
+            "evictor": {
+                "aggressiveMode": true,
+                "cycleInterval": "5m10s",
+                "dryRun": false,
+                "enabled": true,
+                "nodeGracePeriodMinutes": 10,
+                "scopedMode": false
+            }
+        }
+    }
+  EOT
+}
+```
+New configuration: 
+```hcl
+module "castai-gke-cluster" {
+  // ...
+
+  node_templates = {
+    default_by_castai = {
+      name = "default-by-castai"
+      configuration_id = module.castai-aks-cluster.castai_node_configurations["default"]
+      is_default   = true
+      should_taint = false
+
+      constraints = {
+        on_demand          = true
+        spot               = true
+        use_spot_fallbacks = true
+
+        enable_spot_diversity                       = false
+        spot_diversity_price_increase_limit_percent = 20
+
+        spot_interruption_predictions_enabled = true
+        spot_interruption_predictions_type = "aws-rebalance-recommendations"
+      }
+    }
+  }
+  autoscaler_policies_json = <<-EOT
+    {
+        "enabled": true,
+        "unschedulablePods": {
+            "enabled": true
+        },
+        "nodeDownscaler": {
+            "enabled": true,
+            "emptyNodes": {
+                "enabled": true
+            },
+            "evictor": {
+                "aggressiveMode": true,
+                "cycleInterval": "5m10s",
+                "dryRun": false,
+                "enabled": true,
+                "nodeGracePeriodMinutes": 10,
+                "scopedMode": false
+            }
+        }
+    }
+  EOT
+}
+```
+
+
 # Examples
 
 Usage examples are located in [terraform provider repo](https://github.com/castai/terraform-provider-castai/tree/master/examples/eks)
@@ -162,14 +260,14 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 4.2.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 5.0.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 4.2.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 5.0.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
