@@ -149,7 +149,7 @@ Migrating from 5.x.x to 6.x.x
 ------------
 Existing configuration:
 ```hcl
-module "castai-gke-cluster" {
+module "castai-eks-cluster" {
   // ...
 
   node_templates = {
@@ -194,13 +194,13 @@ module "castai-gke-cluster" {
 ```
 New configuration: 
 ```hcl
-module "castai-gke-cluster" {
+module "castai-eks-cluster" {
   // ...
 
   node_templates = {
     default_by_castai = {
       name = "default-by-castai"
-      configuration_id = module.castai-aks-cluster.castai_node_configurations["default"]
+      configuration_id = module.castai-eks-cluster.castai_node_configurations["default"]
       is_default   = true
       should_taint = false
 
