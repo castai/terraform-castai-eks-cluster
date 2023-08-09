@@ -34,6 +34,7 @@ resource "castai_node_configuration" "this" {
     volume_throughput    = try(each.value.volume_throughput, null)
     imds_v1              = try(each.value.imds_v1, null)
     imds_hop_limit       = try(each.value.imds_hop_limit, null)
+    volume_kms_key_arn   = try(each.value.volume_kms_key_arn, null)
   }
 }
 
