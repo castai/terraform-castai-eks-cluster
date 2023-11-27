@@ -240,6 +240,43 @@ module "castai-eks-cluster" {
     }
   EOT
 }
+
+```
+Migrating from 6.x.x to 7.x.x
+---------------------------
+
+Version 7.x.x changed:
+* Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
+
+Old configuration:
+```terraform
+module "castai-eks-cluster" {
+  // ...
+
+  node_templates = {
+    spot_tmpl = {
+      custom_label = {
+        key = "custom-label-key-1"
+        value = "custom-label-value-1"
+      }
+    }
+  }
+}
+```
+
+New configuration:
+```terraform
+module "castai-eks-cluster" {
+  // ...
+
+  node_templates = {
+    spot_tmpl = {
+      custom_labels = {
+        custom-label-key-1 = "custom-label-value-1"
+      }
+    }
+  }
+}
 ```
 
 
