@@ -245,7 +245,7 @@ module "castai-eks-cluster" {
 Migrating from 6.x.x to 7.x.x
 ---------------------------
 
-Version 7.x.x changed:
+Version 7.x.x changes:
 * Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
 
 Old configuration:
