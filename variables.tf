@@ -26,6 +26,12 @@ variable "castai_api_token" {
   default = ""
 }
 
+variable "grpc_url" {
+  type        = string
+  description = "gRPC endpoint used by pod-pinner"
+  default     = "grpc.cast.ai:443"
+}
+
 variable "autoscaler_policies_json" {
   type        = string
   description = "Optional json object to override CAST AI cluster autoscaler policies"
