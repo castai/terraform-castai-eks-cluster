@@ -290,6 +290,61 @@ resource "helm_release" "castai_evictor" {
   }
 }
 
+resource "helm_release" "castai_pod_pinner" {
+  name             = "castai-pod-pinner"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-pinner"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  dynamic "set" {
+    for_each = var.grpc_url != "" ? [var.grpc_url] : []
+    content {
+      name  = "castai.grpcURL"
+      value = var.grpc_url
+    }
+  }
+
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
+  }
+
+  set {
+    name  = "replicaCount"
+    value = "0"
+  }
+
+  depends_on = [helm_release.castai_agent]
+
+  lifecycle {
+    ignore_changes = [set, version]
+  }
+}
+
 resource "helm_release" "castai_spot_handler" {
   name             = "castai-spot-handler"
   repository       = "https://castai.github.io/helm-charts"
