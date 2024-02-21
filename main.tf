@@ -100,6 +100,16 @@ resource "castai_node_template" "this" {
           max_count     = try(gpu.value.max_count, null)
         }
       }
+
+      dynamic "custom_priority" {
+        for_each = flatten([lookup(constraints.value, "custom_priority", [])])
+
+        content {
+          instance_families = try(custom_priority.value.instance_families, [])
+          spot = try(custom_priority.value.spot, false)
+          on_demand = try(custom_priority.value.on_demand, false)
+        }
+      }
     }
   }
   depends_on = [ castai_autoscaler.castai_autoscaler_policies ]
