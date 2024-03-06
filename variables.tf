@@ -154,7 +154,7 @@ variable "evictor_version" {
 variable "kvisor_version" {
   description = "Version of kvisor chart. Default latest"
   type        = string
-  default     = null
+  default     = "0.16.74"
 }
 
 variable "wait_for_cluster_ready" {
