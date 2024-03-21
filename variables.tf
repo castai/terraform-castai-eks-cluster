@@ -32,6 +32,12 @@ variable "grpc_url" {
   default     = "grpc.cast.ai:443"
 }
 
+variable "api_grpc_addr" {
+  type        = string
+  description = "CAST AI GRPC API address"
+  default     = "api-grpc.cast.ai:443"
+}
+
 variable "autoscaler_policies_json" {
   type        = string
   description = "Optional json object to override CAST AI cluster autoscaler policies"
@@ -154,7 +160,7 @@ variable "evictor_version" {
 variable "kvisor_version" {
   description = "Version of kvisor chart. Default latest"
   type        = string
-  default     = "0.16.74"
+  default     = null
 }
 
 variable "wait_for_cluster_ready" {
