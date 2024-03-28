@@ -297,14 +297,14 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 5.3.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 6.4.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 5.3.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 6.4.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
@@ -325,41 +325,43 @@ No modules.
 | [helm_release.castai_cluster_controller](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_evictor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_kvisor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_pod_pinner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_spot_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [null_resource.wait_for_cluster](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 
 ## Inputs
 
-| Name                                                                                                                                                             | Description                                                                                                                           | Type           | Default                 | Required |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|----------------|-------------------------|:--------:|
-| <a name="input_agent_aws_access_key_id"></a> [agent\_aws\_access\_key\_id](#input\_agent\_aws\_access\_key\_id)                                                  | AWS access key for CAST AI agent to fetch instance details.                                                                           | `string`       | `""`                    |    no    |
-| <a name="input_agent_aws_iam_service_account_role_arn"></a> [agent\_aws\_iam\_service\_account\_role\_arn](#input\_agent\_aws\_iam\_service\_account\_role\_arn) | Arn of the role to be used by CAST AI agent to fetch instance details. Only readonly AmazonEC2ReadOnlyAccess is needed.               | `string`       | `""`                    |    no    |
-| <a name="input_agent_aws_secret_access_key"></a> [agent\_aws\_secret\_access\_key](#input\_agent\_aws\_secret\_access\_key)                                      | AWS access key secret for CAST AI agent to fetch instance details.                                                                    | `string`       | `""`                    |    no    |
-| <a name="input_agent_values"></a> [agent\_values](#input\_agent\_values)                                                                                         | List of YAML formatted string with agent values                                                                                       | `list(string)` | `[]`                    |    no    |
-| <a name="input_agent_version"></a> [agent\_version](#input\_agent\_version)                                                                                      | Version of castai-agent helm chart. Default latest                                                                                    | `string`       | `null`                  |    no    |
-| <a name="input_api_url"></a> [api\_url](#input\_api\_url)                                                                                                        | URL of alternative CAST AI API to be used during development or testing                                                               | `string`       | `"https://api.cast.ai"` |    no    |
-| <a name="input_autoscaler_policies_json"></a> [autoscaler\_policies\_json](#input\_autoscaler\_policies\_json)                                                   | Optional json object to override CAST AI cluster autoscaler policies                                                                  | `string`       | `""`                    |    no    |
-| <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id)                                                                                 | ID of AWS account the cluster is located in.                                                                                          | `string`       | n/a                     |   yes    |
-| <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn)                                                                | Arn of the role to be used by CAST AI for IAM access                                                                                  | `string`       | `null`                  |    no    |
-| <a name="input_aws_cluster_name"></a> [aws\_cluster\_name](#input\_aws\_cluster\_name)                                                                           | Name of the cluster to be connected to CAST AI.                                                                                       | `string`       | n/a                     |   yes    |
-| <a name="input_aws_cluster_region"></a> [aws\_cluster\_region](#input\_aws\_cluster\_region)                                                                     | Region of the cluster to be connected to CAST AI.                                                                                     | `string`       | n/a                     |   yes    |
-| <a name="input_castai_api_token"></a> [castai\_api\_token](#input\_castai\_api\_token)                                                                           | Optional CAST AI API token created in console.cast.ai API Access keys section. Used only when `wait_for_cluster_ready` is set to true | `string`       | `""`                    |    no    |
-| <a name="input_castai_components_labels"></a> [castai\_components\_labels](#input\_castai\_components\_labels)                                                   | Optional additional Kubernetes labels for CAST AI pods                                                                                | `map(any)`     | `{}`                    |    no    |
-| <a name="input_cluster_controller_values"></a> [cluster\_controller\_values](#input\_cluster\_controller\_values)                                                | List of YAML formatted string with cluster-controller values                                                                          | `list(string)` | `[]`                    |    no    |
-| <a name="input_cluster_controller_version"></a> [cluster\_controller\_version](#input\_cluster\_controller\_version)                                             | Version of castai-cluster-controller helm chart. Default latest                                                                       | `string`       | `null`                  |    no    |
-| <a name="input_default_node_configuration"></a> [default\_node\_configuration](#input\_default\_node\_configuration)                                             | ID of the default node configuration                                                                                                  | `string`       | n/a                     |   yes    |
-| <a name="input_delete_nodes_on_disconnect"></a> [delete\_nodes\_on\_disconnect](#input\_delete\_nodes\_on\_disconnect)                                           | Optionally delete Cast AI created nodes when the cluster is destroyed                                                                 | `bool`         | `false`                 |    no    |
-| <a name="input_evictor_values"></a> [evictor\_values](#input\_evictor\_values)                                                                                   | List of YAML formatted string with evictor values                                                                                     | `list(string)` | `[]`                    |    no    |
-| <a name="input_evictor_version"></a> [evictor\_version](#input\_evictor\_version)                                                                                | Version of castai-evictor chart. Default latest                                                                                       | `string`       | `null`                  |    no    |
-| <a name="input_grpc_url"></a> [grpc\_url](#input\_grpc\_url)                                                                                                     | URL of alternative CAST AI gRPC to be used during development or testing                                                              | `string`       | `"grpc.cast.ai:443"`    |    no    |
-| <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent)                                                         | Optional flag for installation of security agent (https://docs.cast.ai/product-overview/console/security-insights/)                   | `bool`         | `false`                 |    no    |
-| <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values)                                                                                      | List of YAML formatted string with kvisor values                                                                                      | `list(string)` | `[]`                    |    no    |
-| <a name="input_kvisor_version"></a> [kvisor\_version](#input\_kvisor\_version)                                                                                   | Version of kvisor chart. Default latest                                                                                               | `string`       | `null`                  |    no    |
-| <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations)                                                                    | Map of EKS node configurations to create                                                                                              | `any`          | `{}`                    |    no    |
-| <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates)                                                                                   | Map of node templates to create                                                                                                       | `any`          | `{}`                    |    no    |
-| <a name="input_spot_handler_values"></a> [spot\_handler\_values](#input\_spot\_handler\_values)                                                                  | List of YAML formatted string with spot-handler values                                                                                | `list(string)` | `[]`                    |    no    |
-| <a name="input_spot_handler_version"></a> [spot\_handler\_version](#input\_spot\_handler\_version)                                                               | Version of castai-spot-handler helm chart. Default latest                                                                             | `string`       | `null`                  |    no    |
-| <a name="input_wait_for_cluster_ready"></a> [wait\_for\_cluster\_ready](#input\_wait\_for\_cluster\_ready)                                                       | Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set                 | `bool`         | `false`                 |    no    |
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_agent_aws_access_key_id"></a> [agent\_aws\_access\_key\_id](#input\_agent\_aws\_access\_key\_id) | AWS access key for CAST AI agent to fetch instance details. | `string` | `""` | no |
+| <a name="input_agent_aws_iam_service_account_role_arn"></a> [agent\_aws\_iam\_service\_account\_role\_arn](#input\_agent\_aws\_iam\_service\_account\_role\_arn) | Arn of the role to be used by CAST AI agent to fetch instance details. Only readonly AmazonEC2ReadOnlyAccess is needed. | `string` | `""` | no |
+| <a name="input_agent_aws_secret_access_key"></a> [agent\_aws\_secret\_access\_key](#input\_agent\_aws\_secret\_access\_key) | AWS access key secret for CAST AI agent to fetch instance details. | `string` | `""` | no |
+| <a name="input_agent_values"></a> [agent\_values](#input\_agent\_values) | List of YAML formatted string with agent values | `list(string)` | `[]` | no |
+| <a name="input_agent_version"></a> [agent\_version](#input\_agent\_version) | Version of castai-agent helm chart. Default latest | `string` | `null` | no |
+| <a name="input_api_grpc_addr"></a> [api\_grpc\_addr](#input\_api\_grpc\_addr) | CAST AI GRPC API address | `string` | `"api-grpc.cast.ai:443"` | no |
+| <a name="input_api_url"></a> [api\_url](#input\_api\_url) | URL of alternative CAST AI API to be used during development or testing | `string` | `"https://api.cast.ai"` | no |
+| <a name="input_autoscaler_policies_json"></a> [autoscaler\_policies\_json](#input\_autoscaler\_policies\_json) | Optional json object to override CAST AI cluster autoscaler policies | `string` | `null` | no |
+| <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | ID of AWS account the cluster is located in. | `string` | n/a | yes |
+| <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn) | Arn of the role to be used by CAST AI for IAM access | `string` | `null` | no |
+| <a name="input_aws_cluster_name"></a> [aws\_cluster\_name](#input\_aws\_cluster\_name) | Name of the cluster to be connected to CAST AI. | `string` | n/a | yes |
+| <a name="input_aws_cluster_region"></a> [aws\_cluster\_region](#input\_aws\_cluster\_region) | Region of the cluster to be connected to CAST AI. | `string` | n/a | yes |
+| <a name="input_castai_api_token"></a> [castai\_api\_token](#input\_castai\_api\_token) | Optional CAST AI API token created in console.cast.ai API Access keys section. Used only when `wait_for_cluster_ready` is set to true | `string` | `""` | no |
+| <a name="input_castai_components_labels"></a> [castai\_components\_labels](#input\_castai\_components\_labels) | Optional additional Kubernetes labels for CAST AI pods | `map(any)` | `{}` | no |
+| <a name="input_cluster_controller_values"></a> [cluster\_controller\_values](#input\_cluster\_controller\_values) | List of YAML formatted string with cluster-controller values | `list(string)` | `[]` | no |
+| <a name="input_cluster_controller_version"></a> [cluster\_controller\_version](#input\_cluster\_controller\_version) | Version of castai-cluster-controller helm chart. Default latest | `string` | `null` | no |
+| <a name="input_default_node_configuration"></a> [default\_node\_configuration](#input\_default\_node\_configuration) | ID of the default node configuration | `string` | n/a | yes |
+| <a name="input_delete_nodes_on_disconnect"></a> [delete\_nodes\_on\_disconnect](#input\_delete\_nodes\_on\_disconnect) | Optionally delete Cast AI created nodes when the cluster is destroyed | `bool` | `false` | no |
+| <a name="input_evictor_values"></a> [evictor\_values](#input\_evictor\_values) | List of YAML formatted string with evictor values | `list(string)` | `[]` | no |
+| <a name="input_evictor_version"></a> [evictor\_version](#input\_evictor\_version) | Version of castai-evictor chart. Default latest | `string` | `null` | no |
+| <a name="input_grpc_url"></a> [grpc\_url](#input\_grpc\_url) | gRPC endpoint used by pod-pinner | `string` | `"grpc.cast.ai:443"` | no |
+| <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent) | Optional flag for installation of security agent (https://docs.cast.ai/product-overview/console/security-insights/) | `bool` | `false` | no |
+| <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values) | List of YAML formatted string with kvisor values | `list(string)` | `[]` | no |
+| <a name="input_kvisor_version"></a> [kvisor\_version](#input\_kvisor\_version) | Version of kvisor chart. Default latest | `string` | `null` | no |
+| <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
+| <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates) | Map of node templates to create | `any` | `{}` | no |
+| <a name="input_spot_handler_values"></a> [spot\_handler\_values](#input\_spot\_handler\_values) | List of YAML formatted string with spot-handler values | `list(string)` | `[]` | no |
+| <a name="input_spot_handler_version"></a> [spot\_handler\_version](#input\_spot\_handler\_version) | Version of castai-spot-handler helm chart. Default latest | `string` | `null` | no |
+| <a name="input_wait_for_cluster_ready"></a> [wait\_for\_cluster\_ready](#input\_wait\_for\_cluster\_ready) | Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set | `bool` | `false` | no |
 
 ## Outputs
 
