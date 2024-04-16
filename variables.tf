@@ -20,10 +20,10 @@ variable "api_url" {
 }
 
 variable "castai_api_token" {
-  type = string
+  type        = string
   description = "Optional CAST AI API token created in console.cast.ai API Access keys section. Used only when `wait_for_cluster_ready` is set to true"
-  sensitive = true
-  default = ""
+  sensitive   = true
+  default     = ""
 }
 
 variable "grpc_url" {
@@ -167,4 +167,16 @@ variable "wait_for_cluster_ready" {
   type        = bool
   description = "Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set"
   default     = false
+}
+
+variable "workload_autoscaler_version" {
+  description = "Version of castai-workload-autoscaler helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "workload_autoscaler_values" {
+  description = "List of YAML formatted string with cluster-workload-autoscaler values"
+  type        = list(string)
+  default     = []
 }

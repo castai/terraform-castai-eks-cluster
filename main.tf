@@ -252,6 +252,38 @@ resource "helm_release" "castai_cluster_controller" {
   }
 }
 
+#---------------------------------------------------#
+# CAST.AI Workload Autoscaler configuration         #
+#---------------------------------------------------#
+resource "helm_release" "castai_workload_autoscaler" {
+  name             = "castai-workload-autoscaler"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-workload-autoscaler"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.workload_autoscaler_version
+  values  = var.workload_autoscaler_values
+
+  set {
+    name  = "castai.apiKeySecretRef"
+    value = "castai-cluster-controller"
+  }
+
+  set {
+    name  = "castai.configMapRef"
+    value = "castai-cluster-controller"
+  }
+
+  depends_on = [helm_release.castai_agent]
+
+  lifecycle {
+    ignore_changes = [version]
+  }
+}
+
 resource "null_resource" "wait_for_cluster" {
   count      = var.wait_for_cluster_ready ? 1 : 0
   depends_on = [helm_release.castai_cluster_controller, helm_release.castai_agent]
