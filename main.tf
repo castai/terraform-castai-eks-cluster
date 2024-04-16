@@ -8,7 +8,7 @@ resource "castai_eks_cluster" "my_castai_cluster" {
 }
 
 resource "castai_node_configuration" "this" {
-  for_each = {for k, v in var.node_configurations : k => v}
+  for_each = { for k, v in var.node_configurations : k => v }
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -37,18 +37,18 @@ resource "castai_node_configuration" "this" {
     imds_hop_limit       = try(each.value.imds_hop_limit, null)
     volume_kms_key_arn   = try(each.value.volume_kms_key_arn, null)
 
-    dynamic target_group{
-        for_each = try(each.value.target_group, {})
-        content {
-            arn = target_group.value.arn
-            port = target_group.value.port
-        }
+    dynamic "target_group" {
+      for_each = try(each.value.target_group, {})
+      content {
+        arn  = target_group.value.arn
+        port = target_group.value.port
+      }
     }
   }
 }
 
 resource "castai_node_template" "this" {
-  for_each = {for k, v in var.node_templates : k => v}
+  for_each = { for k, v in var.node_templates : k => v }
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
@@ -115,13 +115,13 @@ resource "castai_node_template" "this" {
 
         content {
           instance_families = try(custom_priority.value.instance_families, [])
-          spot = try(custom_priority.value.spot, false)
-          on_demand = try(custom_priority.value.on_demand, false)
+          spot              = try(custom_priority.value.spot, false)
+          on_demand         = try(custom_priority.value.on_demand, false)
         }
       }
     }
   }
-  depends_on = [ castai_autoscaler.castai_autoscaler_policies ]
+  depends_on = [castai_autoscaler.castai_autoscaler_policies]
 }
 
 resource "castai_node_configuration_default" "this" {
@@ -418,6 +418,8 @@ resource "castai_autoscaler" "castai_autoscaler_policies" {
 }
 
 resource "helm_release" "castai_kvisor" {
+  count = var.install_security_agent ? 1 : 0
+
   name             = "castai-kvisor"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-kvisor"
@@ -448,27 +450,22 @@ resource "helm_release" "castai_kvisor" {
   }
 
   set {
-    name  = "controller.replicas"
-    value = var.install_security_agent == true ? 1 : 0
-  }
-
-  set {
-    name = "controller.extraArgs.kube-linter-enabled"
+    name  = "controller.extraArgs.kube-linter-enabled"
     value = "true"
   }
 
   set {
-    name = "controller.extraArgs.image-scan-enabled"
+    name  = "controller.extraArgs.image-scan-enabled"
     value = "true"
   }
 
   set {
-    name = "controller.extraArgs.kube-bench-enabled"
+    name  = "controller.extraArgs.kube-bench-enabled"
     value = "true"
   }
 
   set {
-    name = "controller.extraArgs.kube-bench-cloud-provider"
+    name  = "controller.extraArgs.kube-bench-cloud-provider"
     value = "eks"
   }
 }
