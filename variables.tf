@@ -180,3 +180,14 @@ variable "workload_autoscaler_values" {
   type        = list(string)
   default     = []
 }
+variable "egressd_version" {
+  description = "Version of castai-egressd helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "egressd_values" {
+  description = "List of YAML formatted string with egressd values"
+  type        = list(string)
+  default     = []
+}

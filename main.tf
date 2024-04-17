@@ -284,6 +284,43 @@ resource "helm_release" "castai_workload_autoscaler" {
   }
 }
 
+#---------------------------------------------------#
+# CAST.AI Network Cost Monitoring configuration     #
+#---------------------------------------------------#
+resource "helm_release" "castai_egressd" {
+  name             = "castai-egressd"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "egressd"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.egressd_version
+  values  = var.egressd_values
+
+  set {
+    name  = "castai.apiURL"
+    value = var.api_url
+  }
+
+  set {
+    name  = "castai.apiKey"
+    value = var.castai_api_token
+  }
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  depends_on = [helm_release.castai_agent]
+
+  lifecycle {
+    ignore_changes = [version]
+  }
+}
+
 resource "null_resource" "wait_for_cluster" {
   count      = var.wait_for_cluster_ready ? 1 : 0
   depends_on = [helm_release.castai_cluster_controller, helm_release.castai_agent]
