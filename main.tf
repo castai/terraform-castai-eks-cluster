@@ -256,6 +256,7 @@ resource "helm_release" "castai_cluster_controller" {
 # CAST.AI Workload Autoscaler configuration         #
 #---------------------------------------------------#
 resource "helm_release" "castai_workload_autoscaler" {
+  count            = var.install_workload_autoscaler ? 1 : 0
   name             = "castai-workload-autoscaler"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-workload-autoscaler"
@@ -288,6 +289,7 @@ resource "helm_release" "castai_workload_autoscaler" {
 # CAST.AI Network Cost Monitoring configuration     #
 #---------------------------------------------------#
 resource "helm_release" "castai_egressd" {
+  count            = var.install_egressd ? 1 : 0
   name             = "castai-egressd"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "egressd"

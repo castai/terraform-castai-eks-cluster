@@ -168,6 +168,11 @@ variable "wait_for_cluster_ready" {
   description = "Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set"
   default     = false
 }
+variable "install_workload_autoscaler" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of workload autoscaler (https://docs.cast.ai/docs/workload-autoscaling-configuration)"
+}
 
 variable "workload_autoscaler_version" {
   description = "Version of castai-workload-autoscaler helm chart. Default latest"
@@ -179,6 +184,11 @@ variable "workload_autoscaler_values" {
   description = "List of YAML formatted string with cluster-workload-autoscaler values"
   type        = list(string)
   default     = []
+}
+variable "install_egressd" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of Egressd (Network cost monitoring) (https://docs.cast.ai/docs/network-cost)"
 }
 variable "egressd_version" {
   description = "Version of castai-egressd helm chart. Default latest"
