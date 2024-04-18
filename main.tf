@@ -308,7 +308,7 @@ resource "helm_release" "castai_egressd" {
 
   set {
     name  = "castai.apiKey"
-    value = var.castai_api_token
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
   }
 
   set {
