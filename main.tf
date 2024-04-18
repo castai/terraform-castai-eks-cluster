@@ -252,6 +252,77 @@ resource "helm_release" "castai_cluster_controller" {
   }
 }
 
+#---------------------------------------------------#
+# CAST.AI Workload Autoscaler configuration         #
+#---------------------------------------------------#
+resource "helm_release" "castai_workload_autoscaler" {
+  count            = var.install_workload_autoscaler ? 1 : 0
+  name             = "castai-workload-autoscaler"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-workload-autoscaler"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.workload_autoscaler_version
+  values  = var.workload_autoscaler_values
+
+  set {
+    name  = "castai.apiKeySecretRef"
+    value = "castai-cluster-controller"
+  }
+
+  set {
+    name  = "castai.configMapRef"
+    value = "castai-cluster-controller"
+  }
+
+  depends_on = [helm_release.castai_agent]
+
+  lifecycle {
+    ignore_changes = [version]
+  }
+}
+
+#---------------------------------------------------#
+# CAST.AI Network Cost Monitoring configuration     #
+#---------------------------------------------------#
+resource "helm_release" "castai_egressd" {
+  count            = var.install_egressd ? 1 : 0
+  name             = "castai-egressd"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "egressd"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.egressd_version
+  values  = var.egressd_values
+
+  set {
+    name  = "castai.apiURL"
+    value = var.api_url
+  }
+
+  set {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  depends_on = [helm_release.castai_agent]
+
+  lifecycle {
+    ignore_changes = [version]
+  }
+}
+
 resource "null_resource" "wait_for_cluster" {
   count      = var.wait_for_cluster_ready ? 1 : 0
   depends_on = [helm_release.castai_cluster_controller, helm_release.castai_agent]
