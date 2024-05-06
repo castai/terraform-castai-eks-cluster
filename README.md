@@ -90,10 +90,10 @@ module "castai-eks-cluster" {
         instance_families             = {
           exclude = ["m5"]
         }
-        compute_optimized = false
-        storage_optimized = false
-        is_gpu_only       = false
-        architectures     = ["amd64"]
+        compute_optimized_status = false
+        storage_optimized_status = false
+        is_gpu_only              = false
+        architectures            = ["amd64"]
       }
     }
   }
@@ -304,9 +304,9 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 6.6.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 6.7.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.13.1 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
 
 ## Modules
 
