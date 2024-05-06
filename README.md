@@ -90,8 +90,8 @@ module "castai-eks-cluster" {
         instance_families             = {
           exclude = ["m5"]
         }
-        compute_optimized_status = false
-        storage_optimized_status = false
+        compute_optimized_status = enabled
+        storage_optimized_status = disabled
         is_gpu_only              = false
         architectures            = ["amd64"]
       }
