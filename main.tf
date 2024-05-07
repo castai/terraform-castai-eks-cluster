@@ -365,6 +365,11 @@ resource "helm_release" "castai_evictor" {
     value = "0"
   }
 
+  set {
+    name  = "castai-evictor-ext.enabled"
+    value = "false"
+  }
+
   depends_on = [helm_release.castai_agent]
 
   lifecycle {
@@ -380,6 +385,21 @@ resource "helm_release" "castai_evictor" {
   }
 }
 
+resource "helm_release" "castai_evictor_ext" {
+  name             = "castai-evictor-ext"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-evictor-ext"
+  namespace        = "castai-agent"
+  create_namespace = false
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.evictor_ext_version
+  values  = var.evictor_ext_values
+
+  depends_on = [helm_release.castai_evictor]
+}
+
 resource "helm_release" "castai_pod_pinner" {
   name             = "castai-pod-pinner"
   repository       = "https://castai.github.io/helm-charts"
@@ -388,6 +408,8 @@ resource "helm_release" "castai_pod_pinner" {
   create_namespace = true
   cleanup_on_fail  = true
   wait             = true
+
+  version = var.pod_pinner_version
 
   set {
     name  = "castai.clusterID"
@@ -481,13 +503,6 @@ resource "helm_release" "castai_spot_handler" {
   depends_on = [helm_release.castai_agent]
 }
 
-resource "castai_autoscaler" "castai_autoscaler_policies" {
-  autoscaler_policies_json = var.autoscaler_policies_json
-  cluster_id               = castai_eks_cluster.my_castai_cluster.id
-
-  depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
-}
-
 resource "helm_release" "castai_kvisor" {
   count = var.install_security_agent ? 1 : 0
 
@@ -539,4 +554,11 @@ resource "helm_release" "castai_kvisor" {
     name  = "controller.extraArgs.kube-bench-cloud-provider"
     value = "eks"
   }
+}
+
+resource "castai_autoscaler" "castai_autoscaler_policies" {
+  autoscaler_policies_json = var.autoscaler_policies_json
+  cluster_id               = castai_eks_cluster.my_castai_cluster.id
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
 }
