@@ -90,8 +90,8 @@ module "castai-eks-cluster" {
         instance_families             = {
           exclude = ["m5"]
         }
-        compute_optimized_status = "disabled"
-        storage_optimized_status = "disabled"
+        compute_optimized_state = "disabled"
+        storage_optimized_state = "disabled"
         is_gpu_only              = false
         architectures            = ["amd64"]
       }
@@ -282,7 +282,7 @@ Migrating from 7.x.x to 8.x.x
 ---------------------------
 
 Version 8.x.x changed:
-* Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_status` and `storage_optimized_status` instead.
+* Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
 
 Old configuration:
 ```terraform
@@ -304,8 +304,8 @@ module "castai-eks-cluster" {
   node_templates = {
     spot_tmpl = {
       constraints = {
-        compute_optimized_status = "disabled"
-        storage_optimized_status = "enabled"
+        compute_optimized_state = "disabled"
+        storage_optimized_state = "enabled"
       }
     }
   }
