@@ -280,7 +280,6 @@ module "castai-eks-cluster" {
 ```
 Migrating from 7.x.x to 8.x.x
 ---------------------------
-
 Version 8.x.x changed:
 * Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
 
@@ -325,12 +324,12 @@ terraform-docs markdown table . --output-file README.md
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
+| Name | Version   |
+|------|-----------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13   |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49   |
 | <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.0.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0  |
 
 ## Providers
 
