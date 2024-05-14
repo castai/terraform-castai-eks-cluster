@@ -204,11 +204,13 @@ variable "workload_autoscaler_values" {
   type        = list(string)
   default     = []
 }
+
 variable "install_egressd" {
   type        = bool
   default     = false
   description = "Optional flag for installation of Egressd (Network cost monitoring) (https://docs.cast.ai/docs/network-cost)"
 }
+
 variable "egressd_version" {
   description = "Version of castai-egressd helm chart. Default latest"
   type        = string
@@ -219,4 +221,10 @@ variable "egressd_values" {
   description = "List of YAML formatted string with egressd values"
   type        = list(string)
   default     = []
+}
+
+variable "self_managed" {
+  type        = bool
+  default     = false
+  description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system."
 }
