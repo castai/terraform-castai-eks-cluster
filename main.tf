@@ -73,8 +73,8 @@ resource "castai_node_template" "this" {
   dynamic "constraints" {
     for_each = flatten([lookup(each.value, "constraints", [])])
     content {
-      compute_optimized                           = try(constraints.value.compute_optimized, false)
-      storage_optimized                           = try(constraints.value.storage_optimized, false)
+      compute_optimized                           = try(constraints.value.compute_optimized, null)
+      storage_optimized                           = try(constraints.value.storage_optimized, null)
       is_gpu_only                                 = try(constraints.value.is_gpu_only, false)
       spot                                        = try(constraints.value.spot, false)
       on_demand                                   = try(constraints.value.on_demand, null)
