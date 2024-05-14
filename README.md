@@ -90,10 +90,10 @@ module "castai-eks-cluster" {
         instance_families             = {
           exclude = ["m5"]
         }
-        compute_optimized = false
-        storage_optimized = false
-        is_gpu_only       = false
-        architectures     = ["amd64"]
+        compute_optimized_state = "disabled"
+        storage_optimized_state = "disabled"
+        is_gpu_only              = false
+        architectures            = ["amd64"]
       }
     }
   }
@@ -278,6 +278,38 @@ module "castai-eks-cluster" {
   }
 }
 ```
+Migrating from 7.x.x to 8.x.x
+---------------------------
+Version 8.x.x changed:
+* Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
+
+Old configuration:
+```terraform
+module "castai-eks-cluster" {
+  node_templates = {
+    spot_tmpl = {
+      constraints = {
+        compute_optimized = false
+        storage_optimized = true
+      }
+    }
+  }
+}
+```
+
+New configuration:
+```terraform
+module "castai-eks-cluster" {
+  node_templates = {
+    spot_tmpl = {
+      constraints = {
+        compute_optimized_state = "disabled"
+        storage_optimized_state = "enabled"
+      }
+    }
+  }
+}
+```
 
 # Examples
 
@@ -296,14 +328,14 @@ terraform-docs markdown table . --output-file README.md
 |------|-----------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13   |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49   |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 6.11.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.0.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0  |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | ~> 6.11.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | ~> 7.0.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
