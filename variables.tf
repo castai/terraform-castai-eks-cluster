@@ -127,6 +127,12 @@ variable "evictor_values" {
   default     = []
 }
 
+variable "evictor_ext_values" {
+  description = "List of YAML formatted string with evictor-ext values"
+  type        = list(string)
+  default     = []
+}
+
 variable "kvisor_values" {
   description = "List of YAML formatted string with kvisor values"
   type        = list(string)
@@ -135,12 +141,6 @@ variable "kvisor_values" {
 
 variable "agent_version" {
   description = "Version of castai-agent helm chart. Default latest"
-  type        = string
-  default     = null
-}
-
-variable "spot_handler_version" {
-  description = "Version of castai-spot-handler helm chart. Default latest"
   type        = string
   default     = null
 }
@@ -157,6 +157,24 @@ variable "evictor_version" {
   default     = null
 }
 
+variable "evictor_ext_version" {
+  description = "Version of castai-evictor-ext chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "pod_pinner_version" {
+  description = "Version of pod-pinner helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "spot_handler_version" {
+  description = "Version of castai-spot-handler helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
 variable "kvisor_version" {
   description = "Version of kvisor chart. Default latest"
   type        = string
@@ -168,6 +186,7 @@ variable "wait_for_cluster_ready" {
   description = "Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set"
   default     = false
 }
+
 variable "install_workload_autoscaler" {
   type        = bool
   default     = false
@@ -185,11 +204,13 @@ variable "workload_autoscaler_values" {
   type        = list(string)
   default     = []
 }
+
 variable "install_egressd" {
   type        = bool
   default     = false
   description = "Optional flag for installation of Egressd (Network cost monitoring) (https://docs.cast.ai/docs/network-cost)"
 }
+
 variable "egressd_version" {
   description = "Version of castai-egressd helm chart. Default latest"
   type        = string
@@ -200,4 +221,10 @@ variable "egressd_values" {
   description = "List of YAML formatted string with egressd values"
   type        = list(string)
   default     = []
+}
+
+variable "self_managed" {
+  type        = bool
+  default     = false
+  description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system."
 }

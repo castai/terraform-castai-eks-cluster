@@ -211,6 +211,8 @@ resource "helm_release" "castai_agent" {
 }
 
 resource "helm_release" "castai_cluster_controller" {
+  count = var.self_managed ? 0 : 1
+
   name             = "cluster-controller"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-cluster-controller"
@@ -255,11 +257,55 @@ resource "helm_release" "castai_cluster_controller" {
   }
 }
 
+resource "helm_release" "castai_cluster_controller_self_managed" {
+  count = var.self_managed ? 1 : 0
+
+  name             = "cluster-controller"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-cluster-controller"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.cluster_controller_version
+  values  = var.cluster_controller_values
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
+}
+
 #---------------------------------------------------#
 # CAST.AI Workload Autoscaler configuration         #
 #---------------------------------------------------#
 resource "helm_release" "castai_workload_autoscaler" {
-  count            = var.install_workload_autoscaler ? 1 : 0
+  count = var.install_workload_autoscaler && !var.self_managed ? 1 : 0
+
   name             = "castai-workload-autoscaler"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-workload-autoscaler"
@@ -288,11 +334,39 @@ resource "helm_release" "castai_workload_autoscaler" {
   }
 }
 
+resource "helm_release" "castai_workload_autoscaler_self_managed" {
+  count = var.install_workload_autoscaler && var.self_managed ? 1 : 0
+
+  name             = "castai-workload-autoscaler"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-workload-autoscaler"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.workload_autoscaler_version
+  values  = var.workload_autoscaler_values
+
+  set {
+    name  = "castai.apiKeySecretRef"
+    value = "castai-cluster-controller"
+  }
+
+  set {
+    name  = "castai.configMapRef"
+    value = "castai-cluster-controller"
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_workload_autoscaler]
+}
+
 #---------------------------------------------------#
 # CAST.AI Network Cost Monitoring configuration     #
 #---------------------------------------------------#
 resource "helm_release" "castai_egressd" {
-  count            = var.install_egressd ? 1 : 0
+  count = var.install_egressd && !var.self_managed ? 1 : 0
+
   name             = "castai-egressd"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "egressd"
@@ -326,6 +400,38 @@ resource "helm_release" "castai_egressd" {
   }
 }
 
+resource "helm_release" "castai_egressd_self_managed" {
+  count = var.install_egressd && var.self_managed ? 1 : 0
+
+  name             = "castai-egressd"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "egressd"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.egressd_version
+  values  = var.egressd_values
+
+  set {
+    name  = "castai.apiURL"
+    value = var.api_url
+  }
+
+  set {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_egressd]
+}
+
 resource "null_resource" "wait_for_cluster" {
   count      = var.wait_for_cluster_ready ? 1 : 0
   depends_on = [helm_release.castai_cluster_controller, helm_release.castai_agent]
@@ -352,6 +458,8 @@ resource "null_resource" "wait_for_cluster" {
 }
 
 resource "helm_release" "castai_evictor" {
+  count = var.self_managed ? 0 : 1
+
   name             = "castai-evictor"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-evictor"
@@ -366,6 +474,11 @@ resource "helm_release" "castai_evictor" {
   set {
     name  = "replicaCount"
     value = "0"
+  }
+
+  set {
+    name  = "castai-evictor-ext.enabled"
+    value = "false"
   }
 
   depends_on = [helm_release.castai_agent]
@@ -383,7 +496,57 @@ resource "helm_release" "castai_evictor" {
   }
 }
 
+resource "helm_release" "castai_evictor_self_managed" {
+  count = var.self_managed ? 1 : 0
+
+  name             = "castai-evictor"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-evictor"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.evictor_version
+  values  = var.evictor_values
+
+  set {
+    name  = "replicaCount"
+    value = "0"
+  }
+
+  set {
+    name  = "castai-evictor-ext.enabled"
+    value = "false"
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
+
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
+  }
+}
+
+resource "helm_release" "castai_evictor_ext" {
+  name             = "castai-evictor-ext"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-evictor-ext"
+  namespace        = "castai-agent"
+  create_namespace = false
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.evictor_ext_version
+  values  = var.evictor_ext_values
+}
+
 resource "helm_release" "castai_pod_pinner" {
+  count = var.self_managed ? 0 : 1
+
   name             = "castai-pod-pinner"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-pod-pinner"
@@ -391,6 +554,8 @@ resource "helm_release" "castai_pod_pinner" {
   create_namespace = true
   cleanup_on_fail  = true
   wait             = true
+
+  version = var.pod_pinner_version
 
   set {
     name  = "castai.clusterID"
@@ -436,6 +601,61 @@ resource "helm_release" "castai_pod_pinner" {
   lifecycle {
     ignore_changes = [set, version]
   }
+}
+
+resource "helm_release" "castai_pod_pinner_self_managed" {
+  count = var.self_managed ? 1 : 0
+
+  name             = "castai-pod-pinner"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-pinner"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.pod_pinner_version
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  dynamic "set" {
+    for_each = var.grpc_url != "" ? [var.grpc_url] : []
+    content {
+      name  = "castai.grpcURL"
+      value = var.grpc_url
+    }
+  }
+
+  dynamic "set" {
+    for_each = var.castai_components_labels
+    content {
+      name  = "podLabels.${set.key}"
+      value = set.value
+    }
+  }
+
+  set {
+    name  = "replicaCount"
+    value = "0"
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_pod_pinner]
 }
 
 resource "helm_release" "castai_spot_handler" {
@@ -484,15 +704,8 @@ resource "helm_release" "castai_spot_handler" {
   depends_on = [helm_release.castai_agent]
 }
 
-resource "castai_autoscaler" "castai_autoscaler_policies" {
-  autoscaler_policies_json = var.autoscaler_policies_json
-  cluster_id               = castai_eks_cluster.my_castai_cluster.id
-
-  depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
-}
-
 resource "helm_release" "castai_kvisor" {
-  count = var.install_security_agent ? 1 : 0
+  count = var.install_security_agent && !var.self_managed ? 1 : 0
 
   name             = "castai-kvisor"
   repository       = "https://castai.github.io/helm-charts"
@@ -542,4 +755,62 @@ resource "helm_release" "castai_kvisor" {
     name  = "controller.extraArgs.kube-bench-cloud-provider"
     value = "eks"
   }
+}
+
+resource "helm_release" "castai_kvisor_self_managed" {
+  count = var.install_security_agent && var.self_managed ? 1 : 0
+
+  name             = "castai-kvisor"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-kvisor"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+
+  values  = var.kvisor_values
+  version = var.kvisor_version
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  set {
+    name  = "castai.grpcAddr"
+    value = var.api_grpc_addr
+  }
+
+  set {
+    name  = "controller.extraArgs.kube-linter-enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.extraArgs.image-scan-enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.extraArgs.kube-bench-enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.extraArgs.kube-bench-cloud-provider"
+    value = "eks"
+  }
+
+  depends_on = [helm_release.castai_kvisor]
+}
+
+resource "castai_autoscaler" "castai_autoscaler_policies" {
+  autoscaler_policies_json = var.autoscaler_policies_json
+  cluster_id               = castai_eks_cluster.my_castai_cluster.id
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_evictor, helm_release.castai_evictor_ext]
 }
