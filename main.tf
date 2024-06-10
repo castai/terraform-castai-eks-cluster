@@ -36,6 +36,8 @@ resource "castai_node_configuration" "this" {
     imds_v1              = try(each.value.imds_v1, null)
     imds_hop_limit       = try(each.value.imds_hop_limit, null)
     volume_kms_key_arn   = try(each.value.volume_kms_key_arn, null)
+    max_pods_per_node_formula = try(each.value.max_pods_per_node_formula, null)
+    ips_per_prefix = try(each.value.ips_per_prefix, null)
 
     dynamic "target_group" {
       for_each = try(each.value.target_group, {})
