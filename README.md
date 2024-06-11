@@ -97,6 +97,53 @@ module "castai-eks-cluster" {
       }
     }
   }
+
+  autoscaler_settings = {
+    enabled                                 = true
+    node_templates_partial_matching_enabled = false
+
+    unschedulable_pods = {
+      enabled = true
+
+      headroom = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+
+      headroom_spot = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+    }
+
+    node_downscaler = {
+      enabled = true
+
+      empty_nodes = {
+        enabled = true
+      }
+
+      evictor = {
+        aggressive_mode           = false
+        cycle_interval            = "5s10s"
+        dry_run                   = false
+        enabled                   = true
+        node_grace_period_minutes = 10
+        scoped_mode               = false
+      }
+    }
+
+    cluster_limits = {
+      enabled = true
+
+      cpu = {
+        max_cores = 20
+        min_cores = 1
+      }
+    }
+  }
 }
 ```
 
@@ -311,6 +358,88 @@ module "castai-eks-cluster" {
 }
 ```
 
+Migrating from 9.x.x to 9.3.x
+---------------------------
+
+Version 9.3.x changed:
+* Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
+
+Old configuration:
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_policies_json = <<-EOT
+    {
+        "enabled": true,
+        "unschedulablePods": {
+            "enabled": true
+        },
+        "nodeDownscaler": {
+            "enabled": true,
+            "emptyNodes": {
+                "enabled": true
+            },
+            "evictor": {
+                "aggressiveMode": false,
+                "cycleInterval": "5m10s",
+                "dryRun": false,
+                "enabled": true,
+                "nodeGracePeriodMinutes": 10,
+                "scopedMode": false
+            }
+        },
+        "nodeTemplatesPartialMatchingEnabled": false,
+        "clusterLimits": {
+            "cpu": {
+                "maxCores": 20,
+                "minCores": 1
+            },
+            "enabled": true
+        }
+    }
+  EOT
+}
+```
+
+New configuration:
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    enabled                                 = true
+    node_templates_partial_matching_enabled = false
+
+    unschedulable_pods = {
+      enabled = true
+    }
+
+    node_downscaler = {
+      enabled = true
+
+      empty_nodes = {
+        enabled = true
+      }
+
+      evictor = {
+        aggressive_mode           = false
+        cycle_interval            = "5m10s"
+        dry_run                   = false
+        enabled                   = true
+        node_grace_period_minutes = 10
+        scoped_mode               = false
+      }
+    }
+
+    cluster_limits = {
+      enabled = true
+
+      cpu = {
+        max_cores = 20
+        min_cores = 1
+      }
+    }
+  }
+}
+```
+
 # Examples
 
 Usage examples are located in [terraform provider repo](https://github.com/castai/terraform-provider-castai/tree/master/examples/eks)
@@ -324,20 +453,20 @@ terraform-docs markdown table . --output-file README.md
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.3.0 |
+| Name | Version  |
+|------|----------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13  |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49  |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.4.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | ~> 7.3.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 7.4.0   |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.13.2  |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2   |
 
 ## Modules
 
@@ -380,7 +509,8 @@ No modules.
 | <a name="input_agent_version"></a> [agent\_version](#input\_agent\_version) | Version of castai-agent helm chart. Default latest | `string` | `null` | no |
 | <a name="input_api_grpc_addr"></a> [api\_grpc\_addr](#input\_api\_grpc\_addr) | CAST AI GRPC API address | `string` | `"api-grpc.cast.ai:443"` | no |
 | <a name="input_api_url"></a> [api\_url](#input\_api\_url) | URL of alternative CAST AI API to be used during development or testing | `string` | `"https://api.cast.ai"` | no |
-| <a name="input_autoscaler_policies_json"></a> [autoscaler\_policies\_json](#input\_autoscaler\_policies\_json) | Optional json object to override CAST AI cluster autoscaler policies | `string` | `null` | no |
+| <a name="input_autoscaler_policies_json"></a> [autoscaler\_policies\_json](#input\_autoscaler\_policies\_json) | Optional json object to override CAST AI cluster autoscaler policies. Deprecated, use `autoscaler_settings` instead. | `string` | `null` | no |
+| <a name="input_autoscaler_settings"></a> [autoscaler\_policy\_overrides](#input\_autoscaler\_policy\_overrides) | Optional Autoscaler policy definitions to override current autoscaler settings | `any` | `null` | no |
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | ID of AWS account the cluster is located in. | `string` | n/a | yes |
 | <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn) | Arn of the role to be used by CAST AI for IAM access | `string` | `null` | no |
 | <a name="input_aws_cluster_name"></a> [aws\_cluster\_name](#input\_aws\_cluster\_name) | Name of the cluster to be connected to CAST AI. | `string` | n/a | yes |
