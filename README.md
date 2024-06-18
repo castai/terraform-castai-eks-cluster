@@ -453,20 +453,20 @@ terraform-docs markdown table . --output-file README.md
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-| Name | Version  |
-|------|----------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13  |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49  |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.4.0 |
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | => 7.4.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | 7.4.0   |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.13.2  |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2   |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | => 7.4.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
@@ -510,7 +510,7 @@ No modules.
 | <a name="input_api_grpc_addr"></a> [api\_grpc\_addr](#input\_api\_grpc\_addr) | CAST AI GRPC API address | `string` | `"api-grpc.cast.ai:443"` | no |
 | <a name="input_api_url"></a> [api\_url](#input\_api\_url) | URL of alternative CAST AI API to be used during development or testing | `string` | `"https://api.cast.ai"` | no |
 | <a name="input_autoscaler_policies_json"></a> [autoscaler\_policies\_json](#input\_autoscaler\_policies\_json) | Optional json object to override CAST AI cluster autoscaler policies. Deprecated, use `autoscaler_settings` instead. | `string` | `null` | no |
-| <a name="input_autoscaler_settings"></a> [autoscaler\_policy\_overrides](#input\_autoscaler\_policy\_overrides) | Optional Autoscaler policy definitions to override current autoscaler settings | `any` | `null` | no |
+| <a name="input_autoscaler_settings"></a> [autoscaler\_settings](#input\_autoscaler\_settings) | Optional Autoscaler policy definitions to override current autoscaler settings | `any` | `null` | no |
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | ID of AWS account the cluster is located in. | `string` | n/a | yes |
 | <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn) | Arn of the role to be used by CAST AI for IAM access | `string` | `null` | no |
 | <a name="input_aws_cluster_name"></a> [aws\_cluster\_name](#input\_aws\_cluster\_name) | Name of the cluster to be connected to CAST AI. | `string` | n/a | yes |
