@@ -73,7 +73,8 @@ resource "castai_node_template" "this" {
   }
 
   dynamic "constraints" {
-    for_each = flatten([lookup(each.value, "constraints", [])])
+    for_each = [for constraints in flatten([lookup(each.value, "constraints", [])]) : constraints if constraints != null]
+
     content {
       compute_optimized                           = try(constraints.value.compute_optimized, null)
       storage_optimized                           = try(constraints.value.storage_optimized, null)
@@ -96,7 +97,7 @@ resource "castai_node_template" "this" {
       azs                                         = try(constraints.value.azs, null)
 
       dynamic "instance_families" {
-        for_each = flatten([lookup(constraints.value, "instance_families", [])])
+        for_each = [for instance_families in flatten([lookup(constraints.value, "instance_families", [])]) : instance_families if instance_families != null]
 
         content {
           include = try(instance_families.value.include, [])
@@ -105,7 +106,8 @@ resource "castai_node_template" "this" {
       }
 
       dynamic "gpu" {
-        for_each = flatten([lookup(constraints.value, "gpu", [])])
+        for_each = [for gpu in flatten([lookup(constraints.value, "gpu", [])]) : gpu if gpu != null]
+
         content {
           manufacturers = try(gpu.value.manufacturers, [])
           include_names = try(gpu.value.include_names, [])
@@ -116,7 +118,7 @@ resource "castai_node_template" "this" {
       }
 
       dynamic "custom_priority" {
-        for_each = flatten([lookup(constraints.value, "custom_priority", [])])
+        for_each = [for custom_priority in flatten([lookup(constraints.value, "custom_priority", [])]) : custom_priority if custom_priority != null]
 
         content {
           instance_families = try(custom_priority.value.instance_families, [])
