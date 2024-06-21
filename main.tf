@@ -740,19 +740,12 @@ resource "helm_release" "castai_kvisor" {
     value = var.api_grpc_addr
   }
 
-  set {
-    name  = "controller.extraArgs.kube-linter-enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "controller.extraArgs.image-scan-enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "controller.extraArgs.kube-bench-enabled"
-    value = "true"
+  dynamic "set" {
+    for_each = var.kvisor_controller_extra_args
+    content {
+      name  = "controller.extraArgs.${set.key}"
+      value = set.value
+    }
   }
 
   set {
@@ -789,19 +782,12 @@ resource "helm_release" "castai_kvisor_self_managed" {
     value = var.api_grpc_addr
   }
 
-  set {
-    name  = "controller.extraArgs.kube-linter-enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "controller.extraArgs.image-scan-enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "controller.extraArgs.kube-bench-enabled"
-    value = "true"
+  dynamic "set" {
+    for_each = var.kvisor_controller_extra_args
+    content {
+      name  = "controller.extraArgs.${set.key}"
+      value = set.value
+    }
   }
 
   set {
