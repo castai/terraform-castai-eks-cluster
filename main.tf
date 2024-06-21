@@ -546,6 +546,8 @@ resource "helm_release" "castai_evictor_ext" {
 
   version = var.evictor_ext_version
   values  = var.evictor_ext_values
+
+  depends_on = [helm_release.castai_agent]
 }
 
 resource "helm_release" "castai_pod_pinner" {
