@@ -58,7 +58,7 @@ resource "castai_node_template" "this" {
   name             = try(each.value.name, each.key)
   is_default       = try(each.value.is_default, false)
   is_enabled       = try(each.value.is_enabled, true)
-  configuration_id = try(each.value.configuration_id, null)
+  configuration_id = try(each.value.configuration_name, null) != null ? castai_node_configuration.this[each.value.configuration_name].id : try(each.value.configuration_id, null)
   should_taint     = try(each.value.should_taint, true)
 
   custom_labels = try(each.value.custom_labels, {})
@@ -136,7 +136,7 @@ resource "castai_node_template" "this" {
 
 resource "castai_node_configuration_default" "this" {
   cluster_id       = castai_eks_cluster.my_castai_cluster.id
-  configuration_id = var.default_node_configuration
+  configuration_id = var.default_node_configuration_name != "" ? castai_node_configuration.this[var.default_node_configuration_name].id : var.default_node_configuration
 }
 
 resource "castai_workload_scaling_policy" "this" {
