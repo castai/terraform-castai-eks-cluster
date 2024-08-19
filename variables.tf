@@ -216,6 +216,12 @@ variable "kvisor_version" {
   default     = null
 }
 
+variable "kvisor_wait" {
+  description = "Wait for kvisor chart to finish release"
+  type        = bool
+  default     = true
+}
+
 variable "wait_for_cluster_ready" {
   type        = bool
   description = "Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set"

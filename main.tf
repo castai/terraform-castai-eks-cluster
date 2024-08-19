@@ -738,6 +738,7 @@ resource "helm_release" "castai_kvisor" {
 
   values  = var.kvisor_values
   version = var.kvisor_version
+  wait = var.kvisor_wait
 
   lifecycle {
     ignore_changes = [version]
@@ -784,6 +785,7 @@ resource "helm_release" "castai_kvisor_self_managed" {
 
   values  = var.kvisor_values
   version = var.kvisor_version
+  wait = var.kvisor_wait
 
   set {
     name  = "castai.clusterID"
