@@ -39,6 +39,7 @@ resource "castai_node_configuration" "this" {
     max_pods_per_node_formula = try(each.value.max_pods_per_node_formula, null)
     ips_per_prefix            = try(each.value.ips_per_prefix, null)
     eks_image_family          = try(each.value.eks_image_family, null)
+    node_group_arn            = try(each.value.node_group_arn, null)
 
     dynamic "target_group" {
       for_each = try(each.value.target_group, {})
@@ -144,8 +145,8 @@ resource "castai_node_configuration_default" "this" {
 resource "castai_workload_scaling_policy" "this" {
   for_each = { for k, v in var.workload_scaling_policies : k => v }
 
-  name              = try(each.value.name, each.key)
-  cluster_id        = castai_eks_cluster.my_castai_cluster.id
+  name       = try(each.value.name, each.key)
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
 
   apply_type        = try(each.value.apply_type, "DEFERRED")
   management_option = try(each.value.management_option, "READ_ONLY")
@@ -740,7 +741,7 @@ resource "helm_release" "castai_kvisor" {
 
   values  = var.kvisor_values
   version = var.kvisor_version
-  wait = var.kvisor_wait
+  wait    = var.kvisor_wait
 
   lifecycle {
     ignore_changes = [version]
@@ -787,7 +788,7 @@ resource "helm_release" "castai_kvisor_self_managed" {
 
   values  = var.kvisor_values
   version = var.kvisor_version
-  wait = var.kvisor_wait
+  wait    = var.kvisor_wait
 
   set {
     name  = "castai.clusterID"
