@@ -327,6 +327,11 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
     }
   }
 
+  set {
+    name  = "managedByCASTAI"
+    value = false
+  }
+
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 
@@ -388,7 +393,12 @@ resource "helm_release" "castai_workload_autoscaler_self_managed" {
     value = "castai-cluster-controller"
   }
 
-  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
+  set {
+    name  = "managedByCASTAI"
+    value = false
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_workload_autoscaler]
 }
 
 #---------------------------------------------------#
@@ -457,6 +467,11 @@ resource "helm_release" "castai_egressd_self_managed" {
   set {
     name  = "castai.clusterID"
     value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  set {
+    name  = "managedByCASTAI"
+    value = false
   }
 
   depends_on = [helm_release.castai_agent, helm_release.castai_egressd]
@@ -553,6 +568,11 @@ resource "helm_release" "castai_evictor_self_managed" {
       name  = "podLabels.${set.key}"
       value = set.value
     }
+  }
+
+  set {
+    name  = "managedByCASTAI"
+    value = false
   }
 }
 
@@ -677,6 +697,16 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
       name  = "podLabels.${set.key}"
       value = set.value
     }
+  }
+
+  set {
+    name  = "replicaCount"
+    value = "0"
+  }
+
+  set {
+    name  = "managedByCASTAI"
+    value = false
   }
 
   depends_on = [helm_release.castai_agent, helm_release.castai_pod_pinner]
@@ -815,6 +845,11 @@ resource "helm_release" "castai_kvisor_self_managed" {
   set {
     name  = "controller.extraArgs.kube-bench-cloud-provider"
     value = "eks"
+  }
+
+  set {
+    name  = "managedByCASTAI"
+    value = false
   }
 
   depends_on = [helm_release.castai_kvisor]
