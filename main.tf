@@ -545,6 +545,11 @@ resource "helm_release" "castai_evictor_self_managed" {
     value = "false"
   }
 
+  set {
+    name  = "managedByCASTAI"
+    value = "false"
+  }
+
   depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
 
   dynamic "set" {
@@ -648,6 +653,11 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
   set {
     name  = "castai.clusterID"
     value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  set {
+    name  = "managedByCASTAI"
+    value = "false"
   }
 
   dynamic "set" {
