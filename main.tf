@@ -550,6 +550,15 @@ resource "helm_release" "castai_evictor_self_managed" {
     value = "false"
   }
 
+  dynamic "set" {
+    for_each = try(var.autoscaler_settings.node_downscaler.evictor.enabled, null) == false ? [0] : []
+
+    content {
+      name = "replicaCount"
+      value = set.value
+    }
+  }
+
   depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
 
   dynamic "set" {
@@ -658,6 +667,15 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
   set {
     name  = "managedByCASTAI"
     value = "false"
+  }
+
+  dynamic "set" {
+    for_each = try(var.autoscaler_settings.unschedulable_pods.pod_pinner.enabled, null) == false ? [0] : []
+
+    content {
+      name = "replicaCount"
+      value = set.value
+    }
   }
 
   dynamic "set" {
