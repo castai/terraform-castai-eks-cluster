@@ -29,7 +29,6 @@ module "castai-eks-cluster" {
   aws_cluster_name   = var.cluster_id
 
   aws_assume_role_arn      = module.castai-eks-role-iam.role_arn
-  autoscaler_policies_json = var.autoscaler_policies_json
 
   // Default node configuration will be used for all CAST provisioned nodes unless specific configuration is requested.
   default_node_configuration = module.cast-eks-cluster.castai_node_configurations["default"]
