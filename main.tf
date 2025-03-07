@@ -339,6 +339,28 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 
+resource "helm_release" "castai_pod_mutator" {
+
+  name             = "castai-pod-mutator"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-mutator"
+  namespace        = "castai-agent"
+  create_namespace = false
+  cleanup_on_fail  = true
+  wait             = true
+  version          = var.pod_mutator_version
+
+  set {
+    name  = "castai.configMapRef"
+    value = "castai-cluster-controller"
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = var.castai_api_token
+  }
+}
+
 #---------------------------------------------------#
 # CAST.AI Workload Autoscaler configuration         #
 #---------------------------------------------------#
