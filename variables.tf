@@ -269,3 +269,15 @@ variable "self_managed" {
   default     = false
   description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system."
 }
+
+variable "pod_mutator_version" {
+  description = "Version of castai-pod-mutator helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "organization_id" {
+  description = "CAST AI Organization ID"
+  type        = string
+  default     = ""
+}
