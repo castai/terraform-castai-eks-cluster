@@ -341,6 +341,7 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
 
 # Helm Release for CAST AI Pod Mutator
 resource "helm_release" "castai_pod_mutator" {
+  count            = var.install_pod_mutator ? 1 : 0
   name             = "castai-pod-mutator"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-pod-mutator"
