@@ -353,12 +353,15 @@ resource "helm_release" "castai_pod_mutator" {
 
   version = var.pod_mutator_version
 
-  set {
-    name  = "castai.configMapRef"
-    value = "castai-cluster-controller"
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
   }
 
-  set {
+  set_sensitive {
     name  = "castai.apiKey"
     value = castai_eks_cluster.my_castai_cluster.cluster_token
   }
@@ -906,12 +909,15 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
 
   version = var.pod_mutator_version
 
-  set {
-    name  = "castai.configMapRef"
-    value = "castai-cluster-controller"
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
   }
 
-  set {
+  set_sensitive {
     name  = "castai.apiKey"
     value = castai_eks_cluster.my_castai_cluster.cluster_token
   }
