@@ -373,7 +373,7 @@ resource "helm_release" "castai_pod_mutator" {
     value = castai_eks_cluster.my_castai_cluster.id
   }
 
-  depends_on = [helm_release.castai_agent]
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 #---------------------------------------------------#
 # CAST.AI Workload Autoscaler configuration         #
@@ -926,7 +926,7 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
     value = castai_eks_cluster.my_castai_cluster.id
   }
 
-  depends_on = [helm_release.castai_agent, helm_release.castai_pod_mutator]
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
