@@ -270,6 +270,12 @@ variable "self_managed" {
   description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system."
 }
 
+variable "install_pod_mutator" {
+  description = "Set to true to install the CAST AI Pod Mutator"
+  type        = bool
+  default     = false # Change to true if you want it enabled by default
+}
+
 variable "pod_mutator_version" {
   description = "Version of castai-pod-mutator helm chart. Default latest"
   type        = string
