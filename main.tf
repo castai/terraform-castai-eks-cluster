@@ -341,6 +341,8 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
 
 # Helm Release for CAST AI Pod Mutator
 resource "helm_release" "castai_pod_mutator" {
+  count = var.install_pod_mutator && !var.self_managed ? 1 : 0
+
   name             = "castai-pod-mutator"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-pod-mutator"
@@ -351,12 +353,15 @@ resource "helm_release" "castai_pod_mutator" {
 
   version = var.pod_mutator_version
 
-  set {
-    name  = "castai.configMapRef"
-    value = "castai-cluster-controller"
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
   }
 
-  set {
+  set_sensitive {
     name  = "castai.apiKey"
     value = castai_eks_cluster.my_castai_cluster.cluster_token
   }
@@ -371,7 +376,7 @@ resource "helm_release" "castai_pod_mutator" {
     value = castai_eks_cluster.my_castai_cluster.id
   }
 
-  depends_on = [helm_release.castai_agent]
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 #---------------------------------------------------#
 # CAST.AI Workload Autoscaler configuration         #
@@ -889,6 +894,45 @@ resource "helm_release" "castai_kvisor_self_managed" {
   }
 
   depends_on = [helm_release.castai_kvisor]
+}
+
+resource "helm_release" "castai_pod_mutator_self_managed" {
+  count = var.install_pod_mutator && var.self_managed ? 1 : 0
+
+  name             = "castai-pod-mutator"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-mutator"
+  namespace        = "castai-agent"
+  create_namespace = false
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.pod_mutator_version
+
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  set {
+    name  = "castai.organizationID"
+    value = var.organization_id
+  }
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
