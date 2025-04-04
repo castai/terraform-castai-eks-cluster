@@ -283,7 +283,7 @@ variable "pod_mutator_version" {
 }
 
 variable "organization_id" {
-  description = "CAST AI Organization ID"
+  description = "DEPRECATED (required only for pod mutator v0.0.25 and older): CAST AI Organization ID"
   type        = string
   default     = ""
 }

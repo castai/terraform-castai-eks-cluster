@@ -366,9 +366,12 @@ resource "helm_release" "castai_pod_mutator" {
     value = castai_eks_cluster.my_castai_cluster.cluster_token
   }
 
-  set {
-    name  = "castai.organizationID"
-    value = var.organization_id
+  dynamic "set" {
+    for_each = var.organization_id != "" ? [var.organization_id] : []
+    content {
+      name  = "castai.organizationID"
+      value = set.value
+    }
   }
 
   set {
@@ -922,9 +925,12 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
     value = castai_eks_cluster.my_castai_cluster.cluster_token
   }
 
-  set {
-    name  = "castai.organizationID"
-    value = var.organization_id
+  dynamic "set" {
+    for_each = var.organization_id != "" ? [var.organization_id] : []
+    content {
+      name  = "castai.organizationID"
+      value = set.value
+    }
   }
 
   set {
