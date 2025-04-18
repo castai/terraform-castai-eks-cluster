@@ -153,8 +153,8 @@ resource "castai_node_configuration_default" "this" {
 resource "castai_workload_scaling_policy" "this" {
   for_each = { for k, v in var.workload_scaling_policies : k => v }
 
-  name              = try(each.value.name, each.key)
-  cluster_id        = castai_eks_cluster.my_castai_cluster.id
+  name       = try(each.value.name, each.key)
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
 
   apply_type        = try(each.value.apply_type, "DEFERRED")
   management_option = try(each.value.management_option, "READ_ONLY")
@@ -605,7 +605,7 @@ resource "helm_release" "castai_evictor_self_managed" {
     for_each = try(var.autoscaler_settings.node_downscaler.evictor.enabled, null) == false ? [0] : []
 
     content {
-      name = "replicaCount"
+      name  = "replicaCount"
       value = set.value
     }
   }
@@ -724,7 +724,7 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
     for_each = try(var.autoscaler_settings.unschedulable_pods.pod_pinner.enabled, null) == false ? [0] : []
 
     content {
-      name = "replicaCount"
+      name  = "replicaCount"
       value = set.value
     }
   }
@@ -819,7 +819,7 @@ resource "helm_release" "castai_kvisor" {
 
   values  = var.kvisor_values
   version = var.kvisor_version
-  wait = var.kvisor_wait
+  wait    = var.kvisor_wait
 
   lifecycle {
     ignore_changes = [version]
@@ -837,7 +837,7 @@ resource "helm_release" "castai_kvisor" {
 
   set {
     name  = "castai.grpcAddr"
-    value = var.api_grpc_addr
+    value = var.kvisor_grpc_addr
   }
 
   dynamic "set" {
@@ -866,7 +866,7 @@ resource "helm_release" "castai_kvisor_self_managed" {
 
   values  = var.kvisor_values
   version = var.kvisor_version
-  wait = var.kvisor_wait
+  wait    = var.kvisor_wait
 
   set {
     name  = "castai.clusterID"
@@ -880,7 +880,7 @@ resource "helm_release" "castai_kvisor_self_managed" {
 
   set {
     name  = "castai.grpcAddr"
-    value = var.api_grpc_addr
+    value = var.kvisor_grpc_addr
   }
 
   dynamic "set" {
