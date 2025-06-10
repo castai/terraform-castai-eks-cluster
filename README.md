@@ -94,6 +94,25 @@ module "castai-eks-cluster" {
         is_gpu_only              = false
         architectures            = ["amd64"]
       }
+      gpu = {
+        default_shared_clients_per_gpu = 9
+        enable_time_sharing            = true
+
+        sharing_configuration = [
+          {
+            gpu_name = "A100"
+            shared_clients_per_gpu = 11
+          },
+          {
+            gpu_name = "L4"
+            shared_clients_per_gpu = 5
+          },
+          {
+            gpu_name = "T4"
+            shared_clients_per_gpu = 3
+          }
+        ]
+      }
     }
   }
 
