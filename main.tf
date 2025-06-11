@@ -132,6 +132,33 @@ resource "castai_node_template" "this" {
           on_demand         = try(custom_priority.value.on_demand, false)
         }
       }
+
+      dynamic "resource_limits" {
+        for_each = [for resource_limits in flatten([lookup(constraints.value, "resource_limits", [])]) : resource_limits if resource_limits != null]
+
+        content {
+          cpu_limit_enabled   = try(resource_limits.value.cpu_limit_enabled, false)
+          cpu_limit_max_cores = try(resource_limits.value.cpu_limit_max_cores, 0)
+        }
+      }
+    }
+  }
+
+  dynamic "gpu" {
+    for_each = [for gpu in flatten([lookup(each.value, "gpu", [])]) : gpu if gpu != null]
+
+    content {
+      enable_time_sharing             = try(gpu.value.enable_time_sharing, null)
+      default_shared_clients_per_gpu  = try(gpu.value.default_shared_clients_per_gpu, null)
+
+      dynamic "sharing_configuration" {
+        for_each = [for sharing_configuration in flatten([lookup(gpu.value, "sharing_configuration", [])]) : sharing_configuration if sharing_configuration != null]
+
+        content {
+          gpu_name     = try(sharing_configuration.value.gpu_name, null)
+          shared_clients_per_gpu     = try(sharing_configuration.value.shared_clients_per_gpu, null)
+        }
+      }
     }
   }
   depends_on = [castai_autoscaler.castai_autoscaler_policies]
@@ -331,6 +358,48 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 
+# Helm Release for CAST AI Pod Mutator
+resource "helm_release" "castai_pod_mutator" {
+  count = var.install_pod_mutator && !var.self_managed ? 1 : 0
+
+  name             = "castai-pod-mutator"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-mutator"
+  namespace        = "castai-agent"
+  create_namespace = false
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.pod_mutator_version
+
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  dynamic "set" {
+    for_each = var.organization_id != "" ? [var.organization_id] : []
+    content {
+      name  = "castai.organizationID"
+      value = set.value
+    }
+  }
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
+}
 #---------------------------------------------------#
 # CAST.AI Workload Autoscaler configuration         #
 #---------------------------------------------------#
@@ -546,6 +615,20 @@ resource "helm_release" "castai_evictor_self_managed" {
     value = "false"
   }
 
+  set {
+    name  = "managedByCASTAI"
+    value = "false"
+  }
+
+  dynamic "set" {
+    for_each = try(var.autoscaler_settings.node_downscaler.evictor.enabled, null) == false ? [0] : []
+
+    content {
+      name  = "replicaCount"
+      value = set.value
+    }
+  }
+
   depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
 
   dynamic "set" {
@@ -649,6 +732,20 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
   set {
     name  = "castai.clusterID"
     value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  set {
+    name  = "managedByCASTAI"
+    value = "false"
+  }
+
+  dynamic "set" {
+    for_each = try(var.autoscaler_settings.unschedulable_pods.pod_pinner.enabled, null) == false ? [0] : []
+
+    content {
+      name  = "replicaCount"
+      value = set.value
+    }
   }
 
   dynamic "set" {
@@ -759,7 +856,7 @@ resource "helm_release" "castai_kvisor" {
 
   set {
     name  = "castai.grpcAddr"
-    value = var.api_grpc_addr
+    value = var.kvisor_grpc_addr
   }
 
   dynamic "set" {
@@ -802,7 +899,7 @@ resource "helm_release" "castai_kvisor_self_managed" {
 
   set {
     name  = "castai.grpcAddr"
-    value = var.api_grpc_addr
+    value = var.kvisor_grpc_addr
   }
 
   dynamic "set" {
@@ -819,6 +916,48 @@ resource "helm_release" "castai_kvisor_self_managed" {
   }
 
   depends_on = [helm_release.castai_kvisor]
+}
+
+resource "helm_release" "castai_pod_mutator_self_managed" {
+  count = var.install_pod_mutator && var.self_managed ? 1 : 0
+
+  name             = "castai-pod-mutator"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-mutator"
+  namespace        = "castai-agent"
+  create_namespace = false
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.pod_mutator_version
+
+  dynamic "set" {
+    for_each = var.api_url != "" ? [var.api_url] : []
+    content {
+      name  = "castai.apiURL"
+      value = var.api_url
+    }
+  }
+
+  set_sensitive {
+    name  = "castai.apiKey"
+    value = castai_eks_cluster.my_castai_cluster.cluster_token
+  }
+
+  dynamic "set" {
+    for_each = var.organization_id != "" ? [var.organization_id] : []
+    content {
+      name  = "castai.organizationID"
+      value = set.value
+    }
+  }
+
+  set {
+    name  = "castai.clusterID"
+    value = castai_eks_cluster.my_castai_cluster.id
+  }
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
