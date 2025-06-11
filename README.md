@@ -498,9 +498,9 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | 7.21.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.16.1 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.3 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 7.54.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.17.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
 
 ## Modules
 
