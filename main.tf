@@ -39,6 +39,7 @@ resource "castai_node_configuration" "this" {
     max_pods_per_node_formula = try(each.value.max_pods_per_node_formula, null)
     ips_per_prefix            = try(each.value.ips_per_prefix, null)
     eks_image_family          = try(each.value.eks_image_family, null)
+    node_group_arn            = try(each.value.node_group_arn, null)
 
     dynamic "target_group" {
       for_each = try(each.value.target_group, {})

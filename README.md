@@ -5,8 +5,7 @@
 Terraform module for connecting an AWS EKS cluster to CAST AI
 ==================
 
-
-Website: https://www.cast.ai
+Website: <https://www.cast.ai>
 
 Requirements
 ------------
@@ -167,7 +166,9 @@ module "castai-eks-cluster" {
 
 Migrating from 2.x.x to 3.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -184,7 +185,9 @@ module "castai-eks-cluster" {
   }
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -212,7 +215,9 @@ module "castai-eks-cluster" {
 
 Migrating from 5.x.x to 6.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -257,7 +262,9 @@ module "castai-eks-cluster" {
   EOT
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -307,13 +314,15 @@ module "castai-eks-cluster" {
 }
 
 ```
+
 Migrating from 6.x.x to 7.x.x
 ---------------------------
 
 Version 7.x.x changes:
-* Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
+- Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -330,6 +339,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -343,12 +353,15 @@ module "castai-eks-cluster" {
   }
 }
 ```
+
 Migrating from 7.x.x to 8.x.x
 ---------------------------
+
 Version 8.x.x changed:
-* Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
+- Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -363,6 +376,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -380,9 +394,10 @@ Migrating from 9.x.x to 9.3.x
 ---------------------------
 
 Version 9.3.x changed:
-* Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
+- Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
 
 Old configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_policies_json = <<-EOT
@@ -419,6 +434,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_settings = {
@@ -482,9 +498,9 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | ~> 7.36 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 7.54.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.17.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
 
 ## Modules
 
