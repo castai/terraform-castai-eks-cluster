@@ -5,8 +5,7 @@
 Terraform module for connecting an AWS EKS cluster to CAST AI
 ==================
 
-
-Website: https://www.cast.ai
+Website: <https://www.cast.ai>
 
 Requirements
 ------------
@@ -167,7 +166,9 @@ module "castai-eks-cluster" {
 
 Migrating from 2.x.x to 3.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -184,7 +185,9 @@ module "castai-eks-cluster" {
   }
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -212,7 +215,9 @@ module "castai-eks-cluster" {
 
 Migrating from 5.x.x to 6.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -257,7 +262,9 @@ module "castai-eks-cluster" {
   EOT
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -307,13 +314,15 @@ module "castai-eks-cluster" {
 }
 
 ```
+
 Migrating from 6.x.x to 7.x.x
 ---------------------------
 
 Version 7.x.x changes:
-* Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
+- Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -330,6 +339,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -343,12 +353,15 @@ module "castai-eks-cluster" {
   }
 }
 ```
+
 Migrating from 7.x.x to 8.x.x
 ---------------------------
+
 Version 8.x.x changed:
-* Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
+- Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -363,6 +376,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -380,9 +394,10 @@ Migrating from 9.x.x to 9.3.x
 ---------------------------
 
 Version 9.3.x changed:
-* Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
+- Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
 
 Old configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_policies_json = <<-EOT
@@ -419,6 +434,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_settings = {
@@ -482,9 +498,9 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | 7.21.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.16.1 |
-| <a name="provider_null"></a> [null](#provider\_null) | 3.2.3 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | ~> 7.36 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
@@ -549,13 +565,13 @@ No modules.
 | <a name="input_evictor_values"></a> [evictor\_values](#input\_evictor\_values) | List of YAML formatted string with evictor values | `list(string)` | `[]` | no |
 | <a name="input_evictor_version"></a> [evictor\_version](#input\_evictor\_version) | Version of castai-evictor chart. Default latest | `string` | `null` | no |
 | <a name="input_grpc_url"></a> [grpc\_url](#input\_grpc\_url) | gRPC endpoint used by pod-pinner | `string` | `"grpc.cast.ai:443"` | no |
-| <a name="input_install_egressd"></a> [install\_egressd](#input\_install\_egressd) | Optional flag for installation of Egressd (Network cost monitoring) (https://docs.cast.ai/docs/network-cost) | `bool` | `false` | no |
+| <a name="input_install_egressd"></a> [install\_egressd](#input\_install\_egressd) | Optional flag for installation of Egressd (Network cost monitoring) (<https://docs.cast.ai/docs/network-cost>) | `bool` | `false` | no |
 | <a name="input_install_pod_mutator"></a> [install\_pod\_mutator](#input\_install\_pod\_mutator) | Optional flag for installation of pod mutator | `bool` | `false` | no |
-| <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent) | Optional flag for installation of security agent (Kvisor - https://docs.cast.ai/docs/kvisor) | `bool` | `false` | no |
-| <a name="input_install_workload_autoscaler"></a> [install\_workload\_autoscaler](#input\_install\_workload\_autoscaler) | Optional flag for installation of workload autoscaler (https://docs.cast.ai/docs/workload-autoscaling-configuration) | `bool` | `false` | no |
-| <a name="input_kvisor_controller_extra_args"></a> [kvisor\_controller\_extra\_args](#input\_kvisor\_controller\_extra\_args) | ⚠️ DEPRECATED: use kvisor\_values instead (see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf ). Extra arguments for the kvisor controller. Optionally enable kvisor to lint Kubernetes YAML manifests, scan workload images and check if workloads pass CIS Kubernetes Benchmarks as well as NSA, WASP and PCI recommendations. | `map(string)` | <pre>{<br/>  "image-scan-enabled": "true",<br/>  "kube-bench-enabled": "true",<br/>  "kube-linter-enabled": "true"<br/>}</pre> | no |
+| <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent) | Optional flag for installation of security agent (Kvisor - <https://docs.cast.ai/docs/kvisor>) | `bool` | `false` | no |
+| <a name="input_install_workload_autoscaler"></a> [install\_workload\_autoscaler](#input\_install\_workload\_autoscaler) | Optional flag for installation of workload autoscaler (<https://docs.cast.ai/docs/workload-autoscaling-configuration>) | `bool` | `false` | no |
+| <a name="input_kvisor_controller_extra_args"></a> [kvisor\_controller\_extra\_args](#input\_kvisor\_controller\_extra\_args) | ⚠️ DEPRECATED: use kvisor\_values instead (see example: <https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf> ). Extra arguments for the kvisor controller. Optionally enable kvisor to lint Kubernetes YAML manifests, scan workload images and check if workloads pass CIS Kubernetes Benchmarks as well as NSA, WASP and PCI recommendations. | `map(string)` | <pre>{<br/>  "image-scan-enabled": "true",<br/>  "kube-bench-enabled": "true",<br/>  "kube-linter-enabled": "true"<br/>}</pre> | no |
 | <a name="input_kvisor_grpc_addr"></a> [kvisor\_grpc\_addr](#input\_kvisor\_grpc\_addr) | CAST AI Kvisor optimized GRPC API address | `string` | `"kvisor.prod-master.cast.ai:443"` | no |
-| <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values) | List of YAML formatted string with kvisor values, see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf | `list(string)` | `[]` | no |
+| <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values) | List of YAML formatted string with kvisor values, see example: <https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf> | `list(string)` | `[]` | no |
 | <a name="input_kvisor_version"></a> [kvisor\_version](#input\_kvisor\_version) | Version of kvisor chart. Default latest | `string` | `null` | no |
 | <a name="input_kvisor_wait"></a> [kvisor\_wait](#input\_kvisor\_wait) | Wait for kvisor chart to finish release | `bool` | `true` | no |
 | <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
