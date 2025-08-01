@@ -21,6 +21,10 @@ locals {
     name  = "castai.grpcURL"
     value = var.grpc_url
   }] : []
+  set_kvisor_grpc_addr = var.kvisor_grpc_addr != "" ? [{
+    name  = "castai.grpcAddr"
+    value = var.kvisor_grpc_addr
+  }] : []
   set_pod_labels = [for k, v in var.castai_components_labels : {
     name  = "podLabels.${k}"
     value = v

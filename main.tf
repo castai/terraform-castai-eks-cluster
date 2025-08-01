@@ -684,7 +684,7 @@ resource "helm_release" "castai_kvisor" {
       },
     ],
     local.set_cluster_id,
-    local.set_grpc_url,
+    local.set_kvisor_grpc_addr,
     [for k, v in var.kvisor_controller_extra_args : {
       name  = "controller.extraArgs.${k}"
       value = v
@@ -717,7 +717,7 @@ resource "helm_release" "castai_kvisor_self_managed" {
       },
     ],
     local.set_cluster_id,
-    local.set_grpc_url,
+    local.set_kvisor_grpc_addr,
     [for k, v in var.kvisor_controller_extra_args : {
       name  = "controller.extraArgs.${k}"
       value = v
