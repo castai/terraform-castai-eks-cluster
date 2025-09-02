@@ -754,6 +754,33 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
 
+resource "helm_release" "castai_live" {
+  count = var.install_live && var.self_managed ? 1 : 0
+
+  name             = "castai-pod-mutator"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-mutator"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.live_version
+  values  = var.live_values
+
+  set = concat(
+    {
+      name  = "castai-aws-vpc-cni.enabled"
+      value = "true"
+    },
+    local.set_cluster_id
+    local.set_apiurl,
+    local.set_sensitive_apikey,
+  )
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
+}
+
 resource "castai_autoscaler" "castai_autoscaler_policies" {
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 

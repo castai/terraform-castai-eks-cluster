@@ -270,6 +270,25 @@ variable "egressd_values" {
   default     = []
 }
 
+variable "install_live" {
+  type        = bool
+  default     = true
+  description = "TODO"
+}
+
+variable "live_version" {
+  description = "TODO"
+  type        = string
+  default     = null
+}
+
+variable "live_values" {
+  description = "TODO"
+  type        = list(string)
+  default     = []
+}
+
+
 variable "self_managed" {
   type        = bool
   default     = false
