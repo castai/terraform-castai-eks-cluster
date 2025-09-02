@@ -273,21 +273,26 @@ variable "egressd_values" {
 variable "install_live" {
   type        = bool
   default     = true
-  description = "TODO"
+  description = "Optional flag for installation of CAST AI Live (https://docs.cast.ai/docs/clm-getting-started). Default is true"
+}
+
+variable "install_live_cni" {
+  type        = bool
+  default     = true
+  description = "Optional flag for installing CAST AI aws-vpc-cni fork for CAST AI Live. Default is true"
 }
 
 variable "live_version" {
-  description = "TODO"
+  description = "Version of castai-live helm chart. Default latest"
   type        = string
   default     = null
 }
 
 variable "live_values" {
-  description = "TODO"
+  description = "List of YAML formatted string with castai-live values"
   type        = list(string)
   default     = []
 }
-
 
 variable "self_managed" {
   type        = bool

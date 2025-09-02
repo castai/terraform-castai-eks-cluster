@@ -757,9 +757,9 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
 resource "helm_release" "castai_live" {
   count = var.install_live && var.self_managed ? 1 : 0
 
-  name             = "castai-pod-mutator"
+  name             = "castai-live"
   repository       = "https://castai.github.io/helm-charts"
-  chart            = "castai-pod-mutator"
+  chart            = "castai-live"
   namespace        = "castai-agent"
   create_namespace = true
   cleanup_on_fail  = true
@@ -769,11 +769,8 @@ resource "helm_release" "castai_live" {
   values  = var.live_values
 
   set = concat(
-    {
-      name  = "castai-aws-vpc-cni.enabled"
-      value = "true"
-    },
-    local.set_cluster_id
+    var.install_live_cni ? [{ name = "castai-aws-vpc-cni.enabled", value = "true" }] : [],
+    local.set_cluster_id,
     local.set_apiurl,
     local.set_sensitive_apikey,
   )
