@@ -61,6 +61,7 @@ resource "castai_node_template" "this" {
   is_enabled       = try(each.value.is_enabled, true)
   configuration_id = try(each.value.configuration_name, null) != null ? castai_node_configuration.this[each.value.configuration_name].id : try(each.value.configuration_id, null)
   should_taint     = try(each.value.should_taint, true)
+  clm_enabled      = try(each.value.clm_enabled, false)
 
   custom_labels = try(each.value.custom_labels, {})
 
