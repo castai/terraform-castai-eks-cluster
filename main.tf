@@ -61,6 +61,7 @@ resource "castai_node_template" "this" {
   is_enabled       = try(each.value.is_enabled, true)
   configuration_id = try(each.value.configuration_name, null) != null ? castai_node_configuration.this[each.value.configuration_name].id : try(each.value.configuration_id, null)
   should_taint     = try(each.value.should_taint, true)
+  clm_enabled      = try(each.value.clm_enabled, false)
 
   custom_labels = try(each.value.custom_labels, {})
 
@@ -752,6 +753,58 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
   set_sensitive = local.set_sensitive_apikey
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
+}
+
+resource "helm_release" "castai_live" {
+  count = var.install_live && var.self_managed ? 0 : 1
+
+  name             = "castai-live"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-live"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  lifecycle {
+    ignore_changes = [version]
+  }
+
+  version = var.live_version
+  values  = var.live_values
+
+  set = concat(
+    var.install_live_cni ? [{ name = "castai-aws-vpc-cni.enabled", value = "true" }] : [],
+    local.set_cluster_id,
+    local.set_apiurl,
+    local.set_sensitive_apikey,
+  )
+
+  depends_on = [helm_release.castai_agent]
+}
+
+resource "helm_release" "castai_live_self_managed" {
+  count = var.install_live && var.self_managed ? 1 : 0
+
+  name             = "castai-live"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-live"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  wait             = true
+
+  version = var.live_version
+  values  = var.live_values
+
+  set = concat(
+    var.install_live_cni ? [{ name = "castai-aws-vpc-cni.enabled", value = "true" }] : [],
+    local.set_cluster_id,
+    local.set_apiurl,
+    local.set_sensitive_apikey,
+  )
+
+  depends_on = [helm_release.castai_agent]
 }
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
