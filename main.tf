@@ -756,7 +756,7 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
 }
 
 resource "helm_release" "castai_live" {
-  count = var.install_live && var.self_managed ? 0 : 1
+  count = var.install_live && var.self_managed ? 1 : 0
 
   name             = "castai-live"
   repository       = "https://castai.github.io/helm-charts"
@@ -784,7 +784,7 @@ resource "helm_release" "castai_live" {
 }
 
 resource "helm_release" "castai_live_self_managed" {
-  count = var.install_live && var.self_managed ? 1 : 0
+  count = var.install_live && !var.self_managed ? 1 : 0
 
   name             = "castai-live"
   repository       = "https://castai.github.io/helm-charts"
