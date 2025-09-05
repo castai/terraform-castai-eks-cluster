@@ -5,8 +5,7 @@
 Terraform module for connecting an AWS EKS cluster to CAST AI
 ==================
 
-
-Website: https://www.cast.ai
+Website: <https://www.cast.ai>
 
 Requirements
 ------------
@@ -29,7 +28,6 @@ module "castai-eks-cluster" {
   aws_cluster_name   = var.cluster_id
 
   aws_assume_role_arn      = module.castai-eks-role-iam.role_arn
-  autoscaler_policies_json = var.autoscaler_policies_json
 
   // Default node configuration will be used for all CAST provisioned nodes unless specific configuration is requested.
   default_node_configuration = module.cast-eks-cluster.castai_node_configurations["default"]
@@ -95,6 +93,25 @@ module "castai-eks-cluster" {
         is_gpu_only              = false
         architectures            = ["amd64"]
       }
+      gpu = {
+        default_shared_clients_per_gpu = 9
+        enable_time_sharing            = true
+
+        sharing_configuration = [
+          {
+            gpu_name = "A100"
+            shared_clients_per_gpu = 11
+          },
+          {
+            gpu_name = "L4"
+            shared_clients_per_gpu = 5
+          },
+          {
+            gpu_name = "T4"
+            shared_clients_per_gpu = 3
+          }
+        ]
+      }
     }
   }
 
@@ -149,7 +166,9 @@ module "castai-eks-cluster" {
 
 Migrating from 2.x.x to 3.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -166,7 +185,9 @@ module "castai-eks-cluster" {
   }
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -194,7 +215,9 @@ module "castai-eks-cluster" {
 
 Migrating from 5.x.x to 6.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -239,7 +262,9 @@ module "castai-eks-cluster" {
   EOT
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -289,13 +314,15 @@ module "castai-eks-cluster" {
 }
 
 ```
+
 Migrating from 6.x.x to 7.x.x
 ---------------------------
 
 Version 7.x.x changes:
-* Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
+- Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -312,6 +339,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -325,12 +353,15 @@ module "castai-eks-cluster" {
   }
 }
 ```
+
 Migrating from 7.x.x to 8.x.x
 ---------------------------
+
 Version 8.x.x changed:
-* Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
+- Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -345,6 +376,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -362,9 +394,10 @@ Migrating from 9.x.x to 9.3.x
 ---------------------------
 
 Version 9.3.x changed:
-* Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
+- Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
 
 Old configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_policies_json = <<-EOT
@@ -401,6 +434,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_settings = {
@@ -457,16 +491,16 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.11 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.36 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | ~> 7.11 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 7.54.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.17.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
 
 ## Modules
 
@@ -492,6 +526,8 @@ No modules.
 | [helm_release.castai_evictor_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_kvisor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_kvisor_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_pod_mutator](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_pod_mutator_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_spot_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -508,7 +544,6 @@ No modules.
 | <a name="input_agent_aws_secret_access_key"></a> [agent\_aws\_secret\_access\_key](#input\_agent\_aws\_secret\_access\_key) | AWS access key secret for CAST AI agent to fetch instance details. | `string` | `""` | no |
 | <a name="input_agent_values"></a> [agent\_values](#input\_agent\_values) | List of YAML formatted string with agent values | `list(string)` | `[]` | no |
 | <a name="input_agent_version"></a> [agent\_version](#input\_agent\_version) | Version of castai-agent helm chart. Default latest | `string` | `null` | no |
-| <a name="input_api_grpc_addr"></a> [api\_grpc\_addr](#input\_api\_grpc\_addr) | CAST AI GRPC API address | `string` | `"api-grpc.cast.ai:443"` | no |
 | <a name="input_api_url"></a> [api\_url](#input\_api\_url) | URL of alternative CAST AI API to be used during development or testing | `string` | `"https://api.cast.ai"` | no |
 | <a name="input_autoscaler_policies_json"></a> [autoscaler\_policies\_json](#input\_autoscaler\_policies\_json) | Optional json object to override CAST AI cluster autoscaler policies. Deprecated, use `autoscaler_settings` instead. | `string` | `null` | no |
 | <a name="input_autoscaler_settings"></a> [autoscaler\_settings](#input\_autoscaler\_settings) | Optional Autoscaler policy definitions to override current autoscaler settings | `any` | `null` | no |
@@ -531,14 +566,18 @@ No modules.
 | <a name="input_evictor_version"></a> [evictor\_version](#input\_evictor\_version) | Version of castai-evictor chart. Default latest | `string` | `null` | no |
 | <a name="input_grpc_url"></a> [grpc\_url](#input\_grpc\_url) | gRPC endpoint used by pod-pinner | `string` | `"grpc.cast.ai:443"` | no |
 | <a name="input_install_egressd"></a> [install\_egressd](#input\_install\_egressd) | Optional flag for installation of Egressd (Network cost monitoring) (https://docs.cast.ai/docs/network-cost) | `bool` | `false` | no |
-| <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent) | Optional flag for installation of security agent (https://docs.cast.ai/product-overview/console/security-insights/) | `bool` | `false` | no |
+| <a name="input_install_pod_mutator"></a> [install\_pod\_mutator](#input\_install\_pod\_mutator) | Optional flag for installation of pod mutator | `bool` | `false` | no |
+| <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent) | Optional flag for installation of security agent (Kvisor - https://docs.cast.ai/docs/kvisor) | `bool` | `false` | no |
 | <a name="input_install_workload_autoscaler"></a> [install\_workload\_autoscaler](#input\_install\_workload\_autoscaler) | Optional flag for installation of workload autoscaler (https://docs.cast.ai/docs/workload-autoscaling-configuration) | `bool` | `false` | no |
-| <a name="input_kvisor_controller_extra_args"></a> [kvisor\_controller\_extra\_args](#input\_kvisor\_controller\_extra\_args) | Extra arguments for the kvisor controller. Optionally enable kvisor to lint Kubernetes YAML manifests, scan workload images and check if workloads pass CIS Kubernetes Benchmarks as well as NSA, WASP and PCI recommendations. | `map(string)` | <pre>{<br/>  "image-scan-enabled": "true",<br/>  "kube-bench-enabled": "true",<br/>  "kube-linter-enabled": "true"<br/>}</pre> | no |
-| <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values) | List of YAML formatted string with kvisor values | `list(string)` | `[]` | no |
+| <a name="input_kvisor_controller_extra_args"></a> [kvisor\_controller\_extra\_args](#input\_kvisor\_controller\_extra\_args) | ⚠️ DEPRECATED: use kvisor\_values instead (see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf ). Extra arguments for the kvisor controller. Optionally enable kvisor to lint Kubernetes YAML manifests, scan workload images and check if workloads pass CIS Kubernetes Benchmarks as well as NSA, WASP and PCI recommendations. | `map(string)` | <pre>{<br/>  "image-scan-enabled": "true",<br/>  "kube-bench-enabled": "true",<br/>  "kube-linter-enabled": "true"<br/>}</pre> | no |
+| <a name="input_kvisor_grpc_addr"></a> [kvisor\_grpc\_addr](#input\_kvisor\_grpc\_addr) | CAST AI Kvisor optimized GRPC API address | `string` | `"kvisor.prod-master.cast.ai:443"` | no |
+| <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values) | List of YAML formatted string with kvisor values, see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf | `list(string)` | `[]` | no |
 | <a name="input_kvisor_version"></a> [kvisor\_version](#input\_kvisor\_version) | Version of kvisor chart. Default latest | `string` | `null` | no |
 | <a name="input_kvisor_wait"></a> [kvisor\_wait](#input\_kvisor\_wait) | Wait for kvisor chart to finish release | `bool` | `true` | no |
 | <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
 | <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates) | Map of node templates to create | `any` | `{}` | no |
+| <a name="input_organization_id"></a> [organization\_id](#input\_organization\_id) | DEPRECATED (required only for pod mutator v0.0.25 and older): CAST AI Organization ID | `string` | `""` | no |
+| <a name="input_pod_mutator_version"></a> [pod\_mutator\_version](#input\_pod\_mutator\_version) | Version of castai-pod-mutator helm chart. Default latest | `string` | `null` | no |
 | <a name="input_pod_pinner_values"></a> [pod\_pinner\_values](#input\_pod\_pinner\_values) | List of YAML formatted string values for agent helm chart | `list(string)` | `[]` | no |
 | <a name="input_pod_pinner_version"></a> [pod\_pinner\_version](#input\_pod\_pinner\_version) | Version of pod-pinner helm chart. Default latest | `string` | `null` | no |
 | <a name="input_self_managed"></a> [self\_managed](#input\_self\_managed) | Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. | `bool` | `false` | no |
