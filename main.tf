@@ -40,6 +40,7 @@ resource "castai_node_configuration" "this" {
     ips_per_prefix            = try(each.value.ips_per_prefix, null)
     eks_image_family          = try(each.value.eks_image_family, null)
     node_group_arn            = try(each.value.node_group_arn, null)
+    threads_per_cpu           = try(each.value.threads_per_cpu, null)
 
     dynamic "target_group" {
       for_each = try(each.value.target_group, {})
