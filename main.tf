@@ -120,11 +120,12 @@ resource "castai_node_template" "this" {
         for_each = [for gpu in flatten([lookup(constraints.value, "gpu", [])]) : gpu if gpu != null]
 
         content {
-          manufacturers = try(gpu.value.manufacturers, [])
-          include_names = try(gpu.value.include_names, [])
-          exclude_names = try(gpu.value.exclude_names, [])
-          min_count     = try(gpu.value.min_count, null)
-          max_count     = try(gpu.value.max_count, null)
+          manufacturers  = try(gpu.value.manufacturers, [])
+          include_names  = try(gpu.value.include_names, [])
+          exclude_names  = try(gpu.value.exclude_names, [])
+          min_count      = try(gpu.value.min_count, null)
+          max_count      = try(gpu.value.max_count, null)
+          fractional_gpus = try(gpu.value.fractional_gpus, null)
         }
       }
 

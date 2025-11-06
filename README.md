@@ -92,6 +92,10 @@ module "castai-eks-cluster" {
         storage_optimized_state = "disabled"
         is_gpu_only              = false
         architectures            = ["amd64"]
+
+        gpu = {
+          fractional_gpus = "enabled"
+        }
       }
       gpu = {
         default_shared_clients_per_gpu = 9
