@@ -330,6 +330,8 @@ resource "castai_workload_scaling_policy" "this" {
       prefer_one_by_one = try(rollout_behavior.value.prefer_one_by_one, null)
     }
   }
+
+  depends_on = [helm_release.castai_workload_autoscaler]
 }
 
 resource "helm_release" "castai_agent" {
