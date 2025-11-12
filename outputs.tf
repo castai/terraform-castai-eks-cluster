@@ -4,6 +4,11 @@ output "cluster_id" {
   sensitive   = true
 }
 
+output "organization_id" {
+  value       = castai_eks_cluster.my_castai_cluster.organization_id
+  description = "CAST.AI organization id of the cluster"
+}
+
 output "castai_node_configurations" {
   description = "Map of node configurations ids by name"
   value = {
