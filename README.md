@@ -125,18 +125,6 @@ module "castai-eks-cluster" {
 
     unschedulable_pods = {
       enabled = true
-
-      headroom = {
-        enabled           = true
-        cpu_percentage    = 10
-        memory_percentage = 10
-      }
-
-      headroom_spot = {
-        enabled           = true
-        cpu_percentage    = 10
-        memory_percentage = 10
-      }
     }
 
     node_downscaler = {
@@ -539,6 +527,330 @@ module "castai-eks-cluster" {
   }
 }
 ```
+
+Migrating from 13.x.x to 14.x.x
+---------------------------
+
+Version 14.x.x removes deprecated fields that were deprecated in CAST.AI provider v7.9.3+. These settings have been moved to `node_templates` and `autoscaler_settings` for better configuration management.
+
+### Removed Fields
+
+#### `autoscaler_policies_json` variable (deprecated since v9.3.x)
+- **Removed**: The entire `autoscaler_policies_json` variable and attribute
+- **Replacement**: Use the structured `autoscaler_settings` block instead
+
+#### Fields removed from `autoscaler_settings.unschedulable_pods`:
+- `headroom` - replaced with low-priority placeholder workloads
+- `headroom_spot` - replaced with low-priority placeholder workloads
+- `node_constraints` - moved to `node_templates.constraints`
+- `custom_instances_enabled` - moved to `node_templates`
+
+#### Entire blocks removed:
+- `spot_instances` - moved to `node_templates.constraints`
+
+### Migration Examples
+
+#### Migrating from `autoscaler_policies_json` to `autoscaler_settings`
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_policies_json = <<-EOT
+    {
+        "enabled": true,
+        "unschedulablePods": {
+            "enabled": true
+        },
+        "nodeDownscaler": {
+            "enabled": true,
+            "emptyNodes": {
+                "enabled": true
+            },
+            "evictor": {
+                "aggressiveMode": false,
+                "cycleInterval": "5m10s",
+                "dryRun": false,
+                "enabled": true,
+                "nodeGracePeriodMinutes": 10,
+                "scopedMode": false
+            }
+        },
+        "clusterLimits": {
+            "cpu": {
+                "maxCores": 20,
+                "minCores": 1
+            },
+            "enabled": true
+        }
+    }
+  EOT
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    enabled = true
+
+    unschedulable_pods = {
+      enabled = true
+    }
+
+    node_downscaler = {
+      enabled = true
+
+      empty_nodes = {
+        enabled = true
+      }
+
+      evictor = {
+        aggressive_mode           = false
+        cycle_interval            = "5m10s"
+        dry_run                   = false
+        enabled                   = true
+        node_grace_period_minutes = 10
+        scoped_mode               = false
+      }
+    }
+
+    cluster_limits = {
+      enabled = true
+
+      cpu = {
+        max_cores = 20
+        min_cores = 1
+      }
+    }
+  }
+}
+```
+
+#### Headroom Configuration
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      headroom = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+      headroom_spot = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+    }
+  }
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      enabled = true
+    }
+  }
+}
+
+# Deploy low-priority placeholder workloads instead
+# See: https://docs.cast.ai/docs/autoscaler-faq#how-can-i-maintain-cluster-headroom
+```
+
+#### Node Constraints Configuration
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      enabled                  = true
+      custom_instances_enabled = true
+      node_constraints = {
+        enabled       = true
+        min_cpu_cores = 2
+        max_cpu_cores = 16
+        min_ram_mib   = 4096
+        max_ram_mib   = 32768
+      }
+    }
+  }
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      enabled = true
+    }
+  }
+
+  # Move constraints to node template
+  node_templates = {
+    default = {
+      configuration_id = module.castai-eks-cluster.castai_node_configurations["default"]
+      is_default       = true
+
+      constraints = {
+        min_cpu    = 2
+        max_cpu    = 16
+        min_memory = 4096
+        max_memory = 32768
+      }
+    }
+  }
+}
+```
+
+#### Spot Instance Configuration
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    spot_instances = {
+      enabled                             = true
+      max_reclaim_rate                    = 10
+      spot_diversity_enabled              = true
+      spot_diversity_price_increase_limit = 20
+
+      spot_backups = {
+        enabled                          = true
+        spot_backup_restore_rate_seconds = 1800
+      }
+
+      spot_interruption_predictions = {
+        enabled                            = true
+        spot_interruption_predictions_type = "aws-rebalance-recommendations"
+      }
+    }
+  }
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  node_templates = {
+    default = {
+      configuration_id = module.castai-eks-cluster.castai_node_configurations["default"]
+      is_default       = true
+
+      constraints = {
+        spot                                          = true
+        use_spot_fallbacks                            = true
+        fallback_restore_rate_seconds                 = 1800
+        enable_spot_diversity                         = true
+        spot_diversity_price_increase_limit_percent   = 20
+        spot_interruption_predictions_enabled         = true
+        spot_interruption_predictions_type            = "aws-rebalance-recommendations"
+      }
+    }
+  }
+}
+```
+
+#### Complete Migration Example
+
+**Before (v13.x.x):**
+
+```hcl
+module "castai-eks-cluster" {
+  source = "castai/eks-cluster/castai"
+
+  autoscaler_settings = {
+    enabled = true
+
+    unschedulable_pods = {
+      enabled                  = true
+      custom_instances_enabled = true
+
+      headroom = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+
+      node_constraints = {
+        min_cpu_cores = 4
+        max_cpu_cores = 32
+      }
+    }
+
+    spot_instances = {
+      enabled = true
+      spot_backups = {
+        enabled = true
+      }
+    }
+  }
+}
+```
+
+**After (v14.x.x):**
+
+```hcl
+module "castai-eks-cluster" {
+  source = "castai/eks-cluster/castai"
+
+  autoscaler_settings = {
+    enabled = true
+
+    unschedulable_pods = {
+      enabled = true
+    }
+  }
+
+  node_templates = {
+    default = {
+      configuration_id = module.castai-eks-cluster.castai_node_configurations["default"]
+      is_default       = true
+
+      constraints = {
+        min_cpu            = 4
+        max_cpu            = 32
+        spot               = true
+        use_spot_fallbacks = true
+      }
+    }
+  }
+}
+
+# For headroom: Deploy low-priority placeholder workloads
+# See: https://docs.cast.ai/docs/autoscaler-faq#how-can-i-maintain-cluster-headroom
+```
+
+### Field Mapping Reference
+
+| Old Field (Removed) | New Field (node_templates.constraints) |
+|---------------------|----------------------------------------|
+| `unschedulable_pods.node_constraints.min_cpu_cores` | `min_cpu` |
+| `unschedulable_pods.node_constraints.max_cpu_cores` | `max_cpu` |
+| `unschedulable_pods.node_constraints.min_ram_mib` | `min_memory` |
+| `unschedulable_pods.node_constraints.max_ram_mib` | `max_memory` |
+| `unschedulable_pods.custom_instances_enabled` | Top-level in node_template |
+| `spot_instances.enabled` | `spot` |
+| `spot_instances.spot_backups.enabled` | `use_spot_fallbacks` |
+| `spot_instances.spot_backups.spot_backup_restore_rate_seconds` | `fallback_restore_rate_seconds` |
+| `spot_instances.spot_diversity_enabled` | `enable_spot_diversity` |
+| `spot_instances.spot_diversity_price_increase_limit` | `spot_diversity_price_increase_limit_percent` |
+| `spot_instances.spot_interruption_predictions.enabled` | `spot_interruption_predictions_enabled` |
+| `spot_instances.spot_interruption_predictions.spot_interruption_predictions_type` | `spot_interruption_predictions_type` |
 
 # Examples
 
