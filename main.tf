@@ -1,3 +1,10 @@
+check "omni_reserved_cidrs_required" {
+  assert {
+    condition     = !var.install_omni || (var.omni_reserved_cidrs != null && length(var.omni_reserved_cidrs) > 0)
+    error_message = "'omni_reserved_cidrs' must be provided when 'install_omni' is true"
+  }
+}
+
 resource "castai_eks_cluster" "my_castai_cluster" {
   account_id = var.aws_account_id
   region     = var.aws_cluster_region
