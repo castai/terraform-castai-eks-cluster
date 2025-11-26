@@ -297,7 +297,7 @@ variable "live_values" {
 variable "self_managed" {
   type        = bool
   default     = false
-  description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system."
+  description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. WARNING: changing this after the module was created is not supported."
 }
 
 variable "pod_mutator_version" {
