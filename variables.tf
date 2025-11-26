@@ -329,3 +329,15 @@ variable "ai_optimizer_values" {
   type        = list(string)
   default     = []
 }
+
+variable "install_omni" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of Omni product"
+}
+
+variable "omni_reserved_cidrs" {
+  type        = list(string)
+  default     = null
+  description = "List of subnet CIDR blocks to pass to Omni"
+}

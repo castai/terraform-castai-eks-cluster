@@ -1149,3 +1149,27 @@ resource "helm_release" "castai_ai_optimizer_proxy_self_managed" {
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
+
+data "aws_eks_cluster" "this" {
+  name = var.aws_cluster_name
+}
+
+module "castai_omni_cluster" {
+  count  = var.install_omni && !var.self_managed ? 1 : 0
+  source = "github.com/castai/terraform-castai-omni-cluster"
+
+  k8s_provider    = "eks"
+  api_url         = var.api_url
+  api_token       = var.castai_api_token
+  organization_id = castai_eks_cluster.my_castai_cluster.organization_id
+  cluster_id      = castai_eks_cluster.my_castai_cluster.id
+  cluster_name    = var.aws_cluster_name
+  cluster_region  = var.aws_cluster_region
+
+  api_server_address    = data.aws_eks_cluster.this.endpoint
+  pod_cidr              = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
+  service_cidr          = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
+  reserved_subnet_cidrs = var.omni_reserved_cidrs
+
+  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
+}
