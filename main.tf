@@ -1,10 +1,3 @@
-check "omni_reserved_cidrs_required" {
-  assert {
-    condition     = !var.install_omni || (var.omni_reserved_cidrs != null && length(var.omni_reserved_cidrs) > 0)
-    error_message = "'omni_reserved_cidrs' must be provided when 'install_omni' is true"
-  }
-}
-
 resource "castai_eks_cluster" "my_castai_cluster" {
   account_id = var.aws_account_id
   region     = var.aws_cluster_region
@@ -1163,7 +1156,7 @@ data "aws_eks_cluster" "this" {
 
 module "castai_omni_cluster" {
   count  = var.install_omni && !var.self_managed ? 1 : 0
-  source = "github.com/castai/terraform-castai-omni-cluster"
+  source = "../terraform-castai-omni-cluster"
 
   k8s_provider    = "eks"
   api_url         = var.api_url
@@ -1173,10 +1166,9 @@ module "castai_omni_cluster" {
   cluster_name    = var.aws_cluster_name
   cluster_region  = var.aws_cluster_region
 
-  api_server_address    = data.aws_eks_cluster.this.endpoint
-  pod_cidr              = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
-  service_cidr          = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
-  reserved_subnet_cidrs = var.omni_reserved_cidrs
+  api_server_address = data.aws_eks_cluster.this.endpoint
+  pod_cidr           = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
+  service_cidr       = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }

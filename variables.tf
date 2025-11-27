@@ -335,9 +335,3 @@ variable "install_omni" {
   default     = false
   description = "Optional flag for installation of Omni product"
 }
-
-variable "omni_reserved_cidrs" {
-  type        = list(string)
-  default     = null
-  description = "List of subnet CIDR blocks to pass to Omni"
-}
