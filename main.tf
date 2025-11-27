@@ -1154,6 +1154,11 @@ data "aws_eks_cluster" "this" {
   name = var.aws_cluster_name
 }
 
+data "aws_vpc" "eks_vpc" {
+  id     = data.aws_eks_cluster.this.vpc_config[0].vpc_id
+  region = var.aws_cluster_region
+}
+
 module "castai_omni_cluster" {
   count  = var.install_omni && !var.self_managed ? 1 : 0
   source = "github.com/castai/terraform-castai-omni-cluster"
@@ -1167,7 +1172,7 @@ module "castai_omni_cluster" {
   cluster_region  = var.aws_cluster_region
 
   api_server_address = data.aws_eks_cluster.this.endpoint
-  pod_cidr           = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
+  pod_cidr           = data.aws_vpc.eks_vpc.cidr_block
   service_cidr       = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
