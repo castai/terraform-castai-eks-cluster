@@ -1156,7 +1156,7 @@ data "aws_eks_cluster" "this" {
 
 module "castai_omni_cluster" {
   count  = var.install_omni && !var.self_managed ? 1 : 0
-  source = "../terraform-castai-omni-cluster"
+  source = "github.com/castai/terraform-castai-omni-cluster"
 
   k8s_provider    = "eks"
   api_url         = var.api_url
