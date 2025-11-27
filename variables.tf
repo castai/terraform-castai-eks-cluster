@@ -329,3 +329,9 @@ variable "ai_optimizer_values" {
   type        = list(string)
   default     = []
 }
+
+variable "install_omni" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of Omni product"
+}
