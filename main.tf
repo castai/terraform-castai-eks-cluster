@@ -1087,11 +1087,15 @@ resource "helm_release" "castai_ai_optimizer_proxy_self_managed" {
 }
 
 data "aws_eks_cluster" "this" {
+  count = var.install_omni && !var.self_managed ? 1 : 0
+
   name = var.aws_cluster_name
 }
 
 data "aws_vpc" "eks_vpc" {
-  id     = data.aws_eks_cluster.this.vpc_config[0].vpc_id
+  count = var.install_omni && !var.self_managed ? 1 : 0
+
+  id     = data.aws_eks_cluster.this[0].vpc_config[0].vpc_id
   region = var.aws_cluster_region
 }
 
@@ -1108,9 +1112,9 @@ module "castai_omni_cluster" {
   cluster_name    = var.aws_cluster_name
   cluster_region  = var.aws_cluster_region
 
-  api_server_address = data.aws_eks_cluster.this.endpoint
-  pod_cidr           = data.aws_vpc.eks_vpc.cidr_block
-  service_cidr       = data.aws_eks_cluster.this.kubernetes_network_config[0].service_ipv4_cidr
+  api_server_address = data.aws_eks_cluster.this[0].endpoint
+  pod_cidr           = data.aws_vpc.eks_vpc[0].cidr_block
+  service_cidr       = data.aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
