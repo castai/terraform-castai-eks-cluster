@@ -408,8 +408,16 @@ resource "helm_release" "castai_cluster_controller" {
     local.set_pod_labels,
   )
 
-  set_sensitive = local.set_sensitive_apikey
-
+  set_sensitive = concat(
+    [
+      {
+        name  = "apiKey"
+        value = castai_eks_cluster.my_castai_cluster.cluster_token
+      }
+    ],
+    local.set_sensitive_apikey,
+  )
+  
   depends_on = [helm_release.castai_agent]
 
   lifecycle {
@@ -834,9 +842,15 @@ resource "helm_release" "castai_kvisor" {
       value = v
     }]
   )
-
-  set_sensitive = local.set_sensitive_apikey
-
+  set_sensitive = concat(
+    [
+      {
+        name  = "apiKey"
+        value = castai_eks_cluster.my_castai_cluster.cluster_token
+      }
+    ],
+    local.set_sensitive_apikey,
+  )
 }
 
 resource "helm_release" "castai_kvisor_self_managed" {
