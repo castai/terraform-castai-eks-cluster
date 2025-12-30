@@ -300,6 +300,12 @@ variable "pod_mutator_version" {
   default     = null
 }
 
+variable "pod_mutator_values" {
+  description = "List of YAML formatted string values for pod-mutator helm chart"
+  type        = list(string)
+  default     = []
+}
+
 variable "organization_id" {
   description = "DEPRECATED (required only for pod mutator v0.0.25 and older): CAST AI Organization ID"
   type        = string
