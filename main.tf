@@ -372,6 +372,7 @@ resource "helm_release" "castai_agent" {
     }] : [],
     local.set_agent_aws_iam_service_account_role_arn,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = concat(
@@ -406,6 +407,7 @@ resource "helm_release" "castai_cluster_controller" {
     local.set_cluster_id,
     local.set_apiurl,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -435,6 +437,7 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
     local.set_cluster_id,
     local.set_apiurl,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -462,6 +465,7 @@ resource "helm_release" "castai_pod_mutator" {
     local.set_organization_id,
     local.set_apiurl,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -489,16 +493,19 @@ resource "helm_release" "castai_workload_autoscaler" {
   version = var.workload_autoscaler_version
   values  = var.workload_autoscaler_values
 
-  set = [
-    {
-      name  = "castai.apiKeySecretRef"
-      value = "castai-cluster-controller"
-    },
-    {
-      name  = "castai.configMapRef"
-      value = "castai-cluster-controller"
-    },
-  ]
+  set = concat(
+    [
+      {
+        name  = "castai.apiKeySecretRef"
+        value = "castai-cluster-controller"
+      },
+      {
+        name  = "castai.configMapRef"
+        value = "castai-cluster-controller"
+      },
+    ],
+    local.set_components_sets,
+  )
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 
@@ -521,16 +528,19 @@ resource "helm_release" "castai_workload_autoscaler_self_managed" {
   version = var.workload_autoscaler_version
   values  = var.workload_autoscaler_values
 
-  set = [
-    {
-      name  = "castai.apiKeySecretRef"
-      value = "castai-cluster-controller"
-    },
-    {
-      name  = "castai.configMapRef"
-      value = "castai-cluster-controller"
-    },
-  ]
+  set = concat(
+    [
+      {
+        name  = "castai.apiKeySecretRef"
+        value = "castai-cluster-controller"
+      },
+      {
+        name  = "castai.configMapRef"
+        value = "castai-cluster-controller"
+      },
+    ],
+    local.set_components_sets,
+  )
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
@@ -555,6 +565,7 @@ resource "helm_release" "castai_egressd" {
   set = concat(
     local.set_cluster_id,
     local.set_apiurl,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -583,6 +594,7 @@ resource "helm_release" "castai_egressd_self_managed" {
   set = concat(
     local.set_cluster_id,
     local.set_apiurl,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -640,7 +652,8 @@ resource "helm_release" "castai_evictor" {
         value = "false"
       },
     ],
-    local.set_pod_labels
+    local.set_pod_labels,
+    local.set_components_sets,
   )
 
   depends_on = [helm_release.castai_agent]
@@ -681,7 +694,8 @@ resource "helm_release" "castai_evictor_self_managed" {
         value = "0"
       }
     ] : [],
-    local.set_pod_labels
+    local.set_pod_labels,
+    local.set_components_sets,
   )
 
   depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
@@ -698,6 +712,10 @@ resource "helm_release" "castai_evictor_ext" {
 
   version = var.evictor_ext_version
   values  = var.evictor_ext_values
+
+  set = concat(
+    local.set_components_sets,
+  )
 
   depends_on = [helm_release.castai_agent]
 }
@@ -727,6 +745,7 @@ resource "helm_release" "castai_pod_pinner" {
     local.set_apiurl,
     local.set_grpc_url,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -763,6 +782,7 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
     local.set_apiurl,
     local.set_grpc_url,
     local.set_pod_labels,
+    local.set_components_sets,
     try(var.autoscaler_settings.unschedulable_pods.pod_pinner.enabled, null) == false ? [
       {
         name  = "replicaCount"
@@ -802,6 +822,7 @@ resource "helm_release" "castai_spot_handler" {
     local.set_apiurl,
     local.set_cluster_id,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   depends_on = [helm_release.castai_agent]
@@ -834,10 +855,11 @@ resource "helm_release" "castai_kvisor" {
     ],
     local.set_cluster_id,
     local.set_kvisor_grpc_addr,
+    local.set_components_sets,
     [for k, v in var.kvisor_controller_extra_args : {
       name  = "controller.extraArgs.${k}"
       value = v
-    }]
+    }],
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -867,10 +889,11 @@ resource "helm_release" "castai_kvisor_self_managed" {
     ],
     local.set_cluster_id,
     local.set_kvisor_grpc_addr,
+    local.set_components_sets,
     [for k, v in var.kvisor_controller_extra_args : {
       name  = "controller.extraArgs.${k}"
       value = v
-    }]
+    }],
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -897,6 +920,7 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
     local.set_organization_id,
     local.set_apiurl,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -927,6 +951,7 @@ resource "helm_release" "castai_live" {
     local.set_cluster_id,
     local.set_apiurl,
     local.set_sensitive_apikey,
+    local.set_components_sets,
   )
 
   depends_on = [helm_release.castai_agent]
@@ -951,6 +976,7 @@ resource "helm_release" "castai_live_self_managed" {
     local.set_cluster_id,
     local.set_apiurl,
     local.set_sensitive_apikey,
+    local.set_components_sets,
   )
 
   depends_on = [helm_release.castai_agent]
@@ -1056,6 +1082,7 @@ resource "helm_release" "castai_ai_optimizer_proxy" {
     local.set_cluster_id,
     local.set_apiurl,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
@@ -1085,6 +1112,7 @@ resource "helm_release" "castai_ai_optimizer_proxy_self_managed" {
     local.set_cluster_id,
     local.set_apiurl,
     local.set_pod_labels,
+    local.set_components_sets,
   )
 
   set_sensitive = local.set_sensitive_apikey
