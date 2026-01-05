@@ -442,7 +442,7 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
 
   set_sensitive = local.set_sensitive_apikey
 
-  depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
+  depends_on = [helm_release.castai_agent]
 }
 
 # Helm Release for CAST AI Pod Mutator
@@ -599,7 +599,7 @@ resource "helm_release" "castai_egressd_self_managed" {
 
   set_sensitive = local.set_sensitive_apikey
 
-  depends_on = [helm_release.castai_agent, helm_release.castai_egressd]
+  depends_on = [helm_release.castai_agent]
 }
 
 resource "null_resource" "wait_for_cluster" {
@@ -698,7 +698,7 @@ resource "helm_release" "castai_evictor_self_managed" {
     local.set_components_sets,
   )
 
-  depends_on = [helm_release.castai_agent, helm_release.castai_evictor]
+  depends_on = [helm_release.castai_agent]
 }
 
 resource "helm_release" "castai_evictor_ext" {
@@ -717,7 +717,7 @@ resource "helm_release" "castai_evictor_ext" {
     local.set_components_sets,
   )
 
-  depends_on = [helm_release.castai_agent]
+  depends_on = [helm_release.castai_evictor, helm_release.castai_evictor_self_managed]
 }
 
 resource "helm_release" "castai_pod_pinner" {
@@ -793,7 +793,7 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
 
   set_sensitive = local.set_sensitive_apikey
 
-  depends_on = [helm_release.castai_agent, helm_release.castai_pod_pinner]
+  depends_on = [helm_release.castai_agent]
 }
 
 resource "helm_release" "castai_spot_handler" {
@@ -863,7 +863,6 @@ resource "helm_release" "castai_kvisor" {
   )
 
   set_sensitive = local.set_sensitive_apikey
-
 }
 
 resource "helm_release" "castai_kvisor_self_managed" {
@@ -897,8 +896,6 @@ resource "helm_release" "castai_kvisor_self_managed" {
   )
 
   set_sensitive = local.set_sensitive_apikey
-
-  depends_on = [helm_release.castai_kvisor]
 }
 
 resource "helm_release" "castai_pod_mutator_self_managed" {
