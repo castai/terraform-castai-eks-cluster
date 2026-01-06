@@ -947,8 +947,11 @@ resource "helm_release" "castai_live" {
     var.install_live_cni ? [{ name = "castai-aws-vpc-cni.enabled", value = "true" }] : [],
     local.set_cluster_id,
     local.set_apiurl,
-    local.set_sensitive_apikey,
     local.set_components_sets,
+  )
+
+  set_sensitive = concat(
+    local.set_sensitive_apikey,
   )
 
   depends_on = [helm_release.castai_agent]
@@ -972,8 +975,11 @@ resource "helm_release" "castai_live_self_managed" {
     var.install_live_cni ? [{ name = "castai-aws-vpc-cni.enabled", value = "true" }] : [],
     local.set_cluster_id,
     local.set_apiurl,
-    local.set_sensitive_apikey,
     local.set_components_sets,
+  )
+
+  set_sensitive = concat(
+    local.set_sensitive_apikey,
   )
 
   depends_on = [helm_release.castai_agent]
