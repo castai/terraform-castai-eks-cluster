@@ -1139,7 +1139,8 @@ data "aws_vpc" "eks_vpc" {
 module "castai_omni_cluster" {
   count = var.install_omni && !var.self_managed ? 1 : 0
   # tflint-ignore: terraform_module_pinned_source
-  source = "github.com/castai/terraform-castai-omni-cluster"
+  source  = "castai/omni-cluster/castai"
+  version = "~> 1"
 
   k8s_provider    = "eks"
   api_url         = var.api_url
