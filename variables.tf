@@ -48,12 +48,6 @@ variable "kvisor_controller_extra_args" {
   }
 }
 
-variable "autoscaler_policies_json" {
-  type        = string
-  description = "Optional json object to override CAST AI cluster autoscaler policies. Deprecated, use `autoscaler_settings` instead."
-  default     = null
-}
-
 variable "autoscaler_settings" {
   type        = any
   description = "Optional Autoscaler policy definitions to override current autoscaler settings"
@@ -93,6 +87,12 @@ variable "agent_aws_secret_access_key" {
 variable "castai_components_labels" {
   type        = map(any)
   description = "Optional additional Kubernetes labels for CAST AI pods"
+  default     = {}
+}
+
+variable "castai_components_sets" {
+  type        = map(string)
+  description = "Optional additional 'set' configurations for every CAST AI Helm release."
   default     = {}
 }
 
@@ -270,10 +270,34 @@ variable "egressd_values" {
   default     = []
 }
 
+variable "install_live" {
+  type        = bool
+  default     = true
+  description = "Optional flag for installation of CAST AI Live (https://docs.cast.ai/docs/clm-getting-started). Default is true"
+}
+
+variable "install_live_cni" {
+  type        = bool
+  default     = true
+  description = "Optional flag for installing CAST AI aws-vpc-cni fork for CAST AI Live. Default is true"
+}
+
+variable "live_version" {
+  description = "Version of castai-live helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "live_values" {
+  description = "List of YAML formatted string with castai-live values"
+  type        = list(string)
+  default     = []
+}
+
 variable "self_managed" {
   type        = bool
   default     = false
-  description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system."
+  description = "Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. WARNING: changing this after the module was created is not supported."
 }
 
 variable "pod_mutator_version" {
@@ -282,8 +306,38 @@ variable "pod_mutator_version" {
   default     = null
 }
 
+variable "pod_mutator_values" {
+  description = "List of YAML formatted string values for pod-mutator helm chart"
+  type        = list(string)
+  default     = []
+}
+
 variable "organization_id" {
   description = "DEPRECATED (required only for pod mutator v0.0.25 and older): CAST AI Organization ID"
   type        = string
   default     = ""
+}
+
+variable "install_ai_optimizer" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of AI Optimizer (https://docs.cast.ai/docs/getting-started-ai)"
+}
+
+variable "ai_optimizer_version" {
+  description = "Version of castai-ai-optimizer helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "ai_optimizer_values" {
+  description = "List of YAML formatted string with ai-optimizer values"
+  type        = list(string)
+  default     = []
+}
+
+variable "install_omni" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of Omni product"
 }

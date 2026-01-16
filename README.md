@@ -1,12 +1,15 @@
 <a href="https://cast.ai">
-    <img src="https://cast.ai/wp-content/themes/cast/img/cast-logo-dark-blue.svg" align="right" height="100" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/full-logo-white.svg">
+    <source media="(prefers-color-scheme: light)" srcset=".github/full-logo-black.svg">
+    <img src=".github/full-logo-black.svg" alt="Cast AI logo" title="Cast AI" align="right" height="50">
+  </picture>
 </a>
 
 Terraform module for connecting an AWS EKS cluster to CAST AI
 ==================
 
-
-Website: https://www.cast.ai
+Website: <https://www.cast.ai>
 
 Requirements
 ------------
@@ -93,6 +96,29 @@ module "castai-eks-cluster" {
         storage_optimized_state = "disabled"
         is_gpu_only              = false
         architectures            = ["amd64"]
+
+        gpu = {
+          fractional_gpus = "enabled"
+        }
+      }
+      gpu = {
+        default_shared_clients_per_gpu = 9
+        enable_time_sharing            = true
+
+        sharing_configuration = [
+          {
+            gpu_name = "A100"
+            shared_clients_per_gpu = 11
+          },
+          {
+            gpu_name = "L4"
+            shared_clients_per_gpu = 5
+          },
+          {
+            gpu_name = "T4"
+            shared_clients_per_gpu = 3
+          }
+        ]
       }
     }
   }
@@ -103,18 +129,6 @@ module "castai-eks-cluster" {
 
     unschedulable_pods = {
       enabled = true
-
-      headroom = {
-        enabled           = true
-        cpu_percentage    = 10
-        memory_percentage = 10
-      }
-
-      headroom_spot = {
-        enabled           = true
-        cpu_percentage    = 10
-        memory_percentage = 10
-      }
     }
 
     node_downscaler = {
@@ -143,12 +157,76 @@ module "castai-eks-cluster" {
       }
     }
   }
+
+  workload_scaling_policies = {
+    default = {
+      apply_type        = "IMMEDIATE"
+      management_option = "MANAGED"
+
+      cpu = {
+        function                 = "QUANTILE"
+        args                     = ["0.9"]
+        overhead                 = 0.15
+        look_back_period_seconds = 172800
+        min                      = 0.1
+        max                      = 2.0
+      }
+
+      memory = {
+        function                 = "MAX"
+        overhead                 = 0.35
+        look_back_period_seconds = 172800
+
+        limit = {
+          type = "NOLIMIT"
+        }
+      }
+
+      assignment_rules = {
+        rules = [
+          {
+            namespace = {
+              names = ["default", "kube-system"]
+            }
+          },
+          {
+            workload = {
+              gvk: ["Deployment", "StatefulSet"]
+              labels_expressions = [
+                {
+                  key      = "region"
+                  operator = "NotIn"
+                  values   = ["eu-west-1", "eu-west-2"]
+                },
+                {
+                  key      = "helm.sh/chart"
+                  operator = "Exists"
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+      startup = {
+        period_seconds = 300
+      }
+
+      predictive_scaling = {
+        cpu = {
+          enabled = true
+        }
+      }
+    }
+  }
 }
 ```
 
 Migrating from 2.x.x to 3.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -165,7 +243,9 @@ module "castai-eks-cluster" {
   }
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -193,7 +273,9 @@ module "castai-eks-cluster" {
 
 Migrating from 5.x.x to 6.x.x
 ------------
+
 Existing configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -238,7 +320,9 @@ module "castai-eks-cluster" {
   EOT
 }
 ```
-New configuration: 
+
+New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   // ...
@@ -288,13 +372,15 @@ module "castai-eks-cluster" {
 }
 
 ```
+
 Migrating from 6.x.x to 7.x.x
 ---------------------------
 
 Version 7.x.x changes:
-* Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
+- Removed `custom_label` attribute in `castai_node_template` resource. Use `custom_labels` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -311,6 +397,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   // ...
@@ -324,12 +411,15 @@ module "castai-eks-cluster" {
   }
 }
 ```
+
 Migrating from 7.x.x to 8.x.x
 ---------------------------
+
 Version 8.x.x changed:
-* Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
+- Removed `compute_optimized` and `storage_optimized` attributes in `castai_node_template` resource, `constraints` object. Use `compute_optimized_state` and `storage_optimized_state` instead.
 
 Old configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -344,6 +434,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```terraform
 module "castai-eks-cluster" {
   node_templates = {
@@ -361,9 +452,10 @@ Migrating from 9.x.x to 9.3.x
 ---------------------------
 
 Version 9.3.x changed:
-* Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
+- Deprecated `autoscaler_policies_json` attribute. Use `autoscaler_settings` instead.
 
 Old configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_policies_json = <<-EOT
@@ -400,6 +492,7 @@ module "castai-eks-cluster" {
 ```
 
 New configuration:
+
 ```hcl
 module "castai-eks-cluster" {
   autoscaler_settings = {
@@ -439,6 +532,330 @@ module "castai-eks-cluster" {
 }
 ```
 
+Migrating from 13.x.x to 14.x.x
+---------------------------
+
+Version 14.x.x removes deprecated fields that were deprecated in CAST.AI provider v7.9.3+. These settings have been moved to `node_templates` and `autoscaler_settings` for better configuration management.
+
+### Removed Fields
+
+#### `autoscaler_policies_json` variable (deprecated since v9.3.x)
+- **Removed**: The entire `autoscaler_policies_json` variable and attribute
+- **Replacement**: Use the structured `autoscaler_settings` block instead
+
+#### Fields removed from `autoscaler_settings.unschedulable_pods`:
+- `headroom` - replaced with low-priority placeholder workloads
+- `headroom_spot` - replaced with low-priority placeholder workloads
+- `node_constraints` - moved to `node_templates.constraints`
+- `custom_instances_enabled` - moved to `node_templates`
+
+#### Entire blocks removed:
+- `spot_instances` - moved to `node_templates.constraints`
+
+### Migration Examples
+
+#### Migrating from `autoscaler_policies_json` to `autoscaler_settings`
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_policies_json = <<-EOT
+    {
+        "enabled": true,
+        "unschedulablePods": {
+            "enabled": true
+        },
+        "nodeDownscaler": {
+            "enabled": true,
+            "emptyNodes": {
+                "enabled": true
+            },
+            "evictor": {
+                "aggressiveMode": false,
+                "cycleInterval": "5m10s",
+                "dryRun": false,
+                "enabled": true,
+                "nodeGracePeriodMinutes": 10,
+                "scopedMode": false
+            }
+        },
+        "clusterLimits": {
+            "cpu": {
+                "maxCores": 20,
+                "minCores": 1
+            },
+            "enabled": true
+        }
+    }
+  EOT
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    enabled = true
+
+    unschedulable_pods = {
+      enabled = true
+    }
+
+    node_downscaler = {
+      enabled = true
+
+      empty_nodes = {
+        enabled = true
+      }
+
+      evictor = {
+        aggressive_mode           = false
+        cycle_interval            = "5m10s"
+        dry_run                   = false
+        enabled                   = true
+        node_grace_period_minutes = 10
+        scoped_mode               = false
+      }
+    }
+
+    cluster_limits = {
+      enabled = true
+
+      cpu = {
+        max_cores = 20
+        min_cores = 1
+      }
+    }
+  }
+}
+```
+
+#### Headroom Configuration
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      headroom = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+      headroom_spot = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+    }
+  }
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      enabled = true
+    }
+  }
+}
+
+# Deploy low-priority placeholder workloads instead
+# See: https://docs.cast.ai/docs/autoscaler-faq#how-can-i-maintain-cluster-headroom
+```
+
+#### Node Constraints Configuration
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      enabled                  = true
+      custom_instances_enabled = true
+      node_constraints = {
+        enabled       = true
+        min_cpu_cores = 2
+        max_cpu_cores = 16
+        min_ram_mib   = 4096
+        max_ram_mib   = 32768
+      }
+    }
+  }
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    unschedulable_pods = {
+      enabled = true
+    }
+  }
+
+  # Move constraints to node template
+  node_templates = {
+    default = {
+      configuration_id = module.castai-eks-cluster.castai_node_configurations["default"]
+      is_default       = true
+
+      constraints = {
+        min_cpu    = 2
+        max_cpu    = 16
+        min_memory = 4096
+        max_memory = 32768
+      }
+    }
+  }
+}
+```
+
+#### Spot Instance Configuration
+
+**Old configuration (removed):**
+
+```hcl
+module "castai-eks-cluster" {
+  autoscaler_settings = {
+    spot_instances = {
+      enabled                             = true
+      max_reclaim_rate                    = 10
+      spot_diversity_enabled              = true
+      spot_diversity_price_increase_limit = 20
+
+      spot_backups = {
+        enabled                          = true
+        spot_backup_restore_rate_seconds = 1800
+      }
+
+      spot_interruption_predictions = {
+        enabled                            = true
+        spot_interruption_predictions_type = "aws-rebalance-recommendations"
+      }
+    }
+  }
+}
+```
+
+**New configuration:**
+
+```hcl
+module "castai-eks-cluster" {
+  node_templates = {
+    default = {
+      configuration_id = module.castai-eks-cluster.castai_node_configurations["default"]
+      is_default       = true
+
+      constraints = {
+        spot                                          = true
+        use_spot_fallbacks                            = true
+        fallback_restore_rate_seconds                 = 1800
+        enable_spot_diversity                         = true
+        spot_diversity_price_increase_limit_percent   = 20
+        spot_interruption_predictions_enabled         = true
+        spot_interruption_predictions_type            = "aws-rebalance-recommendations"
+      }
+    }
+  }
+}
+```
+
+#### Complete Migration Example
+
+**Before (v13.x.x):**
+
+```hcl
+module "castai-eks-cluster" {
+  source = "castai/eks-cluster/castai"
+
+  autoscaler_settings = {
+    enabled = true
+
+    unschedulable_pods = {
+      enabled                  = true
+      custom_instances_enabled = true
+
+      headroom = {
+        enabled           = true
+        cpu_percentage    = 10
+        memory_percentage = 10
+      }
+
+      node_constraints = {
+        min_cpu_cores = 4
+        max_cpu_cores = 32
+      }
+    }
+
+    spot_instances = {
+      enabled = true
+      spot_backups = {
+        enabled = true
+      }
+    }
+  }
+}
+```
+
+**After (v14.x.x):**
+
+```hcl
+module "castai-eks-cluster" {
+  source = "castai/eks-cluster/castai"
+
+  autoscaler_settings = {
+    enabled = true
+
+    unschedulable_pods = {
+      enabled = true
+    }
+  }
+
+  node_templates = {
+    default = {
+      configuration_id = module.castai-eks-cluster.castai_node_configurations["default"]
+      is_default       = true
+
+      constraints = {
+        min_cpu            = 4
+        max_cpu            = 32
+        spot               = true
+        use_spot_fallbacks = true
+      }
+    }
+  }
+}
+
+# For headroom: Deploy low-priority placeholder workloads
+# See: https://docs.cast.ai/docs/autoscaler-faq#how-can-i-maintain-cluster-headroom
+```
+
+### Field Mapping Reference
+
+| Old Field (Removed) | New Field (node_templates.constraints) |
+|---------------------|----------------------------------------|
+| `unschedulable_pods.node_constraints.min_cpu_cores` | `min_cpu` |
+| `unschedulable_pods.node_constraints.max_cpu_cores` | `max_cpu` |
+| `unschedulable_pods.node_constraints.min_ram_mib` | `min_memory` |
+| `unschedulable_pods.node_constraints.max_ram_mib` | `max_memory` |
+| `unschedulable_pods.custom_instances_enabled` | Top-level in node_template |
+| `spot_instances.enabled` | `spot` |
+| `spot_instances.spot_backups.enabled` | `use_spot_fallbacks` |
+| `spot_instances.spot_backups.spot_backup_restore_rate_seconds` | `fallback_restore_rate_seconds` |
+| `spot_instances.spot_diversity_enabled` | `enable_spot_diversity` |
+| `spot_instances.spot_diversity_price_increase_limit` | `spot_diversity_price_increase_limit_percent` |
+| `spot_instances.spot_interruption_predictions.enabled` | `spot_interruption_predictions_enabled` |
+| `spot_instances.spot_interruption_predictions.spot_interruption_predictions_type` | `spot_interruption_predictions_type` |
+
 # Examples
 
 Usage examples are located in [terraform provider repo](https://github.com/castai/terraform-provider-castai/tree/master/examples/eks)
@@ -455,21 +872,25 @@ terraform-docs markdown table . --output-file README.md
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.49 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | ~> 7.36 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 8.3 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_castai"></a> [castai](#provider\_castai) | ~> 7.36 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.22.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 8.3.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 3.1.1 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_castai_omni_cluster"></a> [castai\_omni\_cluster](#module\_castai\_omni\_cluster) | castai/omni-cluster/castai | ~> 2.0 |
 
 ## Resources
 
@@ -482,6 +903,8 @@ No modules.
 | [castai_node_template.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_template) | resource |
 | [castai_workload_scaling_policy.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/workload_scaling_policy) | resource |
 | [helm_release.castai_agent](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_ai_optimizer_proxy](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_ai_optimizer_proxy_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_cluster_controller](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_cluster_controller_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_egressd](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -491,6 +914,8 @@ No modules.
 | [helm_release.castai_evictor_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_kvisor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_kvisor_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_live](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_live_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_mutator](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_mutator_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -499,6 +924,8 @@ No modules.
 | [helm_release.castai_workload_autoscaler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_workload_autoscaler_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [null_resource.wait_for_cluster](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
+| [aws_vpc.eks_vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
 
 ## Inputs
 
@@ -509,8 +936,9 @@ No modules.
 | <a name="input_agent_aws_secret_access_key"></a> [agent\_aws\_secret\_access\_key](#input\_agent\_aws\_secret\_access\_key) | AWS access key secret for CAST AI agent to fetch instance details. | `string` | `""` | no |
 | <a name="input_agent_values"></a> [agent\_values](#input\_agent\_values) | List of YAML formatted string with agent values | `list(string)` | `[]` | no |
 | <a name="input_agent_version"></a> [agent\_version](#input\_agent\_version) | Version of castai-agent helm chart. Default latest | `string` | `null` | no |
+| <a name="input_ai_optimizer_values"></a> [ai\_optimizer\_values](#input\_ai\_optimizer\_values) | List of YAML formatted string with ai-optimizer values | `list(string)` | `[]` | no |
+| <a name="input_ai_optimizer_version"></a> [ai\_optimizer\_version](#input\_ai\_optimizer\_version) | Version of castai-ai-optimizer helm chart. Default latest | `string` | `null` | no |
 | <a name="input_api_url"></a> [api\_url](#input\_api\_url) | URL of alternative CAST AI API to be used during development or testing | `string` | `"https://api.cast.ai"` | no |
-| <a name="input_autoscaler_policies_json"></a> [autoscaler\_policies\_json](#input\_autoscaler\_policies\_json) | Optional json object to override CAST AI cluster autoscaler policies. Deprecated, use `autoscaler_settings` instead. | `string` | `null` | no |
 | <a name="input_autoscaler_settings"></a> [autoscaler\_settings](#input\_autoscaler\_settings) | Optional Autoscaler policy definitions to override current autoscaler settings | `any` | `null` | no |
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | ID of AWS account the cluster is located in. | `string` | n/a | yes |
 | <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn) | Arn of the role to be used by CAST AI for IAM access | `string` | `null` | no |
@@ -530,7 +958,11 @@ No modules.
 | <a name="input_evictor_values"></a> [evictor\_values](#input\_evictor\_values) | List of YAML formatted string with evictor values | `list(string)` | `[]` | no |
 | <a name="input_evictor_version"></a> [evictor\_version](#input\_evictor\_version) | Version of castai-evictor chart. Default latest | `string` | `null` | no |
 | <a name="input_grpc_url"></a> [grpc\_url](#input\_grpc\_url) | gRPC endpoint used by pod-pinner | `string` | `"grpc.cast.ai:443"` | no |
+| <a name="input_install_ai_optimizer"></a> [install\_ai\_optimizer](#input\_install\_ai\_optimizer) | Optional flag for installation of AI Optimizer (https://docs.cast.ai/docs/getting-started-ai) | `bool` | `false` | no |
 | <a name="input_install_egressd"></a> [install\_egressd](#input\_install\_egressd) | Optional flag for installation of Egressd (Network cost monitoring) (https://docs.cast.ai/docs/network-cost) | `bool` | `false` | no |
+| <a name="input_install_live"></a> [install\_live](#input\_install\_live) | Optional flag for installation of CAST AI Live (https://docs.cast.ai/docs/clm-getting-started). Default is true | `bool` | `true` | no |
+| <a name="input_install_live_cni"></a> [install\_live\_cni](#input\_install\_live\_cni) | Optional flag for installing CAST AI aws-vpc-cni fork for CAST AI Live. Default is true | `bool` | `true` | no |
+| <a name="input_install_omni"></a> [install\_omni](#input\_install\_omni) | Optional flag for installation of Omni product | `bool` | `false` | no |
 | <a name="input_install_pod_mutator"></a> [install\_pod\_mutator](#input\_install\_pod\_mutator) | Optional flag for installation of pod mutator | `bool` | `false` | no |
 | <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent) | Optional flag for installation of security agent (Kvisor - https://docs.cast.ai/docs/kvisor) | `bool` | `false` | no |
 | <a name="input_install_workload_autoscaler"></a> [install\_workload\_autoscaler](#input\_install\_workload\_autoscaler) | Optional flag for installation of workload autoscaler (https://docs.cast.ai/docs/workload-autoscaling-configuration) | `bool` | `false` | no |
@@ -539,13 +971,15 @@ No modules.
 | <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values) | List of YAML formatted string with kvisor values, see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf | `list(string)` | `[]` | no |
 | <a name="input_kvisor_version"></a> [kvisor\_version](#input\_kvisor\_version) | Version of kvisor chart. Default latest | `string` | `null` | no |
 | <a name="input_kvisor_wait"></a> [kvisor\_wait](#input\_kvisor\_wait) | Wait for kvisor chart to finish release | `bool` | `true` | no |
+| <a name="input_live_values"></a> [live\_values](#input\_live\_values) | List of YAML formatted string with castai-live values | `list(string)` | `[]` | no |
+| <a name="input_live_version"></a> [live\_version](#input\_live\_version) | Version of castai-live helm chart. Default latest | `string` | `null` | no |
 | <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
 | <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates) | Map of node templates to create | `any` | `{}` | no |
 | <a name="input_organization_id"></a> [organization\_id](#input\_organization\_id) | DEPRECATED (required only for pod mutator v0.0.25 and older): CAST AI Organization ID | `string` | `""` | no |
 | <a name="input_pod_mutator_version"></a> [pod\_mutator\_version](#input\_pod\_mutator\_version) | Version of castai-pod-mutator helm chart. Default latest | `string` | `null` | no |
 | <a name="input_pod_pinner_values"></a> [pod\_pinner\_values](#input\_pod\_pinner\_values) | List of YAML formatted string values for agent helm chart | `list(string)` | `[]` | no |
 | <a name="input_pod_pinner_version"></a> [pod\_pinner\_version](#input\_pod\_pinner\_version) | Version of pod-pinner helm chart. Default latest | `string` | `null` | no |
-| <a name="input_self_managed"></a> [self\_managed](#input\_self\_managed) | Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. | `bool` | `false` | no |
+| <a name="input_self_managed"></a> [self\_managed](#input\_self\_managed) | Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. WARNING: changing this after the module was created is not supported. | `bool` | `false` | no |
 | <a name="input_spot_handler_values"></a> [spot\_handler\_values](#input\_spot\_handler\_values) | List of YAML formatted string with spot-handler values | `list(string)` | `[]` | no |
 | <a name="input_spot_handler_version"></a> [spot\_handler\_version](#input\_spot\_handler\_version) | Version of castai-spot-handler helm chart. Default latest | `string` | `null` | no |
 | <a name="input_wait_for_cluster_ready"></a> [wait\_for\_cluster\_ready](#input\_wait\_for\_cluster\_ready) | Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set | `bool` | `false` | no |
@@ -560,4 +994,5 @@ No modules.
 | <a name="output_castai_node_configurations"></a> [castai\_node\_configurations](#output\_castai\_node\_configurations) | Map of node configurations ids by name |
 | <a name="output_castai_node_templates"></a> [castai\_node\_templates](#output\_castai\_node\_templates) | Map of node template by name |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | CAST AI cluster id, which can be used for accessing cluster data using API |
+| <a name="output_organization_id"></a> [organization\_id](#output\_organization\_id) | CAST.AI organization id of the cluster |
 <!-- END_TF_DOCS -->
