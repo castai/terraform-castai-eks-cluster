@@ -178,7 +178,7 @@ module "castai-eks-cluster" {
         look_back_period_seconds = 172800
 
         limit = {
-          type = "NOLIMIT"
+          type = "NO_LIMIT"
         }
       }
 
@@ -191,7 +191,7 @@ module "castai-eks-cluster" {
           },
           {
             workload = {
-              gvk: ["Deployment", "StatefulSet"]
+              gvk = ["Deployment", "StatefulSet"]
               labels_expressions = [
                 {
                   key      = "region"
