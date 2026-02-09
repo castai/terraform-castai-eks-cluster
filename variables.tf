@@ -234,6 +234,12 @@ variable "install_workload_autoscaler" {
   description = "Optional flag for installation of workload autoscaler (https://docs.cast.ai/docs/workload-autoscaling-configuration)"
 }
 
+variable "install_workload_autoscaler_exporter" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of workload autoscaler exporter (custom metrics exporter)"
+}
+
 variable "install_pod_mutator" {
   type        = bool
   default     = false
@@ -248,6 +254,18 @@ variable "workload_autoscaler_version" {
 
 variable "workload_autoscaler_values" {
   description = "List of YAML formatted string with cluster-workload-autoscaler values"
+  type        = list(string)
+  default     = []
+}
+
+variable "workload_autoscaler_exporter_version" {
+  description = "Version of castai-workload-autoscaler-exporter helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "workload_autoscaler_exporter_values" {
+  description = "List of YAML formatted string with workload-autoscaler-exporter values"
   type        = list(string)
   default     = []
 }
