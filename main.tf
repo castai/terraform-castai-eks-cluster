@@ -149,6 +149,22 @@ resource "castai_node_template" "this" {
           cpu_limit_max_cores = try(resource_limits.value.cpu_limit_max_cores, 0)
         }
       }
+
+      dynamic "aws" {
+        for_each = [for aws in flatten([lookup(constraints.value, "aws", [])]) : aws if aws != null]
+
+        content {
+          dynamic "capacity_reservations" {
+            for_each = flatten([lookup(aws.value, "capacity_reservations", [])])
+
+            content {
+              id                          = try(capacity_reservations.value.id, null)
+              capacity_resource_group_arn = try(capacity_reservations.value.capacity_resource_group_arn, null)
+              type                        = try(capacity_reservations.value.type, null)
+            }
+          }
+        }
+      }
     }
   }
 
