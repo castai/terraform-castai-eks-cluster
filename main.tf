@@ -1233,9 +1233,10 @@ module "castai_omni_cluster" {
   cluster_id      = castai_eks_cluster.my_castai_cluster.id
   cluster_name    = var.aws_cluster_name
 
-  api_server_address = data.aws_eks_cluster.this[0].endpoint
-  pod_cidr           = data.aws_vpc.eks_vpc[0].cidr_block
-  service_cidr       = data.aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr
+  api_server_address    = data.aws_eks_cluster.this[0].endpoint
+  pod_cidr              = data.aws_vpc.eks_vpc[0].cidr_block
+  service_cidr          = data.aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr
+  reserved_subnet_cidrs = var.omni_reserved_subnet_cidrs
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }

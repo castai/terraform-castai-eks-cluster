@@ -359,3 +359,9 @@ variable "install_omni" {
   default     = false
   description = "Optional flag for installation of Omni product"
 }
+
+variable "omni_reserved_subnet_cidrs" {
+  description = "List of reserved subnet CIDRs that should not be allocated by Liqo IPAM (e.g. VPC peering CIDRs)"
+  type        = list(string)
+  default     = []
+}
