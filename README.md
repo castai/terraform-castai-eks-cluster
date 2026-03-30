@@ -217,6 +217,14 @@ module "castai-eks-cluster" {
           enabled = true
         }
       }
+
+      jvm = {
+        memory = {
+          optimization = true
+        }
+      }
+
+      excluded_containers = ["container-1", "container-2"]
     }
   }
 }
@@ -873,7 +881,7 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 8.18.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 8.24.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
@@ -881,10 +889,10 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23.0 |
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 8.18.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.0.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.37.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | 8.24.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 3.1.1 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
 
 ## Modules
 
@@ -970,7 +978,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_install_security_agent"></a> [install\_security\_agent](#input\_install\_security\_agent) | Optional flag for installation of security agent (Kvisor - https://docs.cast.ai/docs/kvisor) | `bool` | `false` | no |
 | <a name="input_install_workload_autoscaler"></a> [install\_workload\_autoscaler](#input\_install\_workload\_autoscaler) | Optional flag for installation of workload autoscaler (https://docs.cast.ai/docs/workload-autoscaling-configuration) | `bool` | `false` | no |
 | <a name="input_install_workload_autoscaler_exporter"></a> [install\_workload\_autoscaler\_exporter](#input\_install\_workload\_autoscaler\_exporter) | Optional flag for installation of workload autoscaler exporter (custom metrics exporter) | `bool` | `false` | no |
-| <a name="input_kvisor_controller_extra_args"></a> [kvisor\_controller\_extra\_args](#input\_kvisor\_controller\_extra\_args) | ⚠️ DEPRECATED: use kvisor\_values instead (see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf ). Extra arguments for the kvisor controller. Optionally enable kvisor to lint Kubernetes YAML manifests, scan workload images and check if workloads pass CIS Kubernetes Benchmarks as well as NSA, WASP and PCI recommendations. | `map(string)` | <pre>{<br>  "image-scan-enabled": "true",<br>  "kube-bench-enabled": "true",<br>  "kube-linter-enabled": "true"<br>}</pre> | no |
+| <a name="input_kvisor_controller_extra_args"></a> [kvisor\_controller\_extra\_args](#input\_kvisor\_controller\_extra\_args) | ⚠️ DEPRECATED: use kvisor\_values instead (see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf ). Extra arguments for the kvisor controller. Optionally enable kvisor to lint Kubernetes YAML manifests, scan workload images and check if workloads pass CIS Kubernetes Benchmarks as well as NSA, WASP and PCI recommendations. | `map(string)` | <pre>{<br/>  "image-scan-enabled": "true",<br/>  "kube-bench-enabled": "true",<br/>  "kube-linter-enabled": "true"<br/>}</pre> | no |
 | <a name="input_kvisor_grpc_addr"></a> [kvisor\_grpc\_addr](#input\_kvisor\_grpc\_addr) | CAST AI Kvisor optimized GRPC API address | `string` | `"kvisor.prod-master.cast.ai:443"` | no |
 | <a name="input_kvisor_values"></a> [kvisor\_values](#input\_kvisor\_values) | List of YAML formatted string with kvisor values, see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf | `list(string)` | `[]` | no |
 | <a name="input_kvisor_version"></a> [kvisor\_version](#input\_kvisor\_version) | Version of kvisor chart. Default latest | `string` | `null` | no |
@@ -979,6 +987,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_live_version"></a> [live\_version](#input\_live\_version) | Version of castai-live helm chart. Default latest | `string` | `null` | no |
 | <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
 | <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates) | Map of node templates to create | `any` | `{}` | no |
+| <a name="input_omni_reserved_subnet_cidrs"></a> [omni\_reserved\_subnet\_cidrs](#input\_omni\_reserved\_subnet\_cidrs) | List of reserved subnet CIDRs that should not be allocated by Liqo IPAM (e.g. VPC peering CIDRs) | `list(string)` | `[]` | no |
 | <a name="input_organization_id"></a> [organization\_id](#input\_organization\_id) | DEPRECATED (required only for pod mutator v0.0.25 and older): CAST AI Organization ID | `string` | `""` | no |
 | <a name="input_pod_mutator_values"></a> [pod\_mutator\_values](#input\_pod\_mutator\_values) | List of YAML formatted string values for pod-mutator helm chart | `list(string)` | `[]` | no |
 | <a name="input_pod_mutator_version"></a> [pod\_mutator\_version](#input\_pod\_mutator\_version) | Version of castai-pod-mutator helm chart. Default latest | `string` | `null` | no |
