@@ -365,3 +365,9 @@ variable "omni_reserved_subnet_cidrs" {
   type        = list(string)
   default     = []
 }
+
+variable "install_helm_apps" {
+  type        = bool
+  default     = true
+  description = "Optional flag to disable installation of all CAST AI Helm charts. When set to false, only the CAST AI cluster registration resources are created."
+}
