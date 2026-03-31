@@ -380,6 +380,29 @@ resource "castai_workload_scaling_policy" "this" {
   depends_on = [helm_release.castai_workload_autoscaler]
 }
 
+resource "castai_workload_custom_metrics_data_source" "this" {
+  for_each = { for k, v in var.workload_custom_metrics_data_sources : k => v }
+
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
+  name       = try(each.value.name, each.key)
+
+  prometheus {
+    url     = each.value.prometheus.url
+    timeout = try(each.value.prometheus.timeout, null)
+    presets = try(each.value.prometheus.presets, null)
+
+    dynamic "metric" {
+      for_each = try(each.value.prometheus.metrics, [])
+      content {
+        name  = metric.value.name
+        query = metric.value.query
+      }
+    }
+  }
+
+  depends_on = [helm_release.castai_workload_autoscaler]
+}
+
 resource "helm_release" "castai_agent" {
   count = var.install_helm_apps ? 1 : 0
 
