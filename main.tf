@@ -1094,6 +1094,11 @@ resource "helm_release" "castai_live" {
   depends_on = [helm_release.castai_agent]
 }
 
+moved {
+  from = helm_release.castai_live_self_managed
+  to   = helm_release.castai_live
+}
+
 resource "castai_autoscaler" "castai_autoscaler_policies" {
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
