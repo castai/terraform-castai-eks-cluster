@@ -364,10 +364,48 @@ resource "castai_workload_scaling_policy" "this" {
     }
   }
 
+  dynamic "anomaly_detection" {
+    for_each = try([each.value.anomaly_detection], [])
+    content {
+      dynamic "cpu_pressure" {
+        for_each = try([anomaly_detection.value.cpu_pressure], [])
+        content {
+          cpu_stall_threshold_percentage = try(cpu_pressure.value.cpu_stall_threshold_percentage, null)
+          min_pressured_pod_percentage   = try(cpu_pressure.value.min_pressured_pod_percentage, null)
+        }
+      }
+    }
+  }
+
+  depends_on = [helm_release.castai_workload_autoscaler]
+}
+
+resource "castai_workload_custom_metrics_data_source" "this" {
+  for_each = { for k, v in var.workload_custom_metrics_data_sources : k => v }
+
+  cluster_id = castai_eks_cluster.my_castai_cluster.id
+  name       = try(each.value.name, each.key)
+
+  prometheus {
+    url     = each.value.prometheus.url
+    timeout = try(each.value.prometheus.timeout, null)
+    presets = try(each.value.prometheus.presets, null)
+
+    dynamic "metric" {
+      for_each = try(each.value.prometheus.metrics, [])
+      content {
+        name  = metric.value.name
+        query = metric.value.query
+      }
+    }
+  }
+
   depends_on = [helm_release.castai_workload_autoscaler]
 }
 
 resource "helm_release" "castai_agent" {
+  count = var.install_helm_apps ? 1 : 0
+
   name             = "castai-agent"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-agent"
@@ -420,7 +458,7 @@ resource "helm_release" "castai_agent" {
 }
 
 resource "helm_release" "castai_cluster_controller" {
-  count = var.self_managed ? 0 : 1
+  count = var.install_helm_apps && !var.self_managed ? 1 : 0
 
   name             = "cluster-controller"
   repository       = "https://castai.github.io/helm-charts"
@@ -450,7 +488,7 @@ resource "helm_release" "castai_cluster_controller" {
 }
 
 resource "helm_release" "castai_cluster_controller_self_managed" {
-  count = var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.self_managed ? 1 : 0
 
   name             = "cluster-controller"
   repository       = "https://castai.github.io/helm-charts"
@@ -477,7 +515,7 @@ resource "helm_release" "castai_cluster_controller_self_managed" {
 
 # Helm Release for CAST AI Pod Mutator
 resource "helm_release" "castai_pod_mutator" {
-  count = var.install_pod_mutator && !var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_pod_mutator && !var.self_managed ? 1 : 0
 
   name             = "castai-pod-mutator"
   repository       = "https://castai.github.io/helm-charts"
@@ -510,7 +548,7 @@ resource "helm_release" "castai_pod_mutator" {
 # CAST.AI Workload Autoscaler configuration         #
 #---------------------------------------------------#
 resource "helm_release" "castai_workload_autoscaler" {
-  count = var.install_workload_autoscaler && !var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_workload_autoscaler && !var.self_managed ? 1 : 0
 
   name             = "castai-workload-autoscaler"
   repository       = "https://castai.github.io/helm-charts"
@@ -545,7 +583,7 @@ resource "helm_release" "castai_workload_autoscaler" {
 }
 
 resource "helm_release" "castai_workload_autoscaler_self_managed" {
-  count = var.install_workload_autoscaler && var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_workload_autoscaler && var.self_managed ? 1 : 0
 
   name             = "castai-workload-autoscaler"
   repository       = "https://castai.github.io/helm-charts"
@@ -579,7 +617,7 @@ resource "helm_release" "castai_workload_autoscaler_self_managed" {
 # CAST.AI Workload Autoscaler Exporter configuration #
 #----------------------------------------------------#
 resource "helm_release" "castai_workload_autoscaler_exporter" {
-  count = var.install_workload_autoscaler_exporter && !var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_workload_autoscaler_exporter && !var.self_managed ? 1 : 0
 
   name             = "castai-workload-autoscaler-exporter"
   repository       = "https://castai.github.io/helm-charts"
@@ -614,7 +652,7 @@ resource "helm_release" "castai_workload_autoscaler_exporter" {
 }
 
 resource "helm_release" "castai_workload_autoscaler_exporter_self_managed" {
-  count = var.install_workload_autoscaler_exporter && var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_workload_autoscaler_exporter && var.self_managed ? 1 : 0
 
   name             = "castai-workload-autoscaler-exporter"
   repository       = "https://castai.github.io/helm-charts"
@@ -648,7 +686,7 @@ resource "helm_release" "castai_workload_autoscaler_exporter_self_managed" {
 # CAST.AI Network Cost Monitoring configuration     #
 #---------------------------------------------------#
 resource "helm_release" "castai_egressd" {
-  count = var.install_egressd && !var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_egressd && !var.self_managed ? 1 : 0
 
   name             = "castai-egressd"
   repository       = "https://castai.github.io/helm-charts"
@@ -677,7 +715,7 @@ resource "helm_release" "castai_egressd" {
 }
 
 resource "helm_release" "castai_egressd_self_managed" {
-  count = var.install_egressd && var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_egressd && var.self_managed ? 1 : 0
 
   name             = "castai-egressd"
   repository       = "https://castai.github.io/helm-charts"
@@ -702,7 +740,7 @@ resource "helm_release" "castai_egressd_self_managed" {
 }
 
 resource "null_resource" "wait_for_cluster" {
-  count      = var.wait_for_cluster_ready ? 1 : 0
+  count      = var.install_helm_apps && var.wait_for_cluster_ready ? 1 : 0
   depends_on = [helm_release.castai_cluster_controller, helm_release.castai_agent]
 
   provisioner "local-exec" {
@@ -727,7 +765,7 @@ resource "null_resource" "wait_for_cluster" {
 }
 
 resource "helm_release" "castai_evictor" {
-  count = var.self_managed ? 0 : 1
+  count = var.install_helm_apps && !var.self_managed ? 1 : 0
 
   name             = "castai-evictor"
   repository       = "https://castai.github.io/helm-charts"
@@ -763,7 +801,7 @@ resource "helm_release" "castai_evictor" {
 }
 
 resource "helm_release" "castai_evictor_self_managed" {
-  count = var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.self_managed ? 1 : 0
 
   name             = "castai-evictor"
   repository       = "https://castai.github.io/helm-charts"
@@ -801,6 +839,8 @@ resource "helm_release" "castai_evictor_self_managed" {
 }
 
 resource "helm_release" "castai_evictor_ext" {
+  count = var.install_helm_apps ? 1 : 0
+
   name             = "castai-evictor-ext"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-evictor-ext"
@@ -820,7 +860,7 @@ resource "helm_release" "castai_evictor_ext" {
 }
 
 resource "helm_release" "castai_pod_pinner" {
-  count = var.self_managed ? 0 : 1
+  count = var.install_helm_apps && !var.self_managed ? 1 : 0
 
   name             = "castai-pod-pinner"
   repository       = "https://castai.github.io/helm-charts"
@@ -857,7 +897,7 @@ resource "helm_release" "castai_pod_pinner" {
 }
 
 resource "helm_release" "castai_pod_pinner_self_managed" {
-  count = var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.self_managed ? 1 : 0
 
   name             = "castai-pod-pinner"
   repository       = "https://castai.github.io/helm-charts"
@@ -896,6 +936,8 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
 }
 
 resource "helm_release" "castai_spot_handler" {
+  count = var.install_helm_apps ? 1 : 0
+
   name             = "castai-spot-handler"
   repository       = "https://castai.github.io/helm-charts"
   chart            = "castai-spot-handler"
@@ -928,7 +970,7 @@ resource "helm_release" "castai_spot_handler" {
 }
 
 resource "helm_release" "castai_kvisor" {
-  count = var.install_security_agent && !var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_security_agent && !var.self_managed ? 1 : 0
 
   name             = "castai-kvisor"
   repository       = "https://castai.github.io/helm-charts"
@@ -965,7 +1007,7 @@ resource "helm_release" "castai_kvisor" {
 }
 
 resource "helm_release" "castai_kvisor_self_managed" {
-  count = var.install_security_agent && var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_security_agent && var.self_managed ? 1 : 0
 
   name             = "castai-kvisor"
   repository       = "https://castai.github.io/helm-charts"
@@ -998,7 +1040,7 @@ resource "helm_release" "castai_kvisor_self_managed" {
 }
 
 resource "helm_release" "castai_pod_mutator_self_managed" {
-  count = var.install_pod_mutator && var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_pod_mutator && var.self_managed ? 1 : 0
 
   name             = "castai-pod-mutator"
   repository       = "https://castai.github.io/helm-charts"
@@ -1025,7 +1067,7 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
 }
 
 resource "helm_release" "castai_live" {
-  count = var.install_live ? 1 : 0
+  count = var.install_helm_apps && var.install_live ? 1 : 0
 
   name             = "castai-live"
   repository       = "https://castai.github.io/helm-charts"
@@ -1135,7 +1177,7 @@ resource "castai_autoscaler" "castai_autoscaler_policies" {
 }
 
 resource "helm_release" "castai_ai_optimizer_proxy" {
-  count = var.install_ai_optimizer && !var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_ai_optimizer && !var.self_managed ? 1 : 0
 
   name             = "castai-ai-optimizer-proxy"
   repository       = "https://castai.github.io/helm-charts"
@@ -1165,7 +1207,7 @@ resource "helm_release" "castai_ai_optimizer_proxy" {
 }
 
 resource "helm_release" "castai_ai_optimizer_proxy_self_managed" {
-  count = var.install_ai_optimizer && var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_ai_optimizer && var.self_managed ? 1 : 0
 
   name             = "castai-ai-optimizer-proxy"
   repository       = "https://castai.github.io/helm-charts"

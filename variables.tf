@@ -126,6 +126,12 @@ variable "workload_scaling_policies" {
   default     = {}
 }
 
+variable "workload_custom_metrics_data_sources" {
+  type        = any
+  description = "Map of workload custom metrics data sources to create"
+  default     = {}
+}
+
 variable "install_security_agent" {
   type        = bool
   default     = false
@@ -364,4 +370,10 @@ variable "omni_reserved_subnet_cidrs" {
   description = "List of reserved subnet CIDRs that should not be allocated by Liqo IPAM (e.g. VPC peering CIDRs)"
   type        = list(string)
   default     = []
+}
+
+variable "install_helm_apps" {
+  type        = bool
+  default     = true
+  description = "Optional flag to disable installation of all CAST AI Helm charts. When set to false, only the CAST AI cluster registration resources are created."
 }
