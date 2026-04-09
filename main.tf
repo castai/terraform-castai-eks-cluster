@@ -1067,7 +1067,7 @@ resource "helm_release" "castai_pod_mutator_self_managed" {
 }
 
 resource "helm_release" "castai_live" {
-  count = var.install_helm_apps && var.install_live && !var.self_managed ? 1 : 0
+  count = var.install_helm_apps && var.install_live ? 1 : 0
 
   name             = "castai-live"
   repository       = "https://castai.github.io/helm-charts"
@@ -1076,10 +1076,6 @@ resource "helm_release" "castai_live" {
   create_namespace = true
   cleanup_on_fail  = true
   wait             = true
-
-  lifecycle {
-    ignore_changes = [version]
-  }
 
   version = var.live_version
   values  = var.live_values
@@ -1098,32 +1094,9 @@ resource "helm_release" "castai_live" {
   depends_on = [helm_release.castai_agent]
 }
 
-resource "helm_release" "castai_live_self_managed" {
-  count = var.install_helm_apps && var.install_live && var.self_managed ? 1 : 0
-
-  name             = "castai-live"
-  repository       = "https://castai.github.io/helm-charts"
-  chart            = "castai-live"
-  namespace        = "castai-agent"
-  create_namespace = true
-  cleanup_on_fail  = true
-  wait             = true
-
-  version = var.live_version
-  values  = var.live_values
-
-  set = concat(
-    var.install_live_cni ? [{ name = "castai-aws-vpc-cni.enabled", value = "true" }] : [],
-    local.set_cluster_id,
-    local.set_apiurl,
-    local.set_components_sets,
-  )
-
-  set_sensitive = concat(
-    local.set_sensitive_apikey,
-  )
-
-  depends_on = [helm_release.castai_agent]
+moved {
+  from = helm_release.castai_live_self_managed
+  to   = helm_release.castai_live
 }
 
 resource "castai_autoscaler" "castai_autoscaler_policies" {
