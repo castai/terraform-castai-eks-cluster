@@ -906,7 +906,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
 | <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 8.26.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
 ## Providers
@@ -915,7 +915,7 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23.0 |
 | <a name="provider_castai"></a> [castai](#provider\_castai) | >= 8.26.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.0.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
 ## Modules
@@ -948,7 +948,6 @@ terraform-docs markdown table . --output-file README.md
 | [helm_release.castai_kvisor](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_kvisor_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_live](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [helm_release.castai_live_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_mutator](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_mutator_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -996,6 +995,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_grpc_url"></a> [grpc\_url](#input\_grpc\_url) | gRPC endpoint used by pod-pinner | `string` | `"grpc.cast.ai:443"` | no |
 | <a name="input_install_ai_optimizer"></a> [install\_ai\_optimizer](#input\_install\_ai\_optimizer) | Optional flag for installation of AI Optimizer (https://docs.cast.ai/docs/getting-started-ai) | `bool` | `false` | no |
 | <a name="input_install_egressd"></a> [install\_egressd](#input\_install\_egressd) | Optional flag for installation of Egressd (Network cost monitoring) (https://docs.cast.ai/docs/network-cost) | `bool` | `false` | no |
+| <a name="input_install_helm_apps"></a> [install\_helm\_apps](#input\_install\_helm\_apps) | Optional flag to disable installation of all CAST AI Helm charts. When set to false, only the CAST AI cluster registration resources are created. | `bool` | `true` | no |
 | <a name="input_install_live"></a> [install\_live](#input\_install\_live) | Optional flag for installation of CAST AI Live (https://docs.cast.ai/docs/clm-getting-started). Default is true | `bool` | `true` | no |
 | <a name="input_install_live_cni"></a> [install\_live\_cni](#input\_install\_live\_cni) | Optional flag for installing CAST AI aws-vpc-cni fork for CAST AI Live. Default is true | `bool` | `true` | no |
 | <a name="input_install_omni"></a> [install\_omni](#input\_install\_omni) | Optional flag for installation of Omni product | `bool` | `false` | no |
