@@ -377,3 +377,9 @@ variable "install_helm_apps" {
   default     = true
   description = "Optional flag to disable installation of all CAST AI Helm charts. When set to false, only the CAST AI cluster registration resources are created."
 }
+
+variable "overwrite_existing_helm_releases" {
+  type        = bool
+  default     = false
+  description = "Optional flag to enable upgrade_install on all CAST AI Helm releases. When set to true, Helm will upgrade an existing release instead of failing with 'cannot re-use a name that is still in use'. Useful when Helm releases already exist in the cluster but are not tracked in Terraform state."
+}
