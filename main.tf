@@ -1289,6 +1289,7 @@ module "castai_omni_cluster" {
   service_cidr          = data.aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr
   reserved_subnet_cidrs = var.omni_reserved_subnet_cidrs
   storage_provider      = var.omni_storage_provider
+  loadbalancer_provider = var.omni_loadbalancer_provider
 
   depends_on = [helm_release.castai_agent, helm_release.castai_cluster_controller]
 }
