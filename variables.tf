@@ -372,6 +372,18 @@ variable "omni_reserved_subnet_cidrs" {
   default     = []
 }
 
+variable "omni_storage_provider" {
+  description = "Storage provider (storageclass) used by Omni edge clusters control planes (k0s etcd PVCs). If null, defaults to the omni-cluster module default (`gp3` for EKS). Override when your cluster uses a different storage class name."
+  type        = string
+  default     = null
+}
+
+variable "omni_loadbalancer_provider" {
+  description = "LoadBalancer provider for Omni edge clusters control planes. This setting is used only for EKS clusters (accepted values are `nlb` and `external`). If null, defaults to the omni-cluster module default (`external` for EKS)."
+  type        = string
+  default     = null
+}
+
 variable "install_helm_apps" {
   type        = bool
   default     = true
