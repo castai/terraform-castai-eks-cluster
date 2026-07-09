@@ -1275,7 +1275,7 @@ data "aws_vpc" "eks_vpc" {
 module "castai_omni_cluster" {
   count   = var.install_omni && !var.self_managed ? 1 : 0
   source  = "castai/omni-cluster/castai"
-  version = "~> 2.0"
+  version = "~> 2.5"
 
   k8s_provider    = "eks"
   api_url         = var.api_url
@@ -1285,7 +1285,7 @@ module "castai_omni_cluster" {
   cluster_name    = var.aws_cluster_name
 
   api_server_address    = data.aws_eks_cluster.this[0].endpoint
-  pod_cidr              = data.aws_vpc.eks_vpc[0].cidr_block
+  pod_cidrs             = [data.aws_vpc.eks_vpc[0].cidr_block]
   service_cidr          = data.aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr
   reserved_subnet_cidrs = var.omni_reserved_subnet_cidrs
   storage_provider      = var.omni_storage_provider
