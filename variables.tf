@@ -121,7 +121,7 @@ variable "node_templates" {
 }
 
 variable "workload_scaling_policies" {
-  type = any
+  type        = any
   description = <<-EOT
     Map of workload scaling policies to create (passed through to castai_workload_scaling_policy).
 
@@ -137,7 +137,7 @@ variable "workload_scaling_policies" {
       requests × multiplier.
     - Both flags are optional booleans and may be combined; see provider docs for workload_scaling_policy.
   EOT
-  default = {}
+  default     = {}
 }
 
 variable "workload_custom_metrics_data_sources" {
