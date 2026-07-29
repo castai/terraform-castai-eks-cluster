@@ -170,6 +170,17 @@ module "castai-eks-cluster" {
         look_back_period_seconds = 172800
         min                      = 0.1
         max                      = 2.0
+        # Dynamic change sensitivity (omit apply_threshold when strategy is set)
+        apply_threshold_strategy = {
+          type = "DEFAULT_ADAPTIVE"
+        }
+        # Semi-automatic CPU limits
+        limit = {
+          type                   = "MULTIPLIER"
+          multiplier             = 1.5
+          only_if_original_exist = true
+          only_if_original_lower = true
+        }
       }
 
       memory = {
