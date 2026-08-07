@@ -386,6 +386,13 @@ resource "castai_workload_scaling_policy" "this" {
     }
   }
 
+  dynamic "hpa_converters" {
+    for_each = try(each.value.hpa_converters, [])
+    content {
+      type = hpa_converters.value.type
+    }
+  }
+
   depends_on = [helm_release.castai_workload_autoscaler]
 }
 
