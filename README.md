@@ -237,6 +237,7 @@ module "castai-eks-cluster" {
       }
 
       jvm = {
+        auto_instrument = true
         memory = {
           optimization = true
         }
