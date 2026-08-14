@@ -136,6 +136,11 @@ variable "workload_scaling_policies" {
     - limit.only_if_original_lower (bool) — only raise limits when original limits are lower than
       requests × multiplier.
     - Both flags are optional booleans and may be combined; see provider docs for workload_scaling_policy.
+
+    JVM optimization:
+    - jvm.auto_instrument (bool) — when true, JMX exporter is automatically injected
+      into pods where a JVM runtime is detected.
+    - jvm.memory.optimization (bool) — enables JVM heap-size optimization.
   EOT
   default     = {}
 }
