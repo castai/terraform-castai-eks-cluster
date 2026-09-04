@@ -841,6 +841,10 @@ resource "helm_release" "castai_evictor" {
         name  = "castai-evictor-ext.enabled"
         value = "false"
       },
+      {
+        name  = "managedByCASTAI"
+        value = "true"
+      },
     ],
     local.set_pod_labels,
     local.set_components_sets,
