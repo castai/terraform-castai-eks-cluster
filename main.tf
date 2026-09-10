@@ -105,7 +105,7 @@ resource "castai_node_template" "this" {
       architectures                                 = try(constraints.value.architectures, ["amd64"])
       architecture_priority                         = try(constraints.value.architecture_priority, [])
       azs                                           = try(constraints.value.azs, null)
-      bare_metal                                    = try(constraints.value.bare_metal, false)
+      bare_metal                                    = try(constraints.value.bare_metal, null)
       burstable_instances                           = try(constraints.value.burstable_instances, null)
       customer_specific                             = try(constraints.value.customer_specific, null)
       cpu_manufacturers                             = try(constraints.value.cpu_manufacturers, null)
