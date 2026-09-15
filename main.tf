@@ -472,7 +472,7 @@ resource "castai_workload_scaling_policy" "this" {
     }
   }
 
-  depends_on = [helm_release.castai_workload_autoscaler]
+  depends_on = [helm_release.castai_workload_autoscaler, helm_release.castai_workload_autoscaler_self_managed]
 }
 
 resource "castai_workload_custom_metrics_data_source" "this" {
