@@ -944,7 +944,7 @@ terraform-docs markdown table . --output-file README.md
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
 | <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 8.57.0 |
@@ -954,7 +954,7 @@ terraform-docs markdown table . --output-file README.md
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23.0 |
 | <a name="provider_castai"></a> [castai](#provider\_castai) | >= 8.57.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.1.0 |
@@ -963,13 +963,13 @@ terraform-docs markdown table . --output-file README.md
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_castai_omni_cluster"></a> [castai\_omni\_cluster](#module\_castai\_omni\_cluster) | castai/omni-cluster/castai | ~> 2.5 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [castai_autoscaler.castai_autoscaler_policies](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/autoscaler) | resource |
 | [castai_eks_cluster.my_castai_cluster](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/eks_cluster) | resource |
 | [castai_node_configuration.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration) | resource |
@@ -995,6 +995,8 @@ terraform-docs markdown table . --output-file README.md
 | [helm_release.castai_pod_pinner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_spot_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_umbrella_cast_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_umbrella_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_workload_autoscaler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_workload_autoscaler_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_workload_autoscaler_exporter_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -1006,7 +1008,7 @@ terraform-docs markdown table . --output-file README.md
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_agent_aws_access_key_id"></a> [agent\_aws\_access\_key\_id](#input\_agent\_aws\_access\_key\_id) | AWS access key for CAST AI agent to fetch instance details. | `string` | `""` | no |
 | <a name="input_agent_aws_iam_service_account_role_arn"></a> [agent\_aws\_iam\_service\_account\_role\_arn](#input\_agent\_aws\_iam\_service\_account\_role\_arn) | Arn of the role to be used by CAST AI agent to fetch instance details. Only readonly AmazonEC2ReadOnlyAccess is needed. | `string` | `""` | no |
 | <a name="input_agent_aws_secret_access_key"></a> [agent\_aws\_secret\_access\_key](#input\_agent\_aws\_secret\_access\_key) | AWS access key secret for CAST AI agent to fetch instance details. | `string` | `""` | no |
@@ -1066,18 +1068,20 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_self_managed"></a> [self\_managed](#input\_self\_managed) | Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. WARNING: changing this after the module was created is not supported. | `bool` | `false` | no |
 | <a name="input_spot_handler_values"></a> [spot\_handler\_values](#input\_spot\_handler\_values) | List of YAML formatted string with spot-handler values | `list(string)` | `[]` | no |
 | <a name="input_spot_handler_version"></a> [spot\_handler\_version](#input\_spot\_handler\_version) | Version of castai-spot-handler helm chart. Default latest | `string` | `null` | no |
+| <a name="input_umbrella_enabled"></a> [umbrella\_enabled](#input\_umbrella\_enabled) | Use Cast AI Umbrella Helm chart instead of standalone charts. See https://github.com/castai/terraform-provider-castai/tree/master/docs/umbrella-migration | `bool` | `false` | no |
 | <a name="input_wait_for_cluster_ready"></a> [wait\_for\_cluster\_ready](#input\_wait\_for\_cluster\_ready) | Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set | `bool` | `false` | no |
 | <a name="input_workload_autoscaler_exporter_values"></a> [workload\_autoscaler\_exporter\_values](#input\_workload\_autoscaler\_exporter\_values) | List of YAML formatted string with workload-autoscaler-exporter values | `list(string)` | `[]` | no |
 | <a name="input_workload_autoscaler_exporter_version"></a> [workload\_autoscaler\_exporter\_version](#input\_workload\_autoscaler\_exporter\_version) | Version of castai-workload-autoscaler-exporter helm chart. Default latest | `string` | `null` | no |
+| <a name="input_workload_autoscaler_keep_crds"></a> [workload\_autoscaler\_keep\_crds](#input\_workload\_autoscaler\_keep\_crds) | Install workload-autoscaler Helm Release in "keep CRDs" mode, so even it it's uninstalled, its CRDs and CRs will be retained. Necessary during migrating to the Cast AI Umbrella Helm chart. | `bool` | `false` | no |
 | <a name="input_workload_autoscaler_values"></a> [workload\_autoscaler\_values](#input\_workload\_autoscaler\_values) | List of YAML formatted string with cluster-workload-autoscaler values | `list(string)` | `[]` | no |
 | <a name="input_workload_autoscaler_version"></a> [workload\_autoscaler\_version](#input\_workload\_autoscaler\_version) | Version of castai-workload-autoscaler helm chart. Default latest | `string` | `null` | no |
 | <a name="input_workload_custom_metrics_data_sources"></a> [workload\_custom\_metrics\_data\_sources](#input\_workload\_custom\_metrics\_data\_sources) | Map of workload custom metrics data sources to create | `any` | `{}` | no |
-| <a name="input_workload_scaling_policies"></a> [workload\_scaling\_policies](#input\_workload\_scaling\_policies) | Map of workload scaling policies to create (passed through to castai\_workload\_scaling\_policy).<br/><br/>Apply threshold:<br/>- Prefer cpu/memory.apply\_threshold\_strategy (e.g. { type = "DEFAULT\_ADAPTIVE" } for Dynamic).<br/>- Deprecated apply\_threshold is only set when apply\_threshold\_strategy is absent (default 0.1).<br/>- If both are supplied, strategy wins and apply\_threshold is omitted so older providers<br/>  that mark the fields as conflicting do not fail.<br/><br/>Min/max constraints:<br/>- Prefer cpu/memory.constraints for new configurations.<br/>- Each min/max strategy supports a single field — either constant<br/>  (number, MiB for memory / cores for CPU) or percentage\_of\_original<br/>  (number, percent of the original pod-spec request). Within a single<br/>  min or max strategy only one of constant / percentage\_of\_original may<br/>  be set.<br/>- Legacy cpu/memory.min and cpu/memory.max (plain numbers) are deprecated.<br/>- The module ensures only one style is passed through: if both legacy<br/>  min/max and constraints are supplied for the same resource (cpu or<br/>  memory), constraints takes precedence and the legacy min/max are<br/>  omitted so the provider does not reject the config.<br/><br/>Resource limits (console Automatic / Semi-automatic map to MULTIPLIER + flags):<br/>- limit.only\_if\_original\_exist (bool) — only set limits when the workload originally had them.<br/>- limit.only\_if\_original\_lower (bool) — only raise limits when original limits are lower than<br/>  requests × multiplier.<br/>- Both flags are optional booleans and may be combined; see provider docs for workload\_scaling\_policy. | `any` | `{}` | no |
+| <a name="input_workload_scaling_policies"></a> [workload\_scaling\_policies](#input\_workload\_scaling\_policies) | Map of workload scaling policies to create (passed through to castai\_workload\_scaling\_policy).<br/><br/>Apply threshold:<br/>- Prefer cpu/memory.apply\_threshold\_strategy (e.g. { type = "DEFAULT\_ADAPTIVE" } for Dynamic).<br/>- Deprecated apply\_threshold is only set when apply\_threshold\_strategy is absent (default 0.1).<br/>- If both are supplied, strategy wins and apply\_threshold is omitted so older providers<br/>  that mark the fields as conflicting do not fail.<br/><br/>Min/max constraints:<br/>- Prefer cpu/memory.constraints for new configurations.<br/>- Each min/max strategy supports a single field — either constant<br/>  (number, MiB for memory / cores for CPU) or percentage\_of\_original<br/>  (number, percent of the original pod-spec request). Within a single<br/>  min or max strategy only one of constant / percentage\_of\_original may<br/>  be set.<br/>- Legacy cpu/memory.min and cpu/memory.max (plain numbers) are deprecated.<br/>- The module ensures only one style is passed through: if both legacy<br/>  min/max and constraints are supplied for the same resource (cpu or<br/>  memory), constraints takes precedence and the legacy min/max are<br/>  omitted so the provider does not reject the config.<br/><br/>Resource limits (console Automatic / Semi-automatic map to MULTIPLIER + flags):<br/>- limit.only\_if\_original\_exist (bool) — only set limits when the workload originally had them.<br/>- limit.only\_if\_original\_lower (bool) — only raise limits when original limits are lower than<br/>  requests × multiplier.<br/>- Both flags are optional booleans and may be combined; see provider docs for workload\_scaling\_policy.<br/><br/>JVM optimization:<br/>- jvm.auto\_instrument (bool) — when true, JMX exporter is automatically injected<br/>  into pods where a JVM runtime is detected.<br/>- jvm.memory.optimization (bool) — enables JVM heap-size optimization. | `any` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_castai_node_configurations"></a> [castai\_node\_configurations](#output\_castai\_node\_configurations) | Map of node configurations ids by name |
 | <a name="output_castai_node_templates"></a> [castai\_node\_templates](#output\_castai\_node\_templates) | Map of node template by name |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | CAST AI cluster id, which can be used for accessing cluster data using API |
