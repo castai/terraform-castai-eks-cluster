@@ -168,8 +168,23 @@ module "castai-eks-cluster" {
         args                     = ["0.9"]
         overhead                 = 0.15
         look_back_period_seconds = 172800
-        min                      = 0.1
-        max                      = 2.0
+
+        # Prefer the new constraints block. Within each min/max strategy only
+        # one of `constant` or `percentage_of_original` may be set. Legacy
+        # `min`/`max` (plain numbers) are still accepted for backward
+        # compatibility, but if both legacy `min`/`max` and `constraints`
+        # are supplied for the same resource, `constraints` takes precedence
+        # and the module omits the legacy `min`/`max` so the provider does
+        # not reject the config.
+        constraints = {
+          min = {
+            constant = 0.1
+          }
+          max = {
+            constant = 2.0
+          }
+        }
+
         # Dynamic change sensitivity (omit apply_threshold when strategy is set)
         apply_threshold_strategy = {
           type = "DEFAULT_ADAPTIVE"
@@ -915,6 +930,21 @@ module "castai-eks-cluster" {
 | `spot_instances.spot_interruption_predictions.enabled` | `spot_interruption_predictions_enabled` |
 | `spot_instances.spot_interruption_predictions.spot_interruption_predictions_type` | `spot_interruption_predictions_type` |
 
+Migrating from 14.x.x to 15.x.x
+-------------------------------
+
+Version 15.0.0 introduces the ability to use the Cast AI umbrella Helm chart instead of the standalone Helm charts.
+This behavior is controlled with the new `umbrella_enabled` variable. It is set to `false` by default and the umbrella
+Helm chart can be enabled by setting it to `true`.
+
+> [!CAUTION]
+> You MUST migrate to the umbrella Helm chart while using the 15.x.x version of this module by following the
+> instructions at https://github.com/castai/terraform-provider-castai/blob/master/docs/umbrella-migration/README.md
+
+A future major release (potentially the next one) will drop the support for the standalone Helm releases and will make
+the controlled migration impossible. If you want to move from 14.x.x or older to a version above 15.x.x, **you must
+first move to 15.x.x and complete the migration** by following the instructions above!
+
 # Examples
 
 Usage examples are located in [terraform provider repo](https://github.com/castai/terraform-provider-castai/tree/master/examples/eks)
@@ -980,6 +1010,8 @@ terraform-docs markdown table . --output-file README.md
 | [helm_release.castai_pod_pinner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_spot_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_umbrella_cast_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_umbrella_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_workload_autoscaler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_workload_autoscaler_exporter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_workload_autoscaler_exporter_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -1051,13 +1083,15 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_self_managed"></a> [self\_managed](#input\_self\_managed) | Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. WARNING: changing this after the module was created is not supported. | `bool` | `false` | no |
 | <a name="input_spot_handler_values"></a> [spot\_handler\_values](#input\_spot\_handler\_values) | List of YAML formatted string with spot-handler values | `list(string)` | `[]` | no |
 | <a name="input_spot_handler_version"></a> [spot\_handler\_version](#input\_spot\_handler\_version) | Version of castai-spot-handler helm chart. Default latest | `string` | `null` | no |
+| <a name="input_umbrella_enabled"></a> [umbrella\_enabled](#input\_umbrella\_enabled) | Use Cast AI Umbrella Helm chart instead of standalone charts. See https://github.com/castai/terraform-provider-castai/tree/master/docs/umbrella-migration | `bool` | `false` | no |
 | <a name="input_wait_for_cluster_ready"></a> [wait\_for\_cluster\_ready](#input\_wait\_for\_cluster\_ready) | Wait for cluster to be ready before finishing the module execution, this option requires `castai_api_token` to be set | `bool` | `false` | no |
 | <a name="input_workload_autoscaler_exporter_values"></a> [workload\_autoscaler\_exporter\_values](#input\_workload\_autoscaler\_exporter\_values) | List of YAML formatted string with workload-autoscaler-exporter values | `list(string)` | `[]` | no |
 | <a name="input_workload_autoscaler_exporter_version"></a> [workload\_autoscaler\_exporter\_version](#input\_workload\_autoscaler\_exporter\_version) | Version of castai-workload-autoscaler-exporter helm chart. Default latest | `string` | `null` | no |
+| <a name="input_workload_autoscaler_keep_crds"></a> [workload\_autoscaler\_keep\_crds](#input\_workload\_autoscaler\_keep\_crds) | Install workload-autoscaler Helm Release in "keep CRDs" mode, so even it it's uninstalled, its CRDs and CRs will be retained. Necessary during migrating to the Cast AI Umbrella Helm chart. | `bool` | `false` | no |
 | <a name="input_workload_autoscaler_values"></a> [workload\_autoscaler\_values](#input\_workload\_autoscaler\_values) | List of YAML formatted string with cluster-workload-autoscaler values | `list(string)` | `[]` | no |
 | <a name="input_workload_autoscaler_version"></a> [workload\_autoscaler\_version](#input\_workload\_autoscaler\_version) | Version of castai-workload-autoscaler helm chart. Default latest | `string` | `null` | no |
 | <a name="input_workload_custom_metrics_data_sources"></a> [workload\_custom\_metrics\_data\_sources](#input\_workload\_custom\_metrics\_data\_sources) | Map of workload custom metrics data sources to create | `any` | `{}` | no |
-| <a name="input_workload_scaling_policies"></a> [workload\_scaling\_policies](#input\_workload\_scaling\_policies) | Map of workload scaling policies to create (passed through to castai\_workload\_scaling\_policy).<br/><br/>Apply threshold:<br/>- Prefer cpu/memory.apply\_threshold\_strategy (e.g. { type = "DEFAULT\_ADAPTIVE" } for Dynamic).<br/>- Deprecated apply\_threshold is only set when apply\_threshold\_strategy is absent (default 0.1).<br/>- If both are supplied, strategy wins and apply\_threshold is omitted so older providers<br/>  that mark the fields as conflicting do not fail.<br/><br/>Resource limits (console Automatic / Semi-automatic map to MULTIPLIER + flags):<br/>- limit.only\_if\_original\_exist (bool) — only set limits when the workload originally had them.<br/>- limit.only\_if\_original\_lower (bool) — only raise limits when original limits are lower than<br/>  requests × multiplier.<br/>- Both flags are optional booleans and may be combined; see provider docs for workload\_scaling\_policy. | `any` | `{}` | no |
+| <a name="input_workload_scaling_policies"></a> [workload\_scaling\_policies](#input\_workload\_scaling\_policies) | Map of workload scaling policies to create (passed through to castai\_workload\_scaling\_policy).<br/><br/>Apply threshold:<br/>- Prefer cpu/memory.apply\_threshold\_strategy (e.g. { type = "DEFAULT\_ADAPTIVE" } for Dynamic).<br/>- Deprecated apply\_threshold is only set when apply\_threshold\_strategy is absent (default 0.1).<br/>- If both are supplied, strategy wins and apply\_threshold is omitted so older providers<br/>  that mark the fields as conflicting do not fail.<br/><br/>Min/max constraints:<br/>- Prefer cpu/memory.constraints for new configurations.<br/>- Each min/max strategy supports a single field — either constant<br/>  (number, MiB for memory / cores for CPU) or percentage\_of\_original<br/>  (number, percent of the original pod-spec request). Within a single<br/>  min or max strategy only one of constant / percentage\_of\_original may<br/>  be set.<br/>- Legacy cpu/memory.min and cpu/memory.max (plain numbers) are deprecated.<br/>- The module ensures only one style is passed through: if both legacy<br/>  min/max and constraints are supplied for the same resource (cpu or<br/>  memory), constraints takes precedence and the legacy min/max are<br/>  omitted so the provider does not reject the config.<br/><br/>Resource limits (console Automatic / Semi-automatic map to MULTIPLIER + flags):<br/>- limit.only\_if\_original\_exist (bool) — only set limits when the workload originally had them.<br/>- limit.only\_if\_original\_lower (bool) — only raise limits when original limits are lower than<br/>  requests × multiplier.<br/>- Both flags are optional booleans and may be combined; see provider docs for workload\_scaling\_policy.<br/><br/>JVM optimization:<br/>- jvm.auto\_instrument (bool) — when true, JMX exporter is automatically injected<br/>  into pods where a JVM runtime is detected.<br/>- jvm.memory.optimization (bool) — enables JVM heap-size optimization. | `any` | `{}` | no |
 
 ## Outputs
 

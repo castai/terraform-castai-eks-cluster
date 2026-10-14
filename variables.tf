@@ -131,6 +131,19 @@ variable "workload_scaling_policies" {
     - If both are supplied, strategy wins and apply_threshold is omitted so older providers
       that mark the fields as conflicting do not fail.
 
+    Min/max constraints:
+    - Prefer cpu/memory.constraints for new configurations.
+    - Each min/max strategy supports a single field — either constant
+      (number, MiB for memory / cores for CPU) or percentage_of_original
+      (number, percent of the original pod-spec request). Within a single
+      min or max strategy only one of constant / percentage_of_original may
+      be set.
+    - Legacy cpu/memory.min and cpu/memory.max (plain numbers) are deprecated.
+    - The module ensures only one style is passed through: if both legacy
+      min/max and constraints are supplied for the same resource (cpu or
+      memory), constraints takes precedence and the legacy min/max are
+      omitted so the provider does not reject the config.
+
     Resource limits (console Automatic / Semi-automatic map to MULTIPLIER + flags):
     - limit.only_if_original_exist (bool) — only set limits when the workload originally had them.
     - limit.only_if_original_lower (bool) — only raise limits when original limits are lower than
@@ -413,4 +426,20 @@ variable "overwrite_existing_helm_releases" {
   type        = bool
   default     = false
   description = "Optional flag to enable upgrade_install on all CAST AI Helm releases. When set to true, Helm will upgrade an existing release instead of failing with 'cannot re-use a name that is still in use'. Useful when Helm releases already exist in the cluster but are not tracked in Terraform state."
+}
+
+variable "workload_autoscaler_keep_crds" {
+  type        = bool
+  default     = false
+  description = "Install workload-autoscaler Helm Release in \"keep CRDs\" mode, so even it it's uninstalled, its CRDs and CRs will be retained. Necessary during migrating to the Cast AI Umbrella Helm chart."
+}
+
+variable "umbrella_enabled" {
+  type        = bool
+  default     = false
+  description = "Use Cast AI Umbrella Helm chart instead of standalone charts. See https://github.com/castai/terraform-provider-castai/tree/master/docs/umbrella-migration"
+  validation {
+    condition     = !(var.umbrella_enabled && !var.workload_autoscaler_keep_crds)
+    error_message = "When setting umbrella_enabled=true, you must also have set workload_autoscaler_keep_crds=true and APPLIED THAT CHANGE SEPARATELY FIRST!"
+  }
 }
