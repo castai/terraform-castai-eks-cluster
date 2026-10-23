@@ -1009,6 +1009,7 @@ terraform-docs markdown table . --output-file README.md
 | [helm_release.castai_pod_mutator_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_pod_pinner_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.castai_pod_pinner_values_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_spot_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_umbrella_cast_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.castai_umbrella_self_managed](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -1078,7 +1079,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_overwrite_existing_helm_releases"></a> [overwrite\_existing\_helm\_releases](#input\_overwrite\_existing\_helm\_releases) | Optional flag to enable upgrade\_install on all CAST AI Helm releases. When set to true, Helm will upgrade an existing release instead of failing with 'cannot re-use a name that is still in use'. Useful when Helm releases already exist in the cluster but are not tracked in Terraform state. | `bool` | `false` | no |
 | <a name="input_pod_mutator_values"></a> [pod\_mutator\_values](#input\_pod\_mutator\_values) | List of YAML formatted string values for pod-mutator helm chart | `list(string)` | `[]` | no |
 | <a name="input_pod_mutator_version"></a> [pod\_mutator\_version](#input\_pod\_mutator\_version) | Version of castai-pod-mutator helm chart. Default latest | `string` | `null` | no |
-| <a name="input_pod_pinner_values"></a> [pod\_pinner\_values](#input\_pod\_pinner\_values) | List of YAML formatted string values for agent helm chart | `list(string)` | `[]` | no |
+| <a name="input_pod_pinner_values"></a> [pod\_pinner\_values](#input\_pod\_pinner\_values) | List of YAML formatted string values for the castai-pod-pinner helm chart. An explicit replicaCount is honoured instead of the module default of 0, and managedByCASTAI set to false marks the release as self-managed: terraform then owns the chart version instead of ignoring it | `list(string)` | `[]` | no |
 | <a name="input_pod_pinner_version"></a> [pod\_pinner\_version](#input\_pod\_pinner\_version) | Version of pod-pinner helm chart. Default latest | `string` | `null` | no |
 | <a name="input_self_managed"></a> [self\_managed](#input\_self\_managed) | Whether CAST AI components' upgrades are managed by a customer; by default upgrades are managed CAST AI central system. WARNING: changing this after the module was created is not supported. | `bool` | `false` | no |
 | <a name="input_spot_handler_values"></a> [spot\_handler\_values](#input\_spot\_handler\_values) | List of YAML formatted string with spot-handler values | `list(string)` | `[]` | no |

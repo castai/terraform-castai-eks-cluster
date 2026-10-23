@@ -63,6 +63,12 @@ locals {
   install_standalone_charts = var.install_helm_apps && !var.umbrella_enabled
   install_umbrella_chart    = var.install_helm_apps && var.umbrella_enabled
 
+  pod_pinner_values_decoded = merge([for v in var.pod_pinner_values : yamldecode(v)]...)
+
+  pod_pinner_values_replica_count_set = contains(keys(local.pod_pinner_values_decoded), "replicaCount")
+
+  pod_pinner_unmanaged_via_values = try(local.pod_pinner_values_decoded.managedByCASTAI, true) == false
+
   # Inputs to the Cast AI Umbrella Helm release
   umbrella_set_castai_agent = [for s in concat(
     [
@@ -192,7 +198,7 @@ locals {
       },
     ] : [],
     ) : concat(
-    [
+    local.pod_pinner_values_replica_count_set ? [] : [
       {
         name  = "replicaCount"
         value = "0"

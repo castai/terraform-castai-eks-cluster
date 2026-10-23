@@ -201,7 +201,7 @@ variable "evictor_ext_values" {
 }
 
 variable "pod_pinner_values" {
-  description = "List of YAML formatted string values for agent helm chart"
+  description = "List of YAML formatted string values for the castai-pod-pinner helm chart. An explicit replicaCount is honoured instead of the module default of 0, and managedByCASTAI set to false marks the release as self-managed: terraform then owns the chart version instead of ignoring it"
   type        = list(string)
   default     = []
 }

@@ -1060,7 +1060,7 @@ resource "helm_release" "castai_evictor_ext" {
 }
 
 resource "helm_release" "castai_pod_pinner" {
-  count = local.install_standalone_charts && !var.self_managed ? 1 : 0
+  count = local.install_standalone_charts && !var.self_managed && !local.pod_pinner_unmanaged_via_values ? 1 : 0
 
   name             = "castai-pod-pinner"
   repository       = "https://castai.github.io/helm-charts"
@@ -1075,7 +1075,7 @@ resource "helm_release" "castai_pod_pinner" {
   values  = var.pod_pinner_values
 
   set = concat(
-    [
+    local.pod_pinner_values_replica_count_set ? [] : [
       {
         name  = "replicaCount"
         value = "0"
@@ -1119,6 +1119,40 @@ resource "helm_release" "castai_pod_pinner_self_managed" {
         value = "false"
       }
     ],
+    local.set_cluster_id,
+    local.set_apiurl,
+    local.set_grpc_url,
+    local.set_pod_labels,
+    local.set_components_sets,
+    try(var.autoscaler_settings.unschedulable_pods.pod_pinner.enabled, null) == false ? [
+      {
+        name  = "replicaCount"
+        value = "0"
+      }
+    ] : [],
+  )
+
+  set_sensitive = local.set_sensitive_apikey
+
+  depends_on = [helm_release.castai_agent]
+}
+
+resource "helm_release" "castai_pod_pinner_values_self_managed" {
+  count = local.install_standalone_charts && !var.self_managed && local.pod_pinner_unmanaged_via_values ? 1 : 0
+
+  name             = "castai-pod-pinner"
+  repository       = "https://castai.github.io/helm-charts"
+  chart            = "castai-pod-pinner"
+  namespace        = "castai-agent"
+  create_namespace = true
+  cleanup_on_fail  = true
+  upgrade_install  = var.overwrite_existing_helm_releases
+  wait             = true
+
+  version = var.pod_pinner_version
+  values  = var.pod_pinner_values
+
+  set = concat(
     local.set_cluster_id,
     local.set_apiurl,
     local.set_grpc_url,
@@ -1391,7 +1425,8 @@ resource "castai_autoscaler" "castai_autoscaler_policies" {
     helm_release.castai_evictor_self_managed,
     helm_release.castai_evictor_ext,
     helm_release.castai_pod_pinner,
-    helm_release.castai_pod_pinner_self_managed
+    helm_release.castai_pod_pinner_self_managed,
+    helm_release.castai_pod_pinner_values_self_managed
   ]
 }
 
