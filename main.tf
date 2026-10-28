@@ -58,12 +58,13 @@ resource "castai_node_template" "this" {
 
   cluster_id = castai_eks_cluster.my_castai_cluster.id
 
-  name             = try(each.value.name, each.key)
-  is_default       = try(each.value.is_default, false)
-  is_enabled       = try(each.value.is_enabled, true)
-  configuration_id = try(each.value.configuration_name, null) != null ? castai_node_configuration.this[each.value.configuration_name].id : try(each.value.configuration_id, null)
-  should_taint     = try(each.value.should_taint, true)
-  clm_enabled      = try(each.value.clm_enabled, false)
+  name                = try(each.value.name, each.key)
+  is_default          = try(each.value.is_default, false)
+  is_enabled          = try(each.value.is_enabled, true)
+  configuration_id    = try(each.value.configuration_name, null) != null ? castai_node_configuration.this[each.value.configuration_name].id : try(each.value.configuration_id, null)
+  should_taint        = try(each.value.should_taint, true)
+  clm_enabled         = try(each.value.clm_enabled, false)
+  clm_networking_mode = try(each.value.clm_networking_mode, null)
 
   custom_labels = try(each.value.custom_labels, {})
 
