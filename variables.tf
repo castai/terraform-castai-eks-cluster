@@ -443,3 +443,20 @@ variable "umbrella_enabled" {
     error_message = "When setting umbrella_enabled=true, you must also have set workload_autoscaler_keep_crds=true and APPLIED THAT CHANGE SEPARATELY FIRST!"
   }
 }
+variable "install_storage_autoscaler" {
+  type        = bool
+  default     = false
+  description = "Optional flag for installation of storage autoscaler (https://docs.cast.ai/docs/storage-introduction)"
+}
+
+variable "storage_autoscaler_version" {
+  description = "Version of castai-storage-autoscaler helm chart. Default latest"
+  type        = string
+  default     = null
+}
+
+variable "storage_autoscaler_values" {
+  description = "List of YAML formatted string values for castai-storage-autoscaler helm chart"
+  type        = list(string)
+  default     = []
+}

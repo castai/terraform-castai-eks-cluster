@@ -236,6 +236,16 @@ locals {
     }],
   ) : merge(s, { name = "autoscaler.castai-kvisor.${s.name}" })]
 
+  umbrella_set_castai_storage_autoscaler = [for s in concat(
+    [
+      {
+        name  = "enabled"
+        value = var.install_storage_autoscaler
+      },
+    ],
+    local.set_components_sets,
+  ) : merge(s, { name = "autoscaler.castai-storage-autoscaler.${s.name}" })]
+
   umbrella_set_castai_live = [for s in concat(
     [
       {
@@ -272,6 +282,7 @@ locals {
     "castai-spot-handler"                 = var.spot_handler_values
     "castai-kvisor"                       = var.kvisor_values
     "castai-live"                         = var.live_values
+    "castai-storage-autoscaler"           = var.storage_autoscaler_values
   }
 
   umbrella_chart_values_decoded = merge([
@@ -333,6 +344,7 @@ locals {
     local.umbrella_set_castai_spot_handler,
     local.umbrella_set_castai_kvisor,
     local.umbrella_set_castai_live,
+    local.umbrella_set_castai_storage_autoscaler,
   )
 
   umbrella_set_sensitive = concat(
