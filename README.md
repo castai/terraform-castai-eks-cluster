@@ -962,7 +962,7 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 8.57.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.17.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
@@ -971,7 +971,7 @@ terraform-docs markdown table . --output-file README.md
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23.0 |
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 8.57.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 9.17.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
@@ -1070,7 +1070,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_live_values"></a> [live\_values](#input\_live\_values) | List of YAML formatted string with castai-live values | `list(string)` | `[]` | no |
 | <a name="input_live_version"></a> [live\_version](#input\_live\_version) | Version of castai-live helm chart. Default latest | `string` | `null` | no |
 | <a name="input_node_configurations"></a> [node\_configurations](#input\_node\_configurations) | Map of EKS node configurations to create | `any` | `{}` | no |
-| <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates) | Map of node templates to create | `any` | `{}` | no |
+| <a name="input_node_templates"></a> [node\_templates](#input\_node\_templates) | Map of node templates to create. Keys mirror the [castai\_node\_template](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_template) resource attributes. | `any` | `{}` | no |
 | <a name="input_omni_loadbalancer_provider"></a> [omni\_loadbalancer\_provider](#input\_omni\_loadbalancer\_provider) | LoadBalancer provider for Omni edge clusters control planes. This setting is used only for EKS clusters (accepted values are `nlb` and `external`). If null, defaults to the omni-cluster module default (`external` for EKS). | `string` | `null` | no |
 | <a name="input_omni_reserved_subnet_cidrs"></a> [omni\_reserved\_subnet\_cidrs](#input\_omni\_reserved\_subnet\_cidrs) | List of reserved subnet CIDRs that should not be allocated by Liqo IPAM (e.g. VPC peering CIDRs) | `list(string)` | `[]` | no |
 | <a name="input_omni_storage_provider"></a> [omni\_storage\_provider](#input\_omni\_storage\_provider) | Storage provider (storageclass) used by Omni edge clusters control planes (k0s etcd PVCs). If null, defaults to the omni-cluster module default (`gp3` for EKS). Override when your cluster uses a different storage class name. | `string` | `null` | no |

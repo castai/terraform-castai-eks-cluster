@@ -116,7 +116,7 @@ variable "default_node_configuration_name" {
 
 variable "node_templates" {
   type        = any
-  description = "Map of node templates to create"
+  description = "Map of node templates to create. Keys mirror the [castai_node_template](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_template) resource attributes."
   default     = {}
 }
 
