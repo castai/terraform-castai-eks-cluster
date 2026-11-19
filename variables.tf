@@ -40,12 +40,8 @@ variable "kvisor_grpc_addr" {
 
 variable "kvisor_controller_extra_args" {
   type        = map(string)
-  description = "⚠️ DEPRECATED: use kvisor_values instead (see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf ). Extra arguments for the kvisor controller. Optionally enable kvisor to lint Kubernetes YAML manifests, scan workload images and check if workloads pass CIS Kubernetes Benchmarks as well as NSA, WASP and PCI recommendations."
-  default = {
-    "kube-linter-enabled" = "true"
-    "image-scan-enabled"  = "true"
-    "kube-bench-enabled"  = "true"
-  }
+  description = "⚠️ DEPRECATED: use kvisor_values instead (see example: https://github.com/castai/terraform-provider-castai/tree/master/examples/eks/eks_cluster_with_security/castai.tf ). Extra arguments for the kvisor controller. Note: kvisor 2.x no longer accepts the image-scan-*, kube-bench-* and kube-linter-* flags."
+  default     = {}
 }
 
 variable "autoscaler_settings" {
