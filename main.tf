@@ -1193,12 +1193,6 @@ resource "helm_release" "castai_kvisor" {
   }
 
   set = concat(
-    [
-      {
-        name  = "controller.extraArgs.kube-bench-cloud-provider"
-        value = "eks"
-      },
-    ],
     local.set_cluster_id,
     local.set_kvisor_grpc_addr,
     local.set_components_sets,
@@ -1227,12 +1221,6 @@ resource "helm_release" "castai_kvisor_self_managed" {
   wait    = var.kvisor_wait
 
   set = concat(
-    [
-      {
-        name  = "controller.extraArgs.kube-bench-cloud-provider"
-        value = "eks"
-      },
-    ],
     local.set_cluster_id,
     local.set_kvisor_grpc_addr,
     local.set_components_sets,
