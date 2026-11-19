@@ -948,7 +948,7 @@ first move to 15.x.x and complete the migration** by following the instructions 
 Migrating from 16.x.x to 17.x.x
 -------------------------------
 
-Version 17.0.0 replaces the deprecated `castai_autoscaler` resource with `castai_autoscaler_policies` and `castai_evictor`. Autoscaler policies and Evictor settings now follow the provider V2 resources and are configured separately. The legacy resource is removed from Terraform state without disabling policies.
+Version 17.0.0 replaces the deprecated `castai_autoscaler` resource with `castai_autoscaler_policies` and `castai_evictor`. Autoscaler policies and Evictor settings now follow the provider V2 resources and are configured separately. The legacy resource is destroyed during migration, preserving its existing behavior of disabling policies.
 
 ### Changed Fields
 
@@ -1072,7 +1072,7 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.7 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
 | <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.17.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.1.0 |
