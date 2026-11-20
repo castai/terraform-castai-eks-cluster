@@ -1083,7 +1083,7 @@ terraform-docs markdown table . --output-file README.md
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23.0 |
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 9.17.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 9.22.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
