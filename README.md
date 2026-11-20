@@ -945,10 +945,10 @@ A future major release (potentially the next one) will drop the support for the 
 the controlled migration impossible. If you want to move from 14.x.x or older to a version above 15.x.x, **you must
 first move to 15.x.x and complete the migration** by following the instructions above!
 
-Migrating from 16.x.x to 17.x.x
+Migrating from 17.x.x to 18.x.x
 -------------------------------
 
-Version 17.0.0 replaces the deprecated `castai_autoscaler` resource with `castai_autoscaler_policies` and `castai_evictor`. Autoscaler policies and Evictor settings now follow the provider V2 resources and are configured separately.
+Version 18.0.0 replaces the deprecated `castai_autoscaler` resource with `castai_autoscaler_policies` and `castai_evictor`. Autoscaler policies and Evictor settings now follow the provider V2 resources and are configured separately.
 
 ### Changed Fields
 
@@ -960,7 +960,7 @@ Version 17.0.0 replaces the deprecated `castai_autoscaler` resource with `castai
 
 ### Migration Example
 
-**Old configuration (v16.x.x):**
+**Old configuration (v17.x.x):**
 
 ```hcl
 module "castai-eks-cluster" {
@@ -1004,7 +1004,7 @@ module "castai-eks-cluster" {
 }
 ```
 
-**New configuration (v17.x.x):**
+**New configuration (v18.x.x):**
 
 ```hcl
 module "castai-eks-cluster" {
