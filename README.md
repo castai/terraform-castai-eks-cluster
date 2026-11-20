@@ -945,6 +945,118 @@ A future major release (potentially the next one) will drop the support for the 
 the controlled migration impossible. If you want to move from 14.x.x or older to a version above 15.x.x, **you must
 first move to 15.x.x and complete the migration** by following the instructions above!
 
+Migrating from 17.x.x to 18.x.x
+-------------------------------
+
+Version 18.0.0 replaces the deprecated `castai_autoscaler` resource with `castai_autoscaler_policies` and `castai_evictor`. Autoscaler policies and Evictor settings now follow the provider V2 resources and are configured separately.
+
+### Changed Fields
+
+- `autoscaler_settings.is_scoped_mode` is renamed to `scoped_mode`
+- `autoscaler_settings.node_templates_partial_matching_enabled` is moved to `autoscaler_settings.unschedulable_pods.partial_template_matching_enabled`
+- `autoscaler_settings.node_downscaler.empty_nodes` is flattened to `empty_nodes_enabled` and `empty_nodes_delay`
+- `autoscaler_settings.node_downscaler.evictor` is moved to the top-level `evictor_settings` variable
+- `autoscaler_settings.node_downscaler.enabled` is removed; use `empty_nodes_enabled` instead
+
+### Migration Example
+
+**Old configuration (v17.x.x):**
+
+```hcl
+module "castai-eks-cluster" {
+  source = "castai/eks-cluster/castai"
+
+  autoscaler_settings = {
+    enabled                                 = true
+    is_scoped_mode                          = true
+    node_templates_partial_matching_enabled = false
+
+    unschedulable_pods = {
+      enabled = true
+    }
+
+    cluster_limits = {
+      enabled = true
+      cpu = {
+        min_cores = 1
+        max_cores = 100
+      }
+    }
+
+    node_downscaler = {
+      enabled = true
+
+      empty_nodes = {
+        enabled       = true
+        delay_seconds = 300
+      }
+
+      evictor = {
+        enabled                   = true
+        dry_run                   = false
+        aggressive_mode           = false
+        scoped_mode               = false
+        cycle_interval            = "1m"
+        node_grace_period_minutes = 5
+      }
+    }
+  }
+}
+```
+
+**New configuration (v18.x.x):**
+
+```hcl
+module "castai-eks-cluster" {
+  source = "castai/eks-cluster/castai"
+
+  autoscaler_settings = {
+    enabled     = true
+    scoped_mode = true
+
+    unschedulable_pods = {
+      enabled                            = true
+      partial_template_matching_enabled = false
+    }
+
+    cluster_limits = {
+      enabled = true
+      cpu = {
+        min_cores = 1
+        max_cores = 100
+      }
+    }
+
+    node_downscaler = {
+      empty_nodes_enabled = true
+      empty_nodes_delay   = "300s"
+    }
+  }
+
+  evictor_settings = {
+    enabled                   = true
+    dry_run                   = false
+    aggressive_mode           = false
+    scoped_mode               = false
+    cycle_interval            = "1m"
+    node_grace_period_minutes = 5
+  }
+}
+```
+
+Evictor can also be configured independently without setting `autoscaler_settings`. Other autoscaler policy fields retain their previous structure.
+
+### Field Mapping Reference
+
+| Previous `autoscaler_settings` field | V2 configuration |
+|--------------------------------------|------------------|
+| `is_scoped_mode` | `autoscaler_settings.scoped_mode` |
+| `node_templates_partial_matching_enabled` | `autoscaler_settings.unschedulable_pods.partial_template_matching_enabled` |
+| `node_downscaler.empty_nodes.enabled` | `autoscaler_settings.node_downscaler.empty_nodes_enabled` |
+| `node_downscaler.empty_nodes.delay_seconds` | `autoscaler_settings.node_downscaler.empty_nodes_delay` as a duration string, for example `"300s"` |
+| `node_downscaler.evictor` | Top-level `evictor_settings`; nested Evictor field names remain unchanged |
+| `node_downscaler.enabled` | No V2 equivalent; configure `empty_nodes_enabled` instead |
+
 # Examples
 
 Usage examples are located in [terraform provider repo](https://github.com/castai/terraform-provider-castai/tree/master/examples/eks)
@@ -962,7 +1074,7 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.17.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.22.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
@@ -971,7 +1083,7 @@ terraform-docs markdown table . --output-file README.md
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23.0 |
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 9.17.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 9.22.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
@@ -985,8 +1097,9 @@ terraform-docs markdown table . --output-file README.md
 
 | Name | Type |
 |------|------|
-| [castai_autoscaler.castai_autoscaler_policies](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/autoscaler) | resource |
+| [castai_autoscaler_policies.castai_autoscaler_policies](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/autoscaler_policies) | resource |
 | [castai_eks_cluster.my_castai_cluster](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/eks_cluster) | resource |
+| [castai_evictor.castai_evictor](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/evictor) | resource |
 | [castai_node_configuration.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration) | resource |
 | [castai_node_configuration_default.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_configuration_default) | resource |
 | [castai_node_template.this](https://registry.terraform.io/providers/castai/castai/latest/docs/resources/node_template) | resource |
@@ -1034,7 +1147,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_ai_optimizer_values"></a> [ai\_optimizer\_values](#input\_ai\_optimizer\_values) | List of YAML formatted string with ai-optimizer values | `list(string)` | `[]` | no |
 | <a name="input_ai_optimizer_version"></a> [ai\_optimizer\_version](#input\_ai\_optimizer\_version) | Version of castai-ai-optimizer helm chart. Default latest | `string` | `null` | no |
 | <a name="input_api_url"></a> [api\_url](#input\_api\_url) | URL of alternative CAST AI API to be used during development or testing | `string` | `"https://api.cast.ai"` | no |
-| <a name="input_autoscaler_settings"></a> [autoscaler\_settings](#input\_autoscaler\_settings) | Optional Autoscaler policy definitions to override current autoscaler settings | `any` | `null` | no |
+| <a name="input_autoscaler_settings"></a> [autoscaler\_settings](#input\_autoscaler\_settings) | Optional policy definitions mapped to the castai\_autoscaler\_policies resource | `any` | `null` | no |
 | <a name="input_aws_account_id"></a> [aws\_account\_id](#input\_aws\_account\_id) | ID of AWS account the cluster is located in. | `string` | n/a | yes |
 | <a name="input_aws_assume_role_arn"></a> [aws\_assume\_role\_arn](#input\_aws\_assume\_role\_arn) | Arn of the role to be used by CAST AI for IAM access | `string` | `null` | no |
 | <a name="input_aws_cluster_name"></a> [aws\_cluster\_name](#input\_aws\_cluster\_name) | Name of the cluster to be connected to CAST AI. | `string` | n/a | yes |
@@ -1051,6 +1164,7 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_egressd_version"></a> [egressd\_version](#input\_egressd\_version) | Version of castai-egressd helm chart. Default latest | `string` | `null` | no |
 | <a name="input_evictor_ext_values"></a> [evictor\_ext\_values](#input\_evictor\_ext\_values) | List of YAML formatted string with evictor-ext values | `list(string)` | `[]` | no |
 | <a name="input_evictor_ext_version"></a> [evictor\_ext\_version](#input\_evictor\_ext\_version) | Version of castai-evictor-ext chart. Default latest | `string` | `null` | no |
+| <a name="input_evictor_settings"></a> [evictor\_settings](#input\_evictor\_settings) | Optional Evictor configuration mapped independently to the castai\_evictor resource | `any` | `null` | no |
 | <a name="input_evictor_values"></a> [evictor\_values](#input\_evictor\_values) | List of YAML formatted string with evictor values | `list(string)` | `[]` | no |
 | <a name="input_evictor_version"></a> [evictor\_version](#input\_evictor\_version) | Version of castai-evictor chart. Default latest | `string` | `null` | no |
 | <a name="input_grpc_url"></a> [grpc\_url](#input\_grpc\_url) | gRPC endpoint used by pod-pinner | `string` | `"grpc.cast.ai:443"` | no |
