@@ -1074,7 +1074,7 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.17.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.22.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
