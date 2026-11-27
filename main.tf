@@ -992,7 +992,7 @@ resource "helm_release" "castai_evictor" {
       },
       {
         name  = "evictorEnabled"
-        value = tostring(try(var.evictor_settings.enabled == true, false))
+        value = tostring(local.evictor_enabled)
       },
     ],
     local.set_pod_labels,
@@ -1033,7 +1033,7 @@ resource "helm_release" "castai_evictor_self_managed" {
       },
       {
         name  = "evictorEnabled"
-        value = tostring(var.evictor_enabled)
+        value = tostring(local.evictor_enabled)
       },
     ],
     try(var.evictor_settings.enabled, null) == false ? [

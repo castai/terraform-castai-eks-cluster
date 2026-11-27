@@ -1162,7 +1162,6 @@ terraform-docs markdown table . --output-file README.md
 | <a name="input_delete_nodes_on_disconnect"></a> [delete\_nodes\_on\_disconnect](#input\_delete\_nodes\_on\_disconnect) | Optionally delete Cast AI created nodes when the cluster is destroyed | `bool` | `false` | no |
 | <a name="input_egressd_values"></a> [egressd\_values](#input\_egressd\_values) | List of YAML formatted string with egressd values | `list(string)` | `[]` | no |
 | <a name="input_egressd_version"></a> [egressd\_version](#input\_egressd\_version) | Version of castai-egressd helm chart. Default latest | `string` | `null` | no |
-| <a name="input_evictor_enabled"></a> [evictor\_enabled](#input\_evictor\_enabled) | Kill-switch for the Evictor chart (evictorEnabled). Used only when self\_managed is true. Set to true to allow evictions. | `bool` | `false` | no |
 | <a name="input_evictor_ext_values"></a> [evictor\_ext\_values](#input\_evictor\_ext\_values) | List of YAML formatted string with evictor-ext values | `list(string)` | `[]` | no |
 | <a name="input_evictor_ext_version"></a> [evictor\_ext\_version](#input\_evictor\_ext\_version) | Version of castai-evictor-ext chart. Default latest | `string` | `null` | no |
 | <a name="input_evictor_settings"></a> [evictor\_settings](#input\_evictor\_settings) | Optional Evictor configuration mapped independently to the castai\_evictor resource | `any` | `null` | no |
