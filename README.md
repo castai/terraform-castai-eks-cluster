@@ -263,6 +263,9 @@ module "castai-eks-cluster" {
           cpu_stall_threshold_percentage = 50
           min_pressured_pod_percentage   = 30
         }
+        infinite_memory_scaling = {
+          enabled = false
+        }
       }
 
       excluded_containers = ["container-1", "container-2"]
@@ -1074,7 +1077,7 @@ terraform-docs markdown table . --output-file README.md
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23.0 |
-| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.22.0 |
+| <a name="requirement_castai"></a> [castai](#requirement\_castai) | >= 9.25.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
@@ -1083,7 +1086,7 @@ terraform-docs markdown table . --output-file README.md
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23.0 |
-| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 9.22.0 |
+| <a name="provider_castai"></a> [castai](#provider\_castai) | >= 9.25.0 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
